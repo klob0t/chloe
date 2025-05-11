@@ -12,4 +12,16 @@
    overflow-y: auto;
    display: flex;
    flex-direction: column;
+
+
+&::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* For Firefox */
+  scrollbar-width: none;
+
+  /* For Internet Explorer and older Edge (less common now but good for completeness) */
+  -ms-overflow-style: none;
+
 }

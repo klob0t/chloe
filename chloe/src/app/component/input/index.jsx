@@ -28,6 +28,7 @@ export default function Input({ onSubmit, isLoading }) {
   }
 
   return (
+    <div className={styles.inputContainer}>
     <div
       ref={inputRef}
       className={styles.inputArea}
@@ -36,7 +37,7 @@ export default function Input({ onSubmit, isLoading }) {
       onInput={handleInput}
       onKeyDown={handleKeyPress}
       role='textbox'
-      data-placeholder='hi!'
-    />      
+    />
+    </div>
   )
 }

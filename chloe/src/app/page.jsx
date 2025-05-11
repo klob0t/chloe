@@ -52,6 +52,7 @@ export default function Main() {
   return(
     <div className={styles.mainContainer}>
       <div className={styles.chatWindow} ref={chatWindowRef}>
+        {isLoading }<div className={styles.loadingSpinner}></div>
         <Chats messages={messages} />
       </div>
       {error && <p className={styles.errorMessage}>{error}</p>}
