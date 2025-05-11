@@ -1,0 +1,27 @@
+
+.message{
+   line-height: 130%;
+   justify-content: flex-start;
+   padding: 0.4rem;
+   display: flex;
+   flex-direction: row;
+}
+
+.user {
+   color: var(--text-dark-blue);
+}
+
+.assistant {
+   color: var(--text-light-blue);
+}
+
+.empty{
+   font-size: 1.4rem;
+   color: var(--text-light-blue);
+   justify-self: center;
+   align-self: center;
+}
+
+.messageContent{
+   padding-left:10px;
+}

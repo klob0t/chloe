@@ -1,0 +1,17 @@
+.inputArea{
+   padding: 10px;
+   border: 1px solid var(--text-light-blue);
+   color: var(--text-light-blue);
+}
+
+.inputArea:empty:before{
+   content:attr(data-placeholder);
+   color: var(--text-light-blue);
+   pointer-events:none;
+   font-size: 1.4rem;
+}
+
+
+.inputArea:focus {
+   outline: none;
+}

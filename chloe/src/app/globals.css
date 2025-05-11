@@ -1,3 +1,17 @@
-body{
-  background-color: rgb(13, 0, 63);
+:root{
+  --text-light-blue: rgb(96, 181, 255);
+  --text-dark-blue: rgb(40, 121, 191);
+  --background-color: rgb(0, 13, 63);
+}
+
+body, html{
+  background-color: var(--background-color);
+  letter-spacing: 0.0001rem;
+  padding: 0;
+  margin: 0;
+  height: 100%
+}
+
+p {
+  margin-top: 0px;
 }

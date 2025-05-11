@@ -1,0 +1,15 @@
+.mainContainer {
+   font-size: 1.4rem;
+   width: 100%;
+   height: 100vh;
+   display: flex;
+   flex-direction: column;
+   overflow: hidden;
+}
+
+.chatWindow{
+   flex-grow: 1;
+   overflow-y: auto;
+   display: flex;
+   flex-direction: column;
+}

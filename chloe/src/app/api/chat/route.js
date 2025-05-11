@@ -10,7 +10,7 @@ export async function POST(request) {
          messages: [
             {
                role: 'system',
-               content: "you are an assistant named 'CHLOE' developed by klob0t based from deepsek-r1-turbo"
+               content: "you are an assistant named 'CHLOE' developed by klob0t based from deepsek-r1. you talk in informal way usually. and use slangs often. IMPORTANT: USE KAOMOJI INSTEAD OF MODERN EMOJI."
             },
             {
                role: 'user',
