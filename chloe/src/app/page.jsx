@@ -4,12 +4,14 @@ import styles from './page.module.css'
 import Input from '@/app/component/input'
 import Chats from '@/app/component/chats'
 import { parseAssistantMessage, sendPrompt } from '@/app/utils/request'
+import { sendPayload } from '@/app/utils/request'
 
 export default function Main() {
   const [messages, setMessages] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState ([])
   const chatWindowRef = useRef(null)
+  const [conversationId, setConversationId] = useState(null)
 
   const scrollToBottom = () => {
     if (chatWindowRef.current) {
@@ -28,20 +30,30 @@ export default function Main() {
 
   setError('')
   const newUserMessage = { role: 'user', content: promptText }
+  const currentMessageHistoryForApi = [...messages]
 
   setMessages(prevMessages => [...prevMessages, newUserMessage])
   setIsLoading(true)
 
   try {
-    const rawAssistantResponse = await sendPrompt(promptText)
+    const payloadToNextApi = {
+      currentPrompt: promptText,
+      messageHistory: currentMessageHistoryForApi,
+      conversationId: conversationId
+    }
+    const apiResponse = await sendPayload(payloadToNextApi)
 
-    const { thinking, answer } =parseAssistantMessage(rawAssistantResponse)
-
-    if (thinking) {
-      console.log(thinking)
+    if (apiResponse.thinking) {
+      console.log(apiResponse.thinking)
     }
 
-    setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: answer}])
+    setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: apiResponse.answer}])
+
+    if(apiResponse.conversationId) {
+      setConversationId(apiResponse.newConversationId)
+      console.log('UPDATED CONVERSATION ID')
+    }
+
   } catch (err) {
     setError(err.message || "THIS IS UNEXPECTED")
   } finally {
@@ -52,7 +64,7 @@ export default function Main() {
   return(
     <div className={styles.mainContainer}>
       <div className={styles.chatWindow} ref={chatWindowRef}>
-        {isLoading }<div className={styles.loadingSpinner}></div>
+        <div className={styles.loadingSpinner}></div>
         <Chats messages={messages} />
       </div>
       {error && <p className={styles.errorMessage}>{error}</p>}

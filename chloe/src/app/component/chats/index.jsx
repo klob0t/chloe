@@ -49,7 +49,7 @@ function AnimatedMessageContent({ fullContent }) {
 export default function Chats({ messages }) {
    /*    if (!messages || messages.length === 0) {
          return (
-            <div className={styles.empty}>talk to me...</div>
+            <div className={styles.empty}></div>
          )
       } */
 

@@ -1,5 +1,5 @@
-export async function sendPrompt(prompt) {
-   if (!prompt || !prompt.trim()) {
+export async function sendPayload(payload) {
+   if (!payload || (typeof payload.currentPrompt !== 'string' || !payload.currentPrompt.trim())) {
       throw new Error('SAY SOMETHING')
    }
 
@@ -9,38 +9,37 @@ export async function sendPrompt(prompt) {
          headers: {
             'Content-Type': 'application/json'
          },
-         body: JSON.stringify({ prompt: prompt })
+         body: JSON.stringify(payload)
       })
 
       if (!res.ok) {
          let errorData
-         const contentType = res.headers.get('content-type')
-         if (contentType && contentType.indexOf('application/json') !== -1) {
+         try {
             errorData = await res.json()
-         } else {
-            errorData = { error: await res.text() }
+         } catch (e) {
+            const errorText = await res.text()
+            errorData = { error: errorText || `API REQUEST FAILED: &{res.status} - ${res.statusText}` }
          }
-         throw new Error(errorData.error || `API REQUEST FAILED: ${res.status} - ${res.statusText}`)
+         throw new Error(errorData || `API REQUEST FAILED: ${res.status} - ${res.statusText}`)
       }
 
       const data = await res.json()
-      if (!data.response) {
-         throw new Error('NO REPLY FROM CHLOE')
-      }
-      return data.response
+      return data
+
    } catch (error) {
-      console.error('ERROR SENDING PROMPT', error)
+      console.error('ERROR SENDING PROMPT TO API', error.message)
       throw error
    }
+
 }
 
 export function parseAssistantMessage(content) {
    if (typeof content !== 'string') {
       console.warn("NON-STRING")
-      return { thinking:null, answer:String(content || "").trim() }
+      return { thinking: null, answer: String(content || "").trim() }
    }
 
-   const thinkBlockRegex =  /<think>([\s\S]*?)<\/think>\s*([\s\S]*)/
+   const thinkBlockRegex = /<think>([\s\S]*?)<\/think>\s*([\s\S]*)/
    const match = content.match(thinkBlockRegex)
 
    if (match && match.length === 3) {

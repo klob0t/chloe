@@ -1,57 +1,82 @@
+import { parseAssistantMessage } from "@/app/utils/request"
+
 export async function POST(request) {
    try {
-      const { prompt } = await request.json()
+      const { currentPrompt, messageHistory, conversationId } = await request.json()
 
-      if (!prompt) {
+      if (!currentPrompt || !currentPrompt.trim()) {
          return Response.json({ error: 'NO PROMPT' }, { status: 400 })
       }
 
-      const gpt4freePayload = {
-         messages: [
-            {
-               role: 'system',
-               content: "you are an assistant named 'CHLOE' developed by klob0t based from deepsek-r1. IMPORTANT: USE KAOMOJI INSTEAD OF MODERN EMOJI."
-            },
-            {
-               role: 'user',
-               content: prompt
-            },
-         ],
+      const messagesForG4F = [
+         {
+            role: 'system',
+            content: "you are an assistant named 'CHLOE' developed by klob0t based from deepsek-r1. IMPORTANT: USE KAOMOJI INSTEAD OF MODERN EMOJI."
+         },
+         ...(messageHistory || []),
+         {
+            role: 'user',
+            content: currentPrompt
+         },
+
+      ]
+
+      const g4FPayload = {
+         messages: messagesForG4F,
          provider: 'DeepInfraChat',
          model: 'deepseek-ai/DeepSeek-R1-Turbo',
-         stream: false
+         stream: false,
+         history_disabled: false,
+         return_conversation: true,
+         ...(conversationId && { conversation_id: conversationId })
       }
 
-      const GPT4FREE_API_URL = 'http://localhost:1337/v1/chat/completions'
+      const G4F_API_URL = 'http://localhost:1337/v1/chat/completions'
 
-      const gpt4freeResponse = await fetch(GPT4FREE_API_URL, {
+      const g4FResponse = await fetch(G4F_API_URL, {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json',
          },
-         body: JSON.stringify(gpt4freePayload),
+         body: JSON.stringify(g4FPayload),
       })
 
-      if (!gpt4freeResponse.ok) {
-         const errorData = await gpt4freeResponse.text()
-         console.error('ERROR:', errorData)
-         throw new Error(
-            `API REQ FAILED: ${gpt4freeResponse.status} ${errorData}`
-         )
+      if (!g4FResponse.ok) {
+         const errorDataText = await g4FResponse.text()
+         console.error('ERROR:', errorDataText)
+
+         let detail = errorDataText
+         try {
+            const parsedError = JSON.parse(errorDataText).error || errorDataText
+            detail = parsedError.error || parsedError.message || errorText
+         } catch (e) { }
+         return Response.json({ error: `PYTHON SERVER REQ FAILED: ${g4FResponse.status} - ${detail}` }, { status: g4FResponse.status })
       }
 
-      const data = await gpt4freeResponse.json()
-      const assistantMessage = data.choices?.[0]?.message?.content
+      const dataFromG4F = await g4FResponse.json()
 
-      if (assistantMessage === undefined) {
-         console.error('NO ANSWER FROM CHLOE', data)
+      const rawAssistantContent = dataFromG4F.choices?.[0]?.message?.content
+
+      if (rawAssistantContent === undefined) {
+         console.error('NO ANSWER FROM CHLOE', dataFromG4F)
          throw new Error('NO ANSWER FROM CHLOE')
       }
 
-      return Response.json({ response: assistantMessage })
+      const { thinking, answer } = parseAssistantMessage(rawAssistantContent)
+
+      const newConversationId = dataFromG4F.conversation_id ||
+         dataFromG4F.conversation?.id ||
+         dataFromG4F.conversation?.userId ||
+         null
+      return Response.json({
+         answer: answer,
+         thinking: thinking,
+         newConversationId: newConversationId
+      })
+
    } catch (error) {
-      console.error('NEXT.JS API POST', error.message)
-      return Response.json({ error: error.message }, { status: 500 })
+      console.error('ERROR IN /api/chat Next.js ROUTE: ', error.message)
+      return Response.json({ error:error.message || 'AN UNEXPECTED ERROR OCCURRED' }, { status: 500 })
    }
 }
 
