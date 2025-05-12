@@ -1,14 +1,18 @@
 'use client'
 import styles from './page.module.css'
 import Markdown from 'markdown-to-jsx'
+import Welcome from '@/app/component/welcome'
 import { useEffect, useState } from 'react'
 import gsap from 'gsap'
 
-function AnimatedMessageContent({ fullContent }) {
+function AnimatedMessageContent({ message }) {
    const [displayedContent, setDisplayedContent] = useState('')
+   const loadingChars = ['\\', '|', '/', '—']
+   const [currentSpinnerChar, setCurrentSpinnerChar] = useState(loadingChars[0]);
+
    useEffect(() => {
-      const contentToAnimate = typeof fullContent === 'string' ? fullContent : ''
-      
+      const contentToAnimate = (message.type !== 'loading' && typeof message.content === 'string') ? message.content : ''
+
       let progress = { value: 0 }
       setDisplayedContent('')
 
@@ -33,36 +37,48 @@ function AnimatedMessageContent({ fullContent }) {
       return () => {
          ctx.revert()
       }
-   }, [fullContent])
+   }, [message.content, message.type])
 
-   const isTyping = displayedContent.length < (typeof fullContent === 'string' ? fullContent.length : 0)
 
-   return(
+   useEffect(() => {
+      let intervalId;
+      if (message.type === 'loading') {
+         let charIndex = 0;
+         intervalId = setInterval(() => {
+            charIndex = (charIndex + 1) % loadingChars.length;
+            setCurrentSpinnerChar(loadingChars[charIndex]);
+         }, 150); // Adjust spinner speed (ms)
+      }
+      return () => clearInterval(intervalId); // Cleanup interval
+   }, [message.type]);
+
+   if (message.type === 'loading') {
+      return <span className={styles.spinner}>{currentSpinnerChar}</span>
+   }
+
+   return (
       <>
-      <Markdown>{displayedContent}</Markdown>
-      {isTyping && <span className={styles.cursor}>_</span>}
+         <Markdown>{displayedContent}</Markdown>
       </>
    )
 
 }
 
 export default function Chats({ messages }) {
-   /*    if (!messages || messages.length === 0) {
-         return (
-            <div className={styles.empty}></div>
-         )
-      } */
-
+   if (!messages || messages.length === 0) {
+      return <Welcome />
+   }
 
    return (
       <div className={styles.messages}>
          {messages.map((msg, index) => (
             <div
-               key={index}
-               className={`${styles.message} ${styles[msg.role]}`}>
+               key={msg.id || index}
+               className={`${styles.message} ${styles[msg.role]}`}
+            >
                <div>{msg.role === 'user' ? '$ ' : '> '}</div>
                <div className={styles.messageContent}>
-                  <AnimatedMessageContent fullContent={msg.content}/>
+                  <AnimatedMessageContent message={msg} />
                </div>
             </div>
          ))}

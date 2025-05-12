@@ -25,3 +25,7 @@
 .messageContent{
    padding-left:10px;
 }
+
+.spinner{
+   display:inline-block
+}

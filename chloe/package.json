@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev:next": "next dev --turbopack",
-    "dev:python": "bash -c \"cd ../gpt4free && source venv/Scripts/activate && python -m g4f.api.run\"",
-    "dev": "concurrently --kill-others \"npm:dev:next\" \"npm:dev:python\"",
+    "dev:python": "bash -c \"cd ../gpt4free && source venv/Scripts/activate && exec python -m g4f.api.run\"",
+    "dev": "concurrently --kill-others --kill-signal SIGINT \"next dev --turbopack\" \"cd ..\\gpt4free && ..\\venv\\Scripts\\python.exe -m g4f.api.run\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

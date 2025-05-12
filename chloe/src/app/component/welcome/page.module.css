@@ -1,0 +1,21 @@
+.welcomeContainer{
+   justify-items: center;
+   align-content: center;
+   height: 100%;
+   width: 100%;
+   margin: 0px 0px 0px 0px;
+   color:  var(--text-light-blue);
+}
+
+.welcomeAscii {
+   font-size: 0.6rem;
+}
+
+.spinner {
+   font-size: 1.4rem;
+}
+
+.welcomeMessage {
+   font-size: 1.4rem;
+   text-align: center;
+}
