@@ -47,7 +47,7 @@ function AnimatedMessageContent({ message }) {
          intervalId = setInterval(() => {
             charIndex = (charIndex + 1) % loadingChars.length;
             setCurrentSpinnerChar(loadingChars[charIndex]);
-         }, 150); // Adjust spinner speed (ms)
+         }, 100); // Adjust spinner speed (ms)
       }
       return () => clearInterval(intervalId); // Cleanup interval
    }, [message.type]);
