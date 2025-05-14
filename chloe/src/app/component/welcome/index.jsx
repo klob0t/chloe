@@ -16,7 +16,7 @@ function AnimatedMessageContent({ fullContent }) {
          if (contentToAnimate) {
             gsap.to(progress, {
                value: contentToAnimate.length,
-               duration: contentToAnimate.length * 0.04,
+               duration: contentToAnimate.length * 0.01,
                ease: 'sine.out',
                onUpdate: () => {
                   setDisplayedContent(contentToAnimate.substring(0, Math.floor(progress.value)))
@@ -76,10 +76,6 @@ const loadingChars = ['\\', '|', '/', '—'];
         }
 
         const apiResponse = await sendPayload(payloadToNextApi)
-
-        if (apiResponse.thinking) {
-          console.log("WELCOME THOUGHT", apiResponse.thinking)
-        }
         
         setMessages([{ role: 'assistant', content: apiResponse.answer }])
 
@@ -108,7 +104,7 @@ const loadingChars = ['\\', '|', '/', '—'];
 &nbsp; ░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓██████▓▒░░▒▓████████▓▒░ <br />
 </pre>  
          </div >
-
+      <div className={styles.greetingContainer}>
       {isLoading && 
          <div className={styles.spinner}>
             {loadingText}
@@ -120,7 +116,7 @@ const loadingChars = ['\\', '|', '/', '—'];
          <AnimatedMessageContent fullContent={messages[0].content}/>
          </div>     
       )}
-
+</div>
       </div>
    )
 }

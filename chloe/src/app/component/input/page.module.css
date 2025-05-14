@@ -1,5 +1,9 @@
+.inputContainer {
+   position: relative;
+   padding: 0
+}
+
 .inputArea{
-   padding: 10px;
    border: 1px solid var(--text-light-blue);
    color: var(--text-light-blue);
    caret-color: transparent;
@@ -7,10 +11,38 @@
    white-space: pre-wrap;
    cursor:text;
    word-wrap: break-word;
-   box-sizing: content-box
+   box-sizing: content-box;
+   outline: none;
+   min-height: 20px;
+   line-height: 1.5;
+   min-height: 1.5em;
+   padding: 0.2em
 }
 
- .inputArea:empty:before{
+
+.customCaret {
+   position: absolute;
+   display: inline-block;
+   width: 10px;
+   height: 25px;
+   background-color: #0c1a3a;
+   pointer-events: none;
+   opacity: 0;
+   mix-blend-mode: difference;
+   animation: blink 0.5s step-end infinite;
+   z-index: 1;
+}
+
+@keyframes blink {
+   0%, 100% {
+      background-color: var(--text-light-blue);
+   }
+   50%{
+      background-color: transparent;
+   }
+}
+
+/*  .inputArea:empty:before{
    position:absolute;
    content:'_';
    color: var(--text-light-blue);
@@ -26,12 +58,12 @@
    vertical-align: text-bottom;
    animation: blink-caret 500ms step-end infinite;
    line-height: 1;
-}
+} */
 
 .inputArea:focus {
    outline: none;
 }
-
+/* 
 
 @keyframes blink-caret {
    from,to {
@@ -40,4 +72,4 @@
    50% {
       opacity: 0;
    }
-}
+} */

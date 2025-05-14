@@ -1,19 +1,24 @@
-import { Spline_Sans_Mono } from "next/font/google";
+import { Geist_Mono, Noto_Emoji } from "next/font/google";
 import "./globals.css";
 
 export const metadata = {
   title: "CHLOE",
 };
 
-const shareTechMono = Spline_Sans_Mono({ 
+const monoSpaced = Geist_Mono({ 
+  weight: ['400', '700'],
+  subsets: ['latin-ext'] 
+  });
+
+const emoji = Noto_Emoji({ 
   weight: ['400', '700'],
   subsets: ['latin-ext'] 
   });
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={shareTechMono.className}>
+    <html lang="en" className={`${monoSpaced.className}`} >
+      <body>
         {children}
       </body>
     </html>

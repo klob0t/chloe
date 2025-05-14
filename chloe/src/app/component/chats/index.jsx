@@ -20,7 +20,7 @@ function AnimatedMessageContent({ message }) {
          if (contentToAnimate) {
             gsap.to(progress, {
                value: contentToAnimate.length,
-               duration: contentToAnimate.length * 0.04,
+               duration: contentToAnimate.length * 0.01,
                ease: 'sine.out',
                onUpdate: () => {
                   setDisplayedContent(contentToAnimate.substring(0, Math.floor(progress.value)))
@@ -43,14 +43,14 @@ function AnimatedMessageContent({ message }) {
    useEffect(() => {
       let intervalId;
       if (message.type === 'loading') {
-         let charIndex = 0;
+         let charIndex = 0
          intervalId = setInterval(() => {
-            charIndex = (charIndex + 1) % loadingChars.length;
-            setCurrentSpinnerChar(loadingChars[charIndex]);
-         }, 100); // Adjust spinner speed (ms)
+            charIndex = (charIndex + 1) % loadingChars.length
+            setCurrentSpinnerChar(loadingChars[charIndex])
+         }, 100)
       }
-      return () => clearInterval(intervalId); // Cleanup interval
-   }, [message.type]);
+      return () => clearInterval(intervalId)
+   }, [message.type])
 
    if (message.type === 'loading') {
       return <span className={styles.spinner}>{currentSpinnerChar}</span>

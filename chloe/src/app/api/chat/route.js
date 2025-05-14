@@ -11,7 +11,7 @@ export async function POST(request) {
       const messagesForG4F = [
          {
             role: 'system',
-            content: "you are an assistant named 'CHLOE' developed by klob0t based from deepsek-r1 who answer with short replies. IMPORTANT: USE KAOMOJI INSTEAD OF MODERN EMOJI."
+            content: "you are an assistant named 'CHLOE' developed by klob0t based from DeepSeek-R1. IMPORTANT: USE KAOMOJI INSTEAD OF MODERN EMOJI."
          },
          ...(messageHistory || []),
          {
@@ -24,7 +24,7 @@ export async function POST(request) {
       const g4FPayload = {
          messages: messagesForG4F,
          provider: 'PollinationsAI',
-         model: 'deepseek-reasoning',
+         model: 'deepseek-r1-distill-qwen-32b',
          stream: false,
          history_disabled: false,
          return_conversation: true,
