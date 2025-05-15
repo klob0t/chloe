@@ -36,52 +36,24 @@
    display: inline-block;
    width: 10px;
    height: 25px;
-   background-color: #0c1a3a;
+   background-color: var(--text-light-blue);
    pointer-events: none;
-   opacity: 0;
+   /* opacity: 0; */
    mix-blend-mode: difference;
-   animation: blink 0.5s step-end infinite;
+   animation: blink 0.5s ease-out infinite;
    z-index: 3;
    translate: 0% 15%;
 }
 
 @keyframes blink {
    0%, 100% {
-      background-color: var(--text-light-blue);
+      opacity: 1;
    }
    50%{
-      background-color: transparent;
+      opacity: 0;
    }
 }
-
-/*  .inputArea:empty:before{
-   position:absolute;
-   content:'_';
-   color: var(--text-light-blue);
-   pointer-events:none;
-   font-size: 1.4rem;
-   animation: blink-caret 500ms step-end infinite
-}
-
-.inputArea:focus:not(:empty):after {
-   content: '_';
-   color: inherit;
-   display: inline-block;
-   vertical-align: text-bottom;
-   animation: blink-caret 500ms step-end infinite;
-   line-height: 1;
-} */
 
 .inputArea:focus {
    outline: none;
 }
-/* 
-
-@keyframes blink-caret {
-   from,to {
-      opacity: 1;
-   }
-   50% {
-      opacity: 0;
-   }
-} */

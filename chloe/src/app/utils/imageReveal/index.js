@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef } from "react"
 import gsap from 'gsap'
-import styles from './reveal.module.css'
+import styles from './page.module.css'
 
 
 
@@ -55,7 +55,7 @@ export default function ImageReveal({ imageUrl, altText = 'Generated Image' }) {
             return
          }
 
-         gsap.set(imageRef.current, { opacity: 1 })
+         gsap.set(imageRef.current, { opacity: 0 })
          gsap.set(svgRects, { opacity: 1 })
 
          const ctx = gsap.context(() => {
@@ -83,22 +83,7 @@ export default function ImageReveal({ imageUrl, altText = 'Generated Image' }) {
                      from: 'random',
                      ease: 'power2.Out'
                   }
-               }, "+=1")
-
-            /*             tl.to(svgRects, {
-                           opacity: 0,
-                           duration: 0.3,
-                           stagger: {
-                              amount: 1.2,
-                              from: 'random',
-                              ease: 'none'
-                           }
-                        })
-                           .to(imageRef.current, {
-                              opacity: 1,
-                              duration: 0.5,
-                              ease:'none'
-                           }, "-=0.8") */
+               }, "+=1.2")
          }, wrapperRef)
 
          return () => {

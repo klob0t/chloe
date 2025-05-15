@@ -85,7 +85,7 @@ export default function Input({ onSubmit, isLoading }) {
       caretY = rect.top - inputDivRect.top + inputElement.scrollTop
 
       if (range.startOffset > 0 && range.startContainer.nodeType === Node.TEXT_NODE) {
-        caretX -= 12 // Your horizontal offset
+        caretX -= 12 
       }
 
       finalTop = caretY

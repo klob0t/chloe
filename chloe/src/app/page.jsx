@@ -61,7 +61,6 @@ export default function Main() {
 
       if (promptText.toLowerCase().startsWith('/imagine ')) {
         const imagePrompt = promptText.substring(8).trim()
-        console.log(imagePrompt)
         if (!imagePrompt) {
           setMessages(prevMessages => [
             ...prevMessages.filter(msg => msg.id !== LOADING_MESSAGE_ID),

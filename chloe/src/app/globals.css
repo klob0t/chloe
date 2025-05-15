@@ -2,7 +2,11 @@
   --text-light-blue: #2e9dff;
   --text-dark-blue: rgb(9, 99, 179);
   --background-color: #081057;
-  --background-color-darker: #010820;
+  --background-color-darker: #03103a;
+}
+
+* {
+  box-sizing: border-box; 
 }
 
 body, html{
@@ -11,7 +15,6 @@ body, html{
   margin: 0;
   height: 100%;
   width: 100vw;
-  max-width: 756px;
   display: flex;
   font-feature-settings: 'ss03' on, 'ss08' on;
 }
