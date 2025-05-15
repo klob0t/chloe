@@ -4,41 +4,47 @@ import Markdown from 'markdown-to-jsx'
 import Welcome from '@/app/component/welcome'
 import { useEffect, useState } from 'react'
 import gsap from 'gsap'
+import ImageReveal from '@/app/utils/imageReveal'
 
-function AnimatedMessageContent({ message }) {
+function AnimatedMessageContent({ message, messageKey }) {
    const [displayedContent, setDisplayedContent] = useState('')
    const loadingChars = ['\\', '|', '/', '—']
    const [currentSpinnerChar, setCurrentSpinnerChar] = useState(loadingChars[0]);
 
-   useEffect(() => {
-      const contentToAnimate = (message.type !== 'loading' && typeof message.content === 'string') ? message.content : ''
+   const markdownOptions = {
+      wrapper: 'article',
+   }
 
-      let progress = { value: 0 }
+   useEffect(() => {
+      const isTextType = message.type !== 'loading' && message.type !== 'image'
+      const contentToAnimate = (isTextType && typeof message.content === 'string') ? message.content : ''
+
+      // console.log(`Effect run: type=${message.type}, typeof message.content=${typeof message.content}, contentToAnimate=`, JSON.stringify(contentToAnimate), typeof contentToAnimate);
+
+      if (!isTextType) {
+         setDisplayedContent( (message.type === 'image' && typeof message.content === 'string') ? message.content : '')
+         return
+      }
+
       setDisplayedContent('')
 
       const ctx = gsap.context(() => {
          if (contentToAnimate) {
-            gsap.to(progress, {
+            gsap.to({ value: 0 }, {
                value: contentToAnimate.length,
                duration: contentToAnimate.length * 0.01,
                ease: 'sine.out',
-               onUpdate: () => {
-                  setDisplayedContent(contentToAnimate.substring(0, Math.floor(progress.value)))
+               onUpdate: function () {
+                  setDisplayedContent(contentToAnimate.substring(0, Math.floor(this.targets()[0].value)))
                },
                onComplete: () => {
                   setDisplayedContent(contentToAnimate)
-               },
+               }
             })
-         } else {
-            setDisplayedContent('')
          }
       })
-
-      return () => {
-         ctx.revert()
-      }
+      return () => ctx.revert()
    }, [message.content, message.type])
-
 
    useEffect(() => {
       let intervalId;
@@ -56,9 +62,23 @@ function AnimatedMessageContent({ message }) {
       return <span className={styles.spinner}>{currentSpinnerChar}</span>
    }
 
+   if (message.type === 'image' && typeof message.content === 'string') {
+      const markdownImageRegex = /!\[(.*?)\]\((.*?)\)/
+      const match = message.content.match(markdownImageRegex)
+
+      if (match && match[2]) {
+         const altText = match[1] || 'Generated Image'
+         const imageUrl = match[2]
+         return <ImageReveal imageUrl={imageUrl} altText={altText} />
+      } else {
+         console.warn('MSG TYPE IS IMAGE BUT NO VALID CONTENT', message.content)
+         return <Markdown >{message.content || 'ERROR: INVALID IMAGE DATA'}</Markdown>
+      }
+   }
+
    return (
       <>
-         <Markdown>{displayedContent}</Markdown>
+         <Markdown options={markdownOptions}>{displayedContent}</Markdown>
       </>
    )
 
@@ -70,18 +90,20 @@ export default function Chats({ messages }) {
    }
 
    return (
-      <div className={styles.messages}>
-         {messages.map((msg, index) => (
-            <div
-               key={msg.id || index}
-               className={`${styles.message} ${styles[msg.role]}`}
-            >
-               <div>{msg.role === 'user' ? '$ ' : '> '}</div>
-               <div className={styles.messageContent}>
-                  <AnimatedMessageContent message={msg} />
+      <div className={styles.chatsContainer}>
+         <div className={styles.messages}>
+            {messages.map((msg, index) => (
+               <div
+                  key={msg.id || index}
+                  className={`${styles.message} ${styles[msg.role]}`}
+               >
+                  <div className={styles[`role-${msg.role}`]}>{msg.role === 'user' ? '<' : '>'}</div>
+                  <div className={styles[`msgContent-${msg.role}`]}>
+                     <AnimatedMessageContent message={msg} />
+                  </div>
                </div>
-            </div>
-         ))}
+            ))}
+         </div>
       </div>
    )
 }

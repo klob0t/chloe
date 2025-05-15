@@ -1,19 +1,19 @@
-import { Geist_Mono, Noto_Emoji } from "next/font/google";
+import localFont from 'next/font/local';
 import "./globals.css";
 
 export const metadata = {
   title: "CHLOE",
+  description: "your digital bestie"
 };
 
-const monoSpaced = Geist_Mono({ 
-  weight: ['400', '700'],
-  subsets: ['latin-ext'] 
+const monoSpaced = localFont({ 
+  src: [
+    {
+      path: '../app/assets/GeistMono-VariableFont_wght.ttf'
+    }
+  ]
   });
 
-const emoji = Noto_Emoji({ 
-  weight: ['400', '700'],
-  subsets: ['latin-ext'] 
-  });
 
 export default function RootLayout({ children }) {
   return (

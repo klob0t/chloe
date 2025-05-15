@@ -13,8 +13,6 @@ export default function Main() {
   const [error, setError] = useState([])
   const chatWindowRef = useRef(null)
   const [conversationId, setConversationId] = useState(null)
-  const [isReady, setIsReady] = useState([])
-
 
   const scrollToBottom = () => {
     if (chatWindowRef.current) {
@@ -26,6 +24,20 @@ export default function Main() {
     scrollToBottom()
   }, [messages])
 
+  useEffect(() => {
+    const chatNode = chatWindowRef.current
+    if (!chatNode) return
+
+    const observer = new MutationObserver(scrollToBottom)
+    const config = { childList: true, subtree: true, characterData: true }
+
+    observer.observe(chatNode, config)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
   const handleSendPrompt = async (promptText) => {
     if (!promptText || !promptText.trim()) {
       return
@@ -36,50 +48,86 @@ export default function Main() {
     const currentMessageHistoryForApi = [...messages]
 
     setMessages(prevMessages => [
-      ...prevMessages, 
+      ...prevMessages,
       newUserMessage,
-      { role: 'assistant', type:'loading', id: LOADING_MESSAGE_ID, content: ''}])
+      { role: 'assistant', type: 'loading', id: LOADING_MESSAGE_ID, content: '' }])
     setIsLoading(true)
 
+    let payloadToNextApi
+
     try {
-      const payloadToNextApi = {
-        currentPrompt: promptText,
-        messageHistory: currentMessageHistoryForApi,
-        conversationId: conversationId
+      let apiResponse
+      let messageType = 'text'
+
+      if (promptText.toLowerCase().startsWith('/imagine ')) {
+        const imagePrompt = promptText.substring(8).trim()
+        console.log(imagePrompt)
+        if (!imagePrompt) {
+          setMessages(prevMessages => [
+            ...prevMessages.filter(msg => msg.id !== LOADING_MESSAGE_ID),
+            { role: 'assistant', content: 'PROVIDE DESC AFTER /IMAGINE', id: `error-${Date.now()}` }
+          ])
+          setIsLoading(false)
+          return
+        }
+        const payloadToNextApi = {
+          requestType: 'image',
+          imagePrompt: imagePrompt,
+          originalUserCommand: promptText,
+          messageHistory: currentMessageHistoryForApi,
+          conversationId: conversationId,
+        }
+        apiResponse = await sendPayload(payloadToNextApi)
+        messageType = 'image'
+      } else {
+        const payloadToNextApi = {
+          requestType: 'text',
+          currentPrompt: promptText,
+          messageHistory: currentMessageHistoryForApi,
+          conversationId: conversationId,
+        }
+        apiResponse = await sendPayload(payloadToNextApi)
+        messageType = 'text'
       }
-      const apiResponse = await sendPayload(payloadToNextApi)
 
-      if (apiResponse.thinking) {
-        console.log(apiResponse.thinking)
-      }
+    let assistantContent = apiResponse.answer
 
-      setMessages(prevMessages => [
-        ...prevMessages.filter(msg => msg.id !== LOADING_MESSAGE_ID), 
-        
-        { role: 'assistant', content: apiResponse.answer, id : `assistant-${Date.now()}` }])
-
-      if (apiResponse.conversationId) {
-        setConversationId(apiResponse.newConversationId)
-        console.log('UPDATED CONVERSATION ID', apiResponse.newConversationId)
-      }
-
-    } catch (err) {
-      setError(err.message || "THIS IS UNEXPECTED")
-      setMessages(prevMessages => prevMessages.filter(msg => msg.id !== LOADING_MESSAGE_ID && msg.id !== newUserMessage.id))
-    } finally {
-      setIsLoading(false)
+    if (messageType === 'image' && apiResponse.error) {
+      assistantContent = apiResponse.error
+      messageType = 'text'
     }
-  }
 
-  return (
-    <div className={styles.mainContainer}>
-      <div className={styles.chatWindow} ref={chatWindowRef}>
-        <Chats messages={messages} />
-      </div>
-      {error && !isLoading && <p className={styles.errorMessage}>{error}</p>}
-      <div className={styles.inputContainer}>
-        <Input onSubmit={handleSendPrompt} isLoading={isLoading} />
-      </div>
+    setMessages(prevMessages => [
+      ...prevMessages.filter(msg => msg.id !== LOADING_MESSAGE_ID),
+      {
+        role: 'assistant',
+        type: messageType,
+        content: apiResponse.answer,
+        id: `assistant-${Date.now()}`
+      }
+    ])
+
+    if (apiResponse.conversationId && messageType === 'text') {
+      setConversationId(apiResponse.newConversationId)
+    }
+
+  } catch (err) {
+    setError(err.message || "THIS IS UNEXPECTED")
+    setMessages(prevMessages => prevMessages.filter(msg => msg.id !== LOADING_MESSAGE_ID && msg.id !== newUserMessage.id))
+  } finally {
+    setIsLoading(false)
+  }
+}
+
+return (
+  <div className={styles.mainContainer}>
+    <div className={styles.chatWindow} ref={chatWindowRef}>
+      <Chats messages={messages} />
     </div>
-  )
+    {error && !isLoading && <p className={styles.errorMessage}>{error}</p>}
+    <div className={styles.inputContainer}>
+      <Input onSubmit={handleSendPrompt} isLoading={isLoading} />
+    </div>
+  </div>
+)
 }

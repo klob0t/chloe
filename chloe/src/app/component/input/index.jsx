@@ -1,14 +1,25 @@
 'use client'
 import { useState, useRef, useEffect, useCallback } from 'react'
 import styles from './page.module.css'
+import gsap from 'gsap'
 
 export default function Input({ onSubmit, isLoading }) {
   const [currentText, setCurrentText] = useState('')
   const inputRef = useRef(null)
   const customCaretRef = useRef(null)
+  const effectRef = useRef(null)
   const [isFocused, setIsFocused] = useState(false)
 
+  useEffect(() => {
+    if (!isLoading && inputRef.current) {
+      if (document.activeElement !== inputRef.current) {
+        inputRef.current.focus()
+      }
+    }
+  }, [isLoading])
+
   const updateCaretPosition = useCallback(() => {
+
     if (!inputRef.current || !customCaretRef.current) {
       return
     }
@@ -31,7 +42,7 @@ export default function Input({ onSubmit, isLoading }) {
     const firstCharVisualOffsetY = 1.98875
 
     if (currentLocalInnerText.trim().length === 0) {
-    
+
       const paddingTop = parseFloat(inputDivStyle.paddingTop) || 0
       const paddingLeft = parseFloat(inputDivStyle.paddingLeft) || 0
       const scrollTop = inputElement.scrollTop
@@ -40,24 +51,22 @@ export default function Input({ onSubmit, isLoading }) {
       caretX = (paddingLeft + scrollLeft) + firstCharVisualOffsetX
       caretY = (paddingTop + scrollTop) + firstCharVisualOffsetY
       finalTop = caretY
-      
+
       caretElement.style.left = `${caretX}px`
       caretElement.style.top = `${finalTop}px`
       caretElement.style.opacity = '1'
 
-    } else { 
-      
+    } else {
+
       const selection = window.getSelection()
 
       if (!selection || selection.rangeCount === 0) {
-      
+
         if (caretElement) caretElement.style.opacity = '0'
         return
       }
-      
+
       const range = selection.getRangeAt(0)
-
-
 
       if (!inputElement.contains(range.commonAncestorContainer) && inputElement !== range.commonAncestorContainer) {
 
@@ -78,7 +87,7 @@ export default function Input({ onSubmit, isLoading }) {
       if (range.startOffset > 0 && range.startContainer.nodeType === Node.TEXT_NODE) {
         caretX -= 12 // Your horizontal offset
       }
-      
+
       finalTop = caretY
 
       caretElement.style.left = `${caretX}px`
@@ -104,14 +113,14 @@ export default function Input({ onSubmit, isLoading }) {
     setCurrentText('')
     if (inputRef.current) {
       inputRef.current.innerText = ''
-      if (document.activeElement === inputRef.current) { 
+      if (document.activeElement === inputRef.current) {
         const selection = window.getSelection()
         const range = document.createRange()
         range.selectNodeContents(inputRef.current)
-        range.collapse(true) 
+        range.collapse(true)
         selection.removeAllRanges()
         selection.addRange(range)
-        updateCaretPosition() 
+        updateCaretPosition()
       } else {
         updateCaretPosition()
       }
@@ -119,11 +128,38 @@ export default function Input({ onSubmit, isLoading }) {
   }
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      performSubmit()
-    }
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+
+    const inputElement = effectRef.current
+    if (!inputElement) return
+
+    const opacity1 = '1';
+
+    const opacity0 = inputElement.style.opacity || '0'
+
+    performSubmit()
+    const tl = gsap.timeline()
+
+    tl.to(inputElement, {
+      opacity: opacity1,
+      duration: 0.04,
+      ease: 'none', 
+    }).to(inputElement, {
+      opacity: opacity0,
+      duration: 0.04,
+      ease: 'none'
+    }).to(inputElement, {
+      opacity: opacity1,
+      duration: 0.04,
+      ease: 'none', 
+    }).to(inputElement, {
+      opacity: opacity0,
+      duration: 0.04,
+      ease: 'none'
+    })
   }
+}
 
   const handleFocus = () => {
     if (!isLoading) {
@@ -141,13 +177,13 @@ export default function Input({ onSubmit, isLoading }) {
       if (customCaretRef.current) {
         customCaretRef.current.style.opacity = '0'
       }
-      return 
+      return
     }
 
     if (currentInputRef) {
       const eventHandler = () => setTimeout(updateCaretPosition, 0)
-      
-      updateCaretPosition() 
+
+      updateCaretPosition()
       const timeoutId = setTimeout(updateCaretPosition, 0)
 
       document.addEventListener('selectionchange', eventHandler)
@@ -158,10 +194,10 @@ export default function Input({ onSubmit, isLoading }) {
       return () => {
         clearTimeout(timeoutId)
         document.removeEventListener('selectionchange', eventHandler)
-        if (currentInputRef) { 
-            currentInputRef.removeEventListener('keyup', eventHandler)
-            currentInputRef.removeEventListener('click', eventHandler)
-            currentInputRef.removeEventListener('input', eventHandler)
+        if (currentInputRef) {
+          currentInputRef.removeEventListener('keyup', eventHandler)
+          currentInputRef.removeEventListener('click', eventHandler)
+          currentInputRef.removeEventListener('input', eventHandler)
         }
       }
     }
@@ -169,14 +205,20 @@ export default function Input({ onSubmit, isLoading }) {
 
   useEffect(() => {
     if (isFocused && !isLoading) {
-      setTimeout(updateCaretPosition, 0) 
+      setTimeout(updateCaretPosition, 0)
     }
   }, [currentText, isFocused, isLoading, updateCaretPosition])
 
 
   return (
-    <div className={`${styles.inputContainer} ${isLoading ? styles.disabled : ''}`}>
+    <div 
+      className={`${styles.inputContainer} ${isLoading ? styles.disabled : ''}`}
+    >
       {!isLoading && <span ref={customCaretRef} className={styles.customCaret}></span>}
+      <div
+        className={styles.inputEffect}
+        ref={effectRef}
+      />
       <div
         ref={inputRef}
         className={styles.inputArea}

@@ -9,6 +9,10 @@
 
 .welcomeAscii {
    font-size: 0.6rem;
+   font-weight: 900;
+   translate: -2% 0;
+   line-height: 1.1em;
+   
 }
 
 .spinner {
@@ -18,8 +22,21 @@
 .welcomeMessage {
    font-size: 1.4rem;
    text-align: center;
+   padding: 0 1em;
 }
 
 .greetingContainer {
    height: 20px;
+}
+
+.runningTextContainer {
+   bottom: 2em;
+   position: absolute;
+   width: 100%;
+   white-space: nowrap;
+   overflow: hidden;
+}
+
+.runningText {
+   display: inline-block
 }

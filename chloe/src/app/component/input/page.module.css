@@ -1,12 +1,11 @@
 .inputContainer {
    position: relative;
-   padding: 0
+   padding: 0;
 }
 
 .inputArea{
-   border: 1px solid var(--text-light-blue);
-   color: var(--text-light-blue);
    caret-color: transparent;
+   color: var(--text-light-blue);
    position: relative;
    white-space: pre-wrap;
    cursor:text;
@@ -16,9 +15,21 @@
    min-height: 20px;
    line-height: 1.5;
    min-height: 1.5em;
-   padding: 0.2em
+   padding: 0.2em;
+   z-index: 2;
 }
 
+.inputEffect{
+   background-color: var(--text-light-blue);
+   box-sizing: content-box;
+   outline: none;
+   min-height: 1.5em;
+   padding: 0.2em;
+   width: 100%;
+   z-index: 1;
+   opacity: 0;
+   position: absolute;
+}
 
 .customCaret {
    position: absolute;
@@ -30,7 +41,8 @@
    opacity: 0;
    mix-blend-mode: difference;
    animation: blink 0.5s step-end infinite;
-   z-index: 1;
+   z-index: 3;
+   translate: 0% 15%;
 }
 
 @keyframes blink {

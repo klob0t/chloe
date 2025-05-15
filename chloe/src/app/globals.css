@@ -1,20 +1,24 @@
 :root{
   --text-light-blue: #2e9dff;
   --text-dark-blue: rgb(9, 99, 179);
-  --background-color: #070e4d;
-  --background-color-darker: #031553;
+  --background-color: #081057;
+  --background-color-darker: #010820;
 }
 
 body, html{
   background-color: var(--background-color);
-  letter-spacing: 0.0001rem;
   padding: 0;
   margin: 0;
-  height: 100%
+  height: 100%;
+  width: 100vw;
+  max-width: 756px;
+  display: flex;
+  font-feature-settings: 'ss03' on, 'ss08' on;
 }
 
 p {
   margin-top: 0px;
+  margin-bottom: 0px !important;
 }
 
 a {
@@ -29,5 +33,9 @@ code {
 blockquote {
   background-color: var(--background-color-darker);
   padding: 0.2em;
-  border: 1px solid red;
+}
+
+hr{
+  border : 0;
+  border-top: 1px solid var(--background-color-darker)
 }

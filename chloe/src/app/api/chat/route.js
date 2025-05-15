@@ -1,82 +1,113 @@
-import { parseAssistantMessage } from "@/app/utils/request"
+import { parseAssistantMessage } from '@/app/utils/request'
 
 export async function POST(request) {
-   try {
-      const { currentPrompt, messageHistory, conversationId } = await request.json()
+  try {
+    const clientPayload = await request.json()
+    const {
+      requestType, 
+      currentPrompt,
+      imagePrompt,  
+      originalUserCommand,
+      messageHistory,
+      conversationId,
+      desiredProvider, 
+      desiredModel
+    } = clientPayload
 
+    let gpt4freePayload
+    let isImageRequest = requestType === "image"
+
+    if (isImageRequest) {
+      if (!imagePrompt || !imagePrompt.trim()) {
+         console.log('error1')
+        return Response.json({ error: 'IMAGINE SOMETHING' }, { status: 400 })
+      }
+
+      gpt4freePayload = {
+        messages: [{ role: 'user', content: imagePrompt }], 
+        provider: "PollinationsImage", 
+        model: "flux-pro",    
+        stream: false,
+        history_disabled: true, 
+        return_conversation: false,
+        enhance: true,
+        safe: false,
+        width: 1024,
+        height: 1024,
+        n: 1
+      }
+    } else { 
       if (!currentPrompt || !currentPrompt.trim()) {
-         return Response.json({ error: 'NO PROMPT' }, { status: 400 })
+         console.log('error2') 
+         return Response.json({ error: 'EMPTY!' }, { status: 400 })
+
       }
-
-      const messagesForG4F = [
-         {
-            role: 'system',
-            content: "you are an assistant named 'CHLOE' developed by klob0t based from DeepSeek-R1. IMPORTANT: USE KAOMOJI INSTEAD OF MODERN EMOJI."
-         },
-         ...(messageHistory || []),
-         {
-            role: 'user',
-            content: currentPrompt
-         },
-
+      const messagesForGpt4Free = [
+        {
+          role: 'system',
+          content: "You are an assistant named 'CHLOE' developed by klob0t based from deepseek-r1. IMPORTANT: USE KAOMOJI INSTEAD OF MODERN EMOJI."
+        },
+        ...(messageHistory || []),
+        { role: 'user', content: currentPrompt },
       ]
-
-      const g4FPayload = {
-         messages: messagesForG4F,
-         provider: 'PollinationsAI',
-         model: 'deepseek-r1-distill-qwen-32b',
-         stream: false,
-         history_disabled: false,
-         return_conversation: true,
-         ...(conversationId && { conversation_id: conversationId })
+      gpt4freePayload = {
+        messages: messagesForGpt4Free,
+        provider: desiredProvider || "PollinationsAI", 
+        model: desiredModel || "deepseek-r1-distill-qwen-32b",
+        stream: false,
+        history_disabled: false,
+        return_conversation: true,
+        ...(conversationId && { conversation_id: conversationId }),
       }
+    }
 
-      const G4F_API_URL = 'http://localhost:1337/v1/chat/completions'
+    const GPT4FREE_PYTHON_API_URL = 'http://localhost:1337/v1/chat/completions'
 
-      const g4FResponse = await fetch(G4F_API_URL, {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-         },
-         body: JSON.stringify(g4FPayload),
-      })
+    const gpt4freeResponse = await fetch(GPT4FREE_PYTHON_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(gpt4freePayload),
+    })
 
-      if (!g4FResponse.ok) {
-         const errorDataText = await g4FResponse.text()
-         console.error('ERROR:', errorDataText)
+    if (!gpt4freeResponse.ok) {
+      const errorText = await gpt4freeResponse.text()
+      console.error(`PYTHON SERVER ERROR (Type: ${requestType}):`, errorText)
+      let detail = errorText
+      try { detail = JSON.parse(errorText).error?.message || JSON.parse(errorText).error || errorText } catch (e) {/* ignore */}
+      return Response.json({ error: `Python server request failed: ${gpt4freeResponse.status}. Detail: ${detail}` }, { status: gpt4freeResponse.status })
+    }
 
-         let detail = errorDataText
-         try {
-            const parsedError = JSON.parse(errorDataText).error || errorDataText
-            detail = parsedError.error || parsedError.message || errorText
-         } catch (e) { }
-         return Response.json({ error: `PYTHON SERVER REQ FAILED: ${g4FResponse.status} - ${detail}` }, { status: g4FResponse.status })
+    const dataFromGpt4free = await gpt4freeResponse.json()
+    let answer, thinking = null, newConvId = null
+
+    if (isImageRequest) {
+     
+      const imageUrl = dataFromGpt4free.choices?.[0]?.message?.content || dataFromGpt4free.imageUrl
+      if (imageUrl) {
+        answer = `${imageUrl}`
+      } else {
+        answer = "CANT ACCESS THE URL"
+        console.error("NO URL:", dataFromGpt4free)
       }
-
-      const dataFromG4F = await g4FResponse.json()
-
-      const rawAssistantContent = dataFromG4F.choices?.[0]?.message?.content
-
+    } else { 
+      const rawAssistantContent = dataFromGpt4free.choices?.[0]?.message?.content
       if (rawAssistantContent === undefined) {
-         console.error('NO ANSWER FROM CHLOE', dataFromG4F)
-         throw new Error('NO ANSWER FROM CHLOE')
+        return Response.json({ error: 'NO RESPONSE' }, { status: 500 })
       }
+      const parsed = parseAssistantMessage(rawAssistantContent)
+      answer = parsed.answer
+      thinking = parsed.thinking
+      newConvId = dataFromGpt4free.conversation_id || dataFromGpt4free.conversation?.id || dataFromGpt4free.conversation?.userId || conversationId
+    }
 
-      const { thinking, answer } = parseAssistantMessage(rawAssistantContent)
+    return Response.json({
+      answer: answer,
+      thinking: thinking,
+      newConversationId: newConvId
+    })
 
-      const newConversationId = dataFromG4F.conversation_id ||
-         dataFromG4F.conversation?.id ||
-         dataFromG4F.conversation?.userId ||
-         null
-      return Response.json({
-         answer: answer,
-         thinking: thinking,
-         newConversationId: newConversationId
-      })
-
-   } catch (error) {
-      console.error('ERROR IN /api/chat Next.js ROUTE: ', error.message)
-      return Response.json({ error:error.message || 'AN UNEXPECTED ERROR OCCURRED' }, { status: 500 })
-   }
+  } catch (error) {
+    console.error('ERROR IN /api/chat Next.js ROUTE:', error.message)
+    return Response.json({ error: error.message || 'UNEXPECTED ERROR IN API ROUTE' }, { status: 500 })
+  }
 }
-

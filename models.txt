@@ -66,3 +66,46 @@
     "midjourney",
     "dall-e-3",
     "turbo"
+
+
+{
+  "prompt": "string",
+  "model": "string",
+  "provider": "string",
+  "response_format": "string",
+  "api_key": "string",
+  "proxy": "string",
+  "width": 0,
+  "height": 0,
+  "num_inference_steps": 0,
+  "seed": 0,
+  "guidance_scale": 0,
+  "aspect_ratio": "string",
+  "n": 0,
+  "negative_prompt": "string",
+  "resolution": "string",
+  "audio": {
+    "additionalProp1": {}
+  }
+}
+
+{
+  "prompt": "string",
+  "model": "string",
+  "provider": "string",
+  "response_format": "string",
+  "api_key": "string",
+  "proxy": "string",
+  "width": 0,
+  "height": 0,
+  "num_inference_steps": 0,
+  "seed": 0,
+  "guidance_scale": 0,
+  "aspect_ratio": "string",
+  "n": 0,
+  "negative_prompt": "string",
+  "resolution": "string",
+  "audio": {
+    "additionalProp1": {}
+  }
+}

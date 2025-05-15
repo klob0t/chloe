@@ -1,5 +1,5 @@
 export async function sendPayload(payload) {
-   if (!payload || (typeof payload.currentPrompt !== 'string' || !payload.currentPrompt.trim())) {
+   if (!payload || typeof payload !== 'object') {
       throw new Error('SAY SOMETHING')
    }
 
