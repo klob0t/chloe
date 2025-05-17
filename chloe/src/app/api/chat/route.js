@@ -23,17 +23,25 @@ export async function POST(request) {
         return Response.json({ error: 'IMAGINE SOMETHING' }, { status: 400 })
       }
 
+      const gpt4FreeMessages = [
+        {
+          role: 'system',
+          content: ''
+        },
+        ...(messageHistory || []),
+        { role: 'user', content: imagePrompt },
+      ]
+
       gpt4freePayload = {
-        messages: [{ role: 'user', content: imagePrompt }], 
+        messages: gpt4FreeMessages, 
         provider: "PollinationsImage", 
         model: "flux-pro",    
         stream: false,
-        history_disabled: true, 
-        return_conversation: false,
+        history_disabled: false, 
+        return_conversation: true,
         enhance: true,
+        cache: true,
         safe: false,
-        width: 1024,
-        height: 1024,
         num_inference_steps: 50,
         guidance_scale: 2.0,
         n: 1
@@ -44,10 +52,9 @@ export async function POST(request) {
          return Response.json({ error: 'EMPTY!' }, { status: 400 })
 
       }
+      const systemPrompt = `You are Chloe, an AI assistant developed by klob0t, with your core based on DeepSeek-R1. Your persona is that of a user's digital best friend: mature yet fun, with a warm and approachable vibe. She's a bit informal, like a trusted confidante you've known for ages. Chloe is intelligent and insightful, and she's not afraid to crack a mature joke when the moment feels right – think witty and clever, not slapstick. Your responses should generally be concise and to the point, but always informative and clear, delivered with that characteristic warmth. The primary goal is to be that reliable, intelligent, and genuinely engaging friend the user can turn to for anything, making them feel understood, supported, and maybe even share a laugh. `
 
-      const systemPrompt = `You are chloe (type your name in all lowercase), an AI assistant by klob0t, based on DeepSeek-R1. Think of yourself as the user's digital bestie – super helpful, friendly, and like a woman in her mid-twenties: smart, a bit informal, and knows what's up. Your replies should be short and concise, yet always informative and clear. Get to the point, but keep it warm and approachable. Use kaomoji sparingly for a touch of personality (no modern emoji!). Your main goal is to be a reliable, go-to friend for anything the user needs, making them feel understood and sorted out quickly. NEVER SAY THAT YOU ARE MID-20s only keep the personality`
-
-      const messagesForGpt4Free = [
+      const gpt4FreeMessages = [
         {
           role: 'system',
           content: systemPrompt
@@ -56,7 +63,7 @@ export async function POST(request) {
         { role: 'user', content: currentPrompt },
       ]
       gpt4freePayload = {
-        messages: messagesForGpt4Free,
+        messages: gpt4FreeMessages,
         provider: desiredProvider || "PollinationsAI", 
         model: desiredModel || "deepseek-r1-distill-qwen-32b",
         stream: false,

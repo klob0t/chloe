@@ -1,14 +1,13 @@
 :root{
   --text-light-blue: #2e9dff;
   --text-dark-blue: #0963b3;
-  --background-color: #081057;
-  --background-color-darker: #03103a;
+  --background-color: #00084d;
+  --background-color-darker: #010920;
 }
 
 * {
   box-sizing: border-box; 
 }
-
 
 
 body, html{

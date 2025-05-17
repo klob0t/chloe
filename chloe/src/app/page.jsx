@@ -1,18 +1,39 @@
 'use client'
-import { useState, useEffect, useRef, use } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styles from './page.module.css'
 import Input from '@/app/component/input'
 import Chats from '@/app/component/chats'
 import { sendPayload } from '@/app/utils/request'
+import gsap from 'gsap'
 
-const LOADING_MESSAGE_ID = 'assistant-loading=placeholder'
+const LOADING_MESSAGE_ID = 'assistant-loading-placeholder'
 
 export default function Main() {
   const [messages, setMessages] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState([])
   const chatWindowRef = useRef(null)
+  const containerRef = useRef(null)
   const [conversationId, setConversationId] = useState(null)
+
+
+  const aniMain = () => {
+    // if (containerRef.current) {
+    //   const tl = gsap.timeline();
+    //   tl.to(containerRef.current, {
+    //   border: '5px solid #2e9dff',
+    //   duration: 0.1,
+    //   ease: 'none', 
+    //   repeat: 1,
+    //   onComplete: () => {
+    //     gsap.set(containerRef.current, { clearProps: 'border' })
+
+      
+    //   }
+    // })
+    // }
+      return
+  }
 
   const scrollToBottom = () => {
     if (chatWindowRef.current) {
@@ -119,13 +140,13 @@ export default function Main() {
 }
 
 return (
-  <div className={styles.mainContainer}>
+  <div ref={containerRef} className={styles.mainContainer}>
     <div className={styles.chatWindow} ref={chatWindowRef}>
       <Chats messages={messages} />
     </div>
     {error && !isLoading && <p className={styles.errorMessage}>{error}</p>}
     <div className={styles.inputContainer}>
-      <Input onSubmit={handleSendPrompt} isLoading={isLoading} />
+      <Input onSubmit={handleSendPrompt} isLoading={isLoading} mainAnim={aniMain} />
     </div>
   </div>
 )

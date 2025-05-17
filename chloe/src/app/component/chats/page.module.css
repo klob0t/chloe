@@ -46,13 +46,14 @@
 .role-assistant {
    color: var(--text-light-blue);
    padding-right: 0.5em;
+   
 
 }
 
 .msgContent-assistant {
    color: var(--text-light-blue);
    text-align: left;
-   margin-right: 1.5em;
+   margin-right: 1.2em;
 
 }
 

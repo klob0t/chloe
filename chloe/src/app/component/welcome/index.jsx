@@ -21,7 +21,7 @@ export default function Welcome({isLoading}) {
             setError('')
             try {
                 const payloadToNextApi = {
-                    currentPrompt: "greet and offer help to the user in 3 words",
+                    currentPrompt: "greet the user warmly and offer what you can do to the user in 5 words",
                     messageHistory: [],
                     conversationId: null,
                     desiredProvider: 'PollinationsAI',
@@ -101,7 +101,7 @@ export default function Welcome({isLoading}) {
             </div>
           
               <RunningText className={styles.runningText}> 
-                type `/imagine` to generate image!
+                Type `/imagine` to generate image
             </RunningText>
         </div>
     )

@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import styles from './page.module.css'
 import gsap from 'gsap'
 
-export default function Input({ onSubmit, isLoading }) {
+export default function Input({ onSubmit, isLoading, mainAnim }) {
   const [currentText, setCurrentText] = useState('')
   const inputRef = useRef(null)
   const customCaretRef = useRef(null)
@@ -133,30 +133,23 @@ export default function Input({ onSubmit, isLoading }) {
 
     const inputElement = effectRef.current
     if (!inputElement) return
+        performSubmit()
 
     const opacity1 = '1';
 
-    const opacity0 = inputElement.style.opacity || '0'
+    if (mainAnim){ mainAnim() }
 
-    performSubmit()
+
     const tl = gsap.timeline()
 
     tl.to(inputElement, {
       opacity: opacity1,
-      duration: 0.04,
+      duration: 0.1,
       ease: 'none', 
-    }).to(inputElement, {
-      opacity: opacity0,
-      duration: 0.04,
-      ease: 'none'
-    }).to(inputElement, {
-      opacity: opacity1,
-      duration: 0.04,
-      ease: 'none', 
-    }).to(inputElement, {
-      opacity: opacity0,
-      duration: 0.04,
-      ease: 'none'
+      repeat: 2,
+      onComplete: () => {
+        gsap.set(inputElement, { clearProps: 'opacity' })
+      }
     })
   }
 }

@@ -4,7 +4,7 @@
    display: inline-block;
    overflow: hidden;
    padding: 0.3em;
-   background-color: var(--text-light-blue);
+   background-color: var(--text-dark-blue);
 }
 
 .imageWrapper img {
