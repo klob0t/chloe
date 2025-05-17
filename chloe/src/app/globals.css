@@ -1,6 +1,6 @@
 :root{
   --text-light-blue: #2e9dff;
-  --text-dark-blue: rgb(9, 99, 179);
+  --text-dark-blue: #0963b3;
   --background-color: #081057;
   --background-color-darker: #03103a;
 }
@@ -8,6 +8,8 @@
 * {
   box-sizing: border-box; 
 }
+
+
 
 body, html{
   background-color: var(--background-color);

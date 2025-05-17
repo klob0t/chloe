@@ -5,11 +5,12 @@ import TextReveal from '@/app/utils/textReveal'
 
 export default function Chats({ messages }) {
    if (!messages || messages.length === 0) {
-      return <Welcome />
+      return <Welcome className={styles.welcomeComp} />
    }
 
    return (
       <div className={styles.chatsContainer}>
+      {!messages && messages.length === 0 && <Welcome className={styles.welcomeComp} />}
          <div className={styles.messages}>
             {messages.map((msg, index) => (
                <div

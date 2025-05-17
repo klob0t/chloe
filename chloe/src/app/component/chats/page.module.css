@@ -1,3 +1,8 @@
+.welcomeComp {
+   height: 100%;
+   position: relative;
+}
+
 .chatsContainer {
    margin: 1em 0.5em;
    box-sizing: border-box;

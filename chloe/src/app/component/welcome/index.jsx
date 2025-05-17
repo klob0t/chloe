@@ -4,6 +4,7 @@ import styles from './page.module.css'
 import { sendPayload } from '@/app/utils/request'
 import TextReveal from '@/app/utils/textReveal'
 import RunningText from '@/app/component/runningText'
+import Image from 'next/image'
 
 export default function Welcome({isLoading}) {
     const [error, setError] = useState('')
@@ -55,6 +56,12 @@ export default function Welcome({isLoading}) {
 
     return (
         <div className={styles.welcomeContainer}>
+          {/* <Image
+            src='/klob0t-logo.svg'
+            width='50'
+            height='50'
+            alt=''
+            /> */}
             <div className={styles.welcomeAscii}>
                 <pre>  
 &nbsp;      __       ___                     <br />
@@ -66,14 +73,15 @@ export default function Welcome({isLoading}) {
 &nbsp; \/____/ \/_/\/_/\/____/\/___/  \/____/<br />
                               
                 </pre>
+                            
             </div>
+
             <div className={styles.greetingContainer}>
                 {!isLoading && error && (
                     <div className={styles.errorMessage}>
                         <p>{error}</p>
                         {messages.length > 0 && messages[0] && (
                             <TextReveal
-                                message={messages[0]}
                                 messageKey="error-message"
                                 styles={styles}
                             />
@@ -91,7 +99,8 @@ export default function Welcome({isLoading}) {
                 )}
               
             </div>
-              <RunningText className={styles.runningText} speed={2}> 
+          
+              <RunningText className={styles.runningText}> 
                 type `/imagine` to generate image!
             </RunningText>
         </div>

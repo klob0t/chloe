@@ -1,55 +1,87 @@
 'use client'
-import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
-import styles from './page.module.css'
-import Markdown from 'markdown-to-jsx'
 
-export default function RunningText({ speed, children }) { 
-    const containerRef = useRef(null);
-    const firstWrapperRef = useRef(null);
-    const mainTl = useRef(null);
+import { useEffect, useRef, useCallback } from 'react'
+import gsap from 'gsap'
+import Markdown from 'markdown-to-jsx'
+import styles from './page.module.css'
+
+export default function RunningText({ speed, children }) {
+    const containerRef = useRef(null)
+    const wrapperRef = useRef(null)
+    const instanceRef = useRef([])
+    const tl = useRef(null)
+
+    const N = 2
+
 
     useEffect(() => {
 
-      if (mainTl.current) {
-         mainTl.current.kill()
-      }
+        const containerWidth = containerRef.current.offsetWidth
 
-      mainTl.current = gsap.timeline()
+        const instanceWidth = instanceRef.current[0].offsetWidth
 
-      mainTl.current.to(containerRef.current, {
-         xPercent: -100,
-         duration: speed,
-         ease: 'none'
-      })
+        // let minOneWidth = 0
+        // for (let i = 0; i < N - 1; i++) {
+        //     minOneWidth += instanceRef.current[i].offsetWidth
+        // }
+        // console.log(gap)
 
-      const wrapperTl = gsap.timeline({
-         repeat: -1
-      })
+        if (tl.current) {
+            tl.current.kill();
+        }
 
-      wrapperTl.to(firstWrapperRef.current, {
-         xPercent: -100,
-         duration: speed,
-         ease: 'none'
-      })
+        tl.current = gsap.timeline()
 
-      mainTl.current.add(wrapperTl)
+        for (let i = 1; i < N; i++) {
+            gsap.set(instanceRef.current[i], {
+                position: 'absolute',
+                left: `${i / (N - 1) * 100}%`,
+            })
+        }
 
-      return () => {
-            if (mainTl.current) {
-                mainTl.current.kill()
+        gsap.set(containerRef.current, {
+            left: '100%'
+        })
+
+        tl.current.to(containerRef.current, {
+            xPercent: -100,
+            duration: 5,
+            ease: 'none',
+        })
+
+        const wrapperTl = gsap.timeline()
+
+        wrapperTl.to(wrapperRef.current, {
+            xPercent: -100,
+            duration: 5,
+            ease: 'none',
+            repeat: -1
+        })
+
+        tl.current.add(wrapperTl)
+
+        return () => {
+            if (tl.current) {
+                tl.current.kill()
             }
-        };
+        }
 
-
-    }, [speed]); 
+    }, [children, speed])
 
     return (
-        <div ref={containerRef} className={styles.runningTextContainer}>
-            <div ref={firstWrapperRef} className={styles.runningTextWrapper}>
-                <span><Markdown>{children}</Markdown></span>
-                <span><Markdown>{children}</Markdown></span>
+        <div ref={containerRef} className={styles.marqueeContainer}>
+            <div ref={wrapperRef} className={styles.marqueeWrapper}>
+                {Array.from({ length: N }).map((_, i) => (
+                    <p
+                        key={i}
+                        ref={el => instanceRef.current[i] = el}
+                        className={styles.textInstance}>
+                        <Markdown>{children}</Markdown>
+                    </p>
+                ))}
             </div>
+
+
         </div>
-    );
+    )
 }
