@@ -2,13 +2,12 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/g4f_handler.py",  
-      "use": "@vercel/python"
-    },
-    {
       "src": "package.json", 
       "use": "@vercel/next"
+    },
+    {
+      "src": "api/**/*.py",  
+      "use": "@vercel/python"
     }
   ]
-
 }

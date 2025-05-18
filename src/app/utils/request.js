@@ -4,7 +4,17 @@ export async function sendPayload(payload) {
    }
 
    try {
-      const res = await fetch('/api/chat', {
+
+      const BASE_URL =
+         process.env.NEXT_PUBLIC_VERCEL_ENV == null ||
+            process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
+            ? "http://localhost:8000"
+            : process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
+               ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+               : `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`
+
+
+      const res = await fetch(`${BASE_URL}/api/chat`, {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json'

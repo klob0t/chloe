@@ -4,7 +4,7 @@ function getBaseUrl() {
   if (process.env.VERCEL_URL) {
     return `https://` + process.env.VERCEL_URL
   }
-  return `http://localhost:${process.env.PORT || 8001}`
+  return `http://localhost:${process.env.PORT || 3000}`
 }
 
 export async function POST(request) {
@@ -81,7 +81,7 @@ export async function POST(request) {
     }
 
     const baseUrl = getBaseUrl()
-    const G4F_SERVER = `${baseUrl}/api/g4f_handler/v1/chat/completions`
+    const G4F_SERVER = `${baseUrl}/api/v1/chat/completions`
 
     console.log(G4F_SERVER)
 
@@ -133,3 +133,9 @@ export async function POST(request) {
     return Response.json({ error: error.message || 'UNEXPECTED ERROR IN API ROUTE' }, { status: 500 })
   }
 }
+
+
+// export async function POST(request) {
+//   console.log("POST /api/chat HIT!")
+//   return Response.json({ message: "Helllo from /api/chat POST"})
+// }

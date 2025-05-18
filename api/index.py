@@ -1,5 +1,3 @@
-# /api/gptfree_handler.py
-
 from fastapi import FastAPI, Response # Import FastAPI for the fallback type hint and Response
 
 # Initialize 'app' to a fallback to handle potential import errors gracefully during Vercel build/runtime
@@ -7,6 +5,9 @@ app = None
 error_message_on_load = "g4f.api.create_app function not successfully called." # Default error
 
 try:
+    import g4f
+    import g4f.debug
+    g4f.debug.logging = True
     from g4f.api import create_app
     
     # Call the function to get the actual FastAPI application instance
