@@ -38,8 +38,8 @@ export default function Input({ onSubmit, isLoading, mainAnim }) {
     let caretX, caretY
     let finalTop
 
-    const firstCharVisualOffsetX = 2.42625
-    const firstCharVisualOffsetY = 1.98875
+    const firstCharVisualOffsetX = 1.5
+    const firstCharVisualOffsetY = 1.5
 
     if (currentLocalInnerText.trim().length === 0) {
 

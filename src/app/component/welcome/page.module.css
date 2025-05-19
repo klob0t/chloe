@@ -10,25 +10,24 @@
    position: relative;
 }
 
-.welcomeContainer img{
+.link{
    position: absolute;
    top: 0;
-   align-self: flex-start !important;
-   margin:  10 0;
+   margin:  20 0;
 }
 
 .welcomeAscii {
    font-size: 0.6rem;
    font-weight: 900;
    translate: -2% 0;
-   line-height: 1.5em;
+   line-height: 1.3em;
    padding: 0 0 0 0;
    display: flex;
    align-items: flex-end;
 }
 
 .welcomeMessage {
-   font-size: 1.4rem;
+   /* font-size: 1.4rem; */
    padding: 0.15rem 0 0 0;
    text-align: center;
 }

@@ -19,8 +19,8 @@ const PixelOverlaySvg = () => (
                   key={`rect-${rowIndex}-${colIndex}`}
                   x={colIndex * 32}
                   y={rowIndex * 32}
-                  width='32'
-                  height='32'
+                  width='40'
+                  height='40'
                   fill='#081057'
                   className={styles.pixelRect}
                />
@@ -55,7 +55,7 @@ export default function ImageReveal({ imageUrl, altText = 'Generated Image' }) {
             return
          }
 
-         gsap.set(imageRef.current, { opacity: 0 })
+         gsap.set(wrapperRef.current, { opacity: 0 })
          gsap.set(svgRects, { opacity: 1 })
 
          const ctx = gsap.context(() => {
@@ -64,18 +64,16 @@ export default function ImageReveal({ imageUrl, altText = 'Generated Image' }) {
                   animationPlayedRef.current = true
                   const svgElement = wrapperRef.current.querySelector('svg')
                   if (svgElement) {
-
                      svgElement.style.display = 'none'
                   }
                }
             })
 
-            tl.to(imageRef.current, {
+            tl.to(wrapperRef.current, {
                opacity: 1,
-               duration: 0.5,
+               duration: 1.5,
                ease: 'none'
-            },)
-               .to(svgRects, {
+            }) .to(svgRects, {
                   opacity: 0,
                   duration: 0.01,
                   stagger: {
@@ -87,7 +85,6 @@ export default function ImageReveal({ imageUrl, altText = 'Generated Image' }) {
          }, wrapperRef)
 
          return () => {
-
             animationPlayedRef.current = false
             ctx.revert()
          }

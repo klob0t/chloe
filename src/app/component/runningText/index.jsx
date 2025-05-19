@@ -20,12 +20,6 @@ export default function RunningText({ speed, children }) {
 
         const instanceWidth = instanceRef.current[0].offsetWidth
 
-        // let minOneWidth = 0
-        // for (let i = 0; i < N - 1; i++) {
-        //     minOneWidth += instanceRef.current[i].offsetWidth
-        // }
-        // console.log(gap)
-
         if (tl.current) {
             tl.current.kill();
         }

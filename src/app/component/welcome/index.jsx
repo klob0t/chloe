@@ -5,6 +5,7 @@ import { sendPayload } from '@/app/utils/request'
 import TextReveal from '@/app/utils/textReveal'
 import RunningText from '@/app/component/runningText'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function Welcome({isLoading}) {
     const [error, setError] = useState('')
@@ -56,12 +57,13 @@ export default function Welcome({isLoading}) {
 
     return (
         <div className={styles.welcomeContainer}>
-          {/* <Image
+        <Link className={styles.link} href='https://klob0t.xyz'>
+          <Image
             src='/klob0t-logo.svg'
             width='50'
             height='50'
             alt=''
-            /> */}
+            /></Link>
             <div className={styles.welcomeAscii}>
                 <pre>  
 &nbsp;      __       ___                     <br />

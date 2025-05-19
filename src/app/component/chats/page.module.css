@@ -83,3 +83,12 @@
    }
 }
 
+.welcomeAscii {
+   font-size: 0.4rem;
+   font-weight: 900;
+   translate: 0 -20px;
+   line-height: 1.3em;
+   display: flex;
+   align-items: flex-end;
+   color: var(--text-dark-blue)
+}
