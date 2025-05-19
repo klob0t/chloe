@@ -21,7 +21,7 @@ export default function Welcome({isLoading}) {
             setError('')
             try {
                 const payloadToNextApi = {
-                    currentPrompt: "greet the user warmly and offer what you can do to the user in 5 words",
+                    currentPrompt: "greet the user warmly and offer what you can do to the user 5 words",
                     messageHistory: [],
                     conversationId: null,
                     desiredProvider: 'PollinationsAI',

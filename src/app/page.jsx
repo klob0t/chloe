@@ -4,7 +4,6 @@ import styles from './page.module.css'
 import Input from '@/app/component/input'
 import Chats from '@/app/component/chats'
 import { sendPayload } from '@/app/utils/request'
-import gsap from 'gsap'
 
 const LOADING_MESSAGE_ID = 'assistant-loading-placeholder'
 
@@ -17,21 +16,7 @@ export default function Main() {
   const [conversationId, setConversationId] = useState(null)
 
 
-  const aniMain = () => {
-    // if (containerRef.current) {
-    //   const tl = gsap.timeline();
-    //   tl.to(containerRef.current, {
-    //   border: '5px solid #2e9dff',
-    //   duration: 0.1,
-    //   ease: 'none', 
-    //   repeat: 1,
-    //   onComplete: () => {
-    //     gsap.set(containerRef.current, { clearProps: 'border' })
-
-      
-    //   }
-    // })
-    // }
+  const aniMain = () => {k
       return
   }
 

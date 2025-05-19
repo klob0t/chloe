@@ -2,7 +2,7 @@
   --text-light-blue: #2e9dff;
   --text-dark-blue: #0963b3;
   --background-color: #00084d;
-  --background-color-darker: #010920;
+  --background-color-darker: #000b2e;
 }
 
 * {
@@ -41,5 +41,5 @@ blockquote {
 
 hr{
   border : 0;
-  border-top: 1px solid var(--background-color-darker)
+  border-top: 1px solid var(--text-dark-blue)
 }

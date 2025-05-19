@@ -3,8 +3,8 @@
    position: relative;
    display: inline-block;
    overflow: hidden;
-   padding: 0.3em;
-   background-color: var(--text-dark-blue);
+   padding: 0.5em;
+   background-color: rgb(241, 241, 219);
 }
 
 .imageWrapper img {

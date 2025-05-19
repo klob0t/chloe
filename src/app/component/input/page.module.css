@@ -17,6 +17,7 @@
    min-height: 1.5em;
    padding: 0.2em;
    z-index: 2;
+   /* border: 1 solid red;dsaf */
 }
 
 .inputEffect{
@@ -56,4 +57,20 @@
 
 .inputArea:focus {
    outline: none;
+}
+
+.disclaimWrapper {
+   display: flex;
+   height: fit-content;
+   width: 100%;
+   background-color: var(--background-color);
+}
+
+.disclaimerText {
+   width: 100vw;
+
+   color: var(--text-dark-blue);
+   font-size: 0.5em;
+   z-index: 3;
+   text-align: center;
 }

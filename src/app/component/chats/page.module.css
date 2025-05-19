@@ -6,15 +6,15 @@
 .chatsContainer {
    margin: 1em 0.5em;
    box-sizing: border-box;
+   position: relative;
 }
 
 .messages {
-   justify-content: flex-start;
    display: flex;
    flex-direction: column;
 }
 
-.message img{
+.message img {
    max-width: 100%;
 }
 
@@ -27,6 +27,7 @@
    padding: 0.4rem;
    word-wrap: break-word;
 }
+
 .message.user {
    align-self: flex-end;
 }
@@ -46,8 +47,6 @@
 .role-assistant {
    color: var(--text-light-blue);
    padding-right: 0.5em;
-   
-
 }
 
 .msgContent-assistant {
@@ -68,15 +67,19 @@
    padding-left: 10px;
 }
 
-.cursor{
+.cursor {
    animation: blink 1s step-end infinite
 }
 
 @keyframes blink {
-   0%, 100% {
+
+   0%,
+   100% {
       background-color: var(--text-light-blue);
    }
-   50%{
+
+   50% {
       background-color: transparent;
    }
 }
+

@@ -1,5 +1,4 @@
 'use client'
-
 import { useEffect, useState } from 'react'
 import Markdown from 'markdown-to-jsx'
 import gsap from 'gsap'
@@ -24,16 +23,20 @@ export default function TextReveal({ message, messageKey }) {
             return
         }
 
+        const words = contentToAnimate.split(/(\s+)/)
+        const elementsCount = words.filter(word => word.trim() !== '').length
+
         setDisplayedContent('')
 
         const ctx = gsap.context(() => {
             if (contentToAnimate) {
                 gsap.to({ value: 0 }, {
-                    value: contentToAnimate.length,
-                    duration: contentToAnimate.length * 0.01,
-                    ease: 'sine.out',
+                    value: words.length,
+                    duration: elementsCount * 0.03,
+                    ease: 'none',
                     onUpdate: function () {
-                        setDisplayedContent(contentToAnimate.substring(0, Math.floor(this.targets()[0].value)))
+                        const currentWordIndex = Math.floor(this.targets()[0].value)
+                        setDisplayedContent(words.slice(0, currentWordIndex).join(""))
                     },
                     onComplete: () => {
                         setDisplayedContent(contentToAnimate)
@@ -61,17 +64,19 @@ export default function TextReveal({ message, messageKey }) {
     }
 
     if (message.type === 'image' && typeof message.content === 'string') {
-        const markdownImageRegex = /!\[(.*?)\]\((.*?)\)/
-        const match = message.content.match(markdownImageRegex)
+        // const markdownImageRegex = /!\[(.*?)\]\((.*?)\)/
+        // const match = message.content.match(markdownImageRegex)
+        // console.log(match)
+        return <ImageReveal imageUrl={message.content}/>
 
-        if (match && match[2]) {
-            const altText = match[1] || 'Generated Image'
-            const imageUrl = match[2]
-            return <ImageReveal imageUrl={imageUrl} altText={altText} />
-        } else {
-            console.warn('MSG TYPE IS IMAGE BUT NO VALID CONTENT', message.content)
-            return <Markdown >{message.content || 'ERROR: INVALID IMAGE DATA'}</Markdown>
-        }
+        // if (match && match[2]) {
+        //     const altText = match[1] || 'Generated Image'
+        //     const imageUrl = match[2]
+        //     return <ImageReveal imageUrl={message.content} altText={altText} />
+        // } else {
+        //     console.warn('MSG TYPE IS IMAGE BUT NO VALID CONTENT', message.content)
+        //     return <Markdown >{message.content || 'ERROR: INVALID IMAGE DATA'}</Markdown>
+        // }
     }
 
     return (

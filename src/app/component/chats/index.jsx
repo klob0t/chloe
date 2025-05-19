@@ -9,21 +9,25 @@ export default function Chats({ messages }) {
    }
 
    return (
-      <div className={styles.chatsContainer}>
-      {!messages && messages.length === 0 && <Welcome className={styles.welcomeComp} />}
-         <div className={styles.messages}>
-            {messages.map((msg, index) => (
-               <div
-                  key={msg.id || index}
-                  className={`${styles.message} ${styles[msg.role]}`}
-               >
-                  <div className={styles[`role-${msg.role}`]}>{msg.role === 'user' ? '<' : '>'}</div>
-                  <div className={styles[`msgContent-${msg.role}`]}>
-                     <TextReveal message={msg} />
+      <>
+
+         <div className={styles.chatsContainer}>
+            {!messages && messages.length === 0 && <Welcome className={styles.welcomeComp} />}
+            <div className={styles.messages}>
+               {messages.map((msg, index) => (
+                  <div
+                     key={msg.id || index}
+                     className={`${styles.message} ${styles[msg.role]}`}
+                  >
+                     <div className={styles[`role-${msg.role}`]}>{msg.role === 'user' ? '<' : '>'}</div>
+                     <div className={styles[`msgContent-${msg.role}`]}>
+                        <TextReveal message={msg} />
+                     </div>
                   </div>
-               </div>
-            ))}
+               ))}
+            </div>
          </div>
-      </div>
+
+      </>
    )
 }

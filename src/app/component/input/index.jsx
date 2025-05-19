@@ -85,7 +85,7 @@ export default function Input({ onSubmit, isLoading, mainAnim }) {
       caretY = rect.top - inputDivRect.top + inputElement.scrollTop
 
       if (range.startOffset > 0 && range.startContainer.nodeType === Node.TEXT_NODE) {
-        caretX -= 12 
+        caretX -= 12
       }
 
       finalTop = caretY
@@ -128,31 +128,28 @@ export default function Input({ onSubmit, isLoading, mainAnim }) {
   }
 
   const handleKeyPress = (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault()
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
 
-    const inputElement = effectRef.current
-    if (!inputElement) return
-        performSubmit()
+      const inputElement = effectRef.current
+      if (!inputElement) return
+      performSubmit()
 
-    const opacity1 = '1';
+      const opacity1 = '1';
 
-    if (mainAnim){ mainAnim() }
+      const tl = gsap.timeline()
 
-
-    const tl = gsap.timeline()
-
-    tl.to(inputElement, {
-      opacity: opacity1,
-      duration: 0.1,
-      ease: 'none', 
-      repeat: 2,
-      onComplete: () => {
-        gsap.set(inputElement, { clearProps: 'opacity' })
-      }
-    })
+      tl.to(inputElement, {
+        opacity: opacity1,
+        duration: 0.1,
+        ease: 'none',
+        repeat: 2,
+        onComplete: () => {
+          gsap.set(inputElement, { clearProps: 'opacity' })
+        }
+      })
+    }
   }
-}
 
   const handleFocus = () => {
     if (!isLoading) {
@@ -204,7 +201,7 @@ export default function Input({ onSubmit, isLoading, mainAnim }) {
 
 
   return (
-    <div 
+    <div
       className={`${styles.inputContainer} ${isLoading ? styles.disabled : ''}`}
     >
       {!isLoading && <span ref={customCaretRef} className={styles.customCaret}></span>}
@@ -224,6 +221,10 @@ export default function Input({ onSubmit, isLoading, mainAnim }) {
         role='textbox'
         aria-multiline="true"
       />
+
+      <div className={styles.disclaimWrapper}>
+        <span className={styles.disclaimerText}>chloe may make mistakes... double-check it.</span>
+      </div>
     </div>
   )
 }

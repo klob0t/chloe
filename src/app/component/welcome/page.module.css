@@ -17,8 +17,6 @@
    margin:  10 0;
 }
 
-
-
 .welcomeAscii {
    font-size: 0.6rem;
    font-weight: 900;
@@ -32,6 +30,7 @@
 .welcomeMessage {
    font-size: 1.4rem;
    padding: 0.15rem 0 0 0;
+   text-align: center;
 }
 
 .greetingContainer {

@@ -8,19 +8,19 @@ import styles from './page.module.css'
 const PixelOverlaySvg = () => (
    <svg
       className={styles.pixelOverlay}
-      viewBox='0 0 1024 1024'
+      viewBox='0 0 1080 1080'
       preserveAspectRatio='none'
       xmlns='http://www.w3.org/2000/svg'
    >
       <g clipPath='url(#clipPath_pixel_reveal_image_component)'>
-         {Array.from({ length: 16 }).map((_, rowIndex) =>
-            Array.from({ length: 16 }).map((_, colIndex) => (
+         {Array.from({ length: 32 }).map((_, rowIndex) =>
+            Array.from({ length: 40 }).map((_, colIndex) => (
                <rect
                   key={`rect-${rowIndex}-${colIndex}`}
-                  x={colIndex * 64}
-                  y={rowIndex * 64}
-                  width='68'
-                  height='68'
+                  x={colIndex * 32}
+                  y={rowIndex * 32}
+                  width='32'
+                  height='32'
                   fill='#081057'
                   className={styles.pixelRect}
                />
@@ -97,6 +97,8 @@ export default function ImageReveal({ imageUrl, altText = 'Generated Image' }) {
    }, [imageUrl])
 
    if (!imageUrl) return null
+
+   console.log("ATTEMPTING TO LOAD IMAGE:", imageUrl)
 
    return (
       <div ref={wrapperRef} className={styles.imageWrapper}>
