@@ -13,7 +13,8 @@
 .link{
    position: absolute;
    top: 0;
-   margin:  20 0;
+   transform: translateY(20px);
+
 }
 
 .welcomeAscii {

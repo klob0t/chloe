@@ -2,6 +2,7 @@
 import styles from './page.module.css'
 import Welcome from '@/app/component/welcome'
 import TextReveal from '@/app/utils/textReveal'
+import Link from 'next/link'
 
 export default function Chats({ messages }) {
    if (!messages || messages.length === 0) {
@@ -12,7 +13,7 @@ export default function Chats({ messages }) {
       <>
 
          <div className={styles.chatsContainer}>
-
+<Link href='/' className={styles.homePage}>
 <div className={styles.welcomeAscii}>
                 <pre>  
 &nbsp;      __       ___                     <br />
@@ -23,10 +24,9 @@ export default function Chats({ messages }) {
 &nbsp;\ \____\\ \_\ \_\/\____\ \____/\ \____\<br />
 &nbsp; \/____/ \/_/\/_/\/____/\/___/  \/____/<br />
                               
-                </pre>
-                            
+                </pre> 
             </div>
-
+            </Link>
             {!messages && messages.length === 0 && <Welcome className={styles.welcomeComp} />}
             <div className={styles.messages}>
                {messages.map((msg, index) => (
@@ -42,7 +42,6 @@ export default function Chats({ messages }) {
                ))}
             </div>
          </div>
-
       </>
    )
 }

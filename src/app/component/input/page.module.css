@@ -36,7 +36,7 @@
 .customCaret {
    position: absolute;
    display: inline-block;
-   width: 10px;
+   width: 12px;
    height: 25px;
    background-color: var(--text-light-blue);
    pointer-events: none;

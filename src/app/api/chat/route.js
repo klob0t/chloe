@@ -22,7 +22,10 @@ export async function POST(request) {
       messageHistory,
       conversationId,
       desiredProvider,
-      desiredModel
+      desiredModel,
+      seed,
+      inferenceSteps,
+      guidanceScale
     } = clientPayload
 
     let g4fPayload
@@ -41,15 +44,14 @@ export async function POST(request) {
         stream: false,
         enhance: true,
         response_format : 'url',
-        // history_disabled: false, 
-        // return_conversation: true,
-        enhance: true,
+        seed: +seed,
+        enhance: false,
         width: 1080,
         height: 1350,
         cache: true,
         safe: false,
-        // num_inference_steps: 2,
-        // guidance_scale: 2,
+        num_inference_steps: +inferenceSteps,
+        guidance_scale: +guidanceScale,
         n: 1
       }
       g4fServerEndpoint = `${apiURL()}/api/v1/images/generations`
@@ -103,6 +105,7 @@ export async function POST(request) {
 
     if (isImageRequest) {
       const imageUrl = g4fData?.data?.[0]?.url
+      console.log(imageUrl)
       if (imageUrl) {
         answer = imageUrl
       } else {

@@ -94,9 +94,7 @@ export default function ImageReveal({ imageUrl, altText = 'Generated Image' }) {
    }, [imageUrl])
 
    if (!imageUrl) return null
-
-   console.log("ATTEMPTING TO LOAD IMAGE:", imageUrl)
-
+   
    return (
       <div ref={wrapperRef} className={styles.imageWrapper}>
          <img ref={imageRef} src={imageUrl} alt={altText} />

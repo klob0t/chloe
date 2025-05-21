@@ -18,6 +18,10 @@
    max-width: 100%;
 }
 
+.homePage {
+   text-decoration: none;
+}
+
 .message {
    display: flex;
    flex-direction: row;
@@ -90,5 +94,5 @@
    line-height: 1.3em;
    display: flex;
    align-items: flex-end;
-   color: var(--text-dark-blue)
+   color: var(--text-dark-blue);
 }

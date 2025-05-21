@@ -1,5 +1,6 @@
-import localFont from 'next/font/local';
-import "./globals.css";
+import localFont from 'next/font/local'
+import "./globals.css"
+import { Analytics } from '@vercel/analytics/next'
 
 export const metadata = {
   title: "chloe",
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${monoSpaced.className}`} >
       <body>
         {children}
+        <Analytics />
       </body>
     </html>
   );
