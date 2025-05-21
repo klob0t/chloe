@@ -45,9 +45,7 @@ export default function ImageReveal({ imageUrl, altText = 'Generated Image' }) {
          wrapperRef.current &&
          imageRef.current &&
          !animationPlayedRef.current) {
-
          const selector = `.${styles.pixelRect}`
-
          const svgRects = wrapperRef.current.querySelectorAll(selector)
 
          if (svgRects.length === 0) {
@@ -96,9 +94,11 @@ export default function ImageReveal({ imageUrl, altText = 'Generated Image' }) {
    if (!imageUrl) return null
    
    return (
+      <div className={styles.imageContainer}>
       <div ref={wrapperRef} className={styles.imageWrapper}>
          <img ref={imageRef} src={imageUrl} alt={altText} />
          <PixelOverlaySvg />
+      </div>
       </div>
    )
 }

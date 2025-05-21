@@ -5,7 +5,7 @@ import gsap from 'gsap'
 import styles from './page.module.css'
 import ImageReveal from '@/app/utils/imageReveal'
 
-export default function TextReveal({ message, messageKey }) {
+export default function TextReveal({ message }) {
     const [displayedContent, setDisplayedContent] = useState('')
     const loadingChars = ['\\', '|', '/', '—']
     const [currentSpinnerChar, setCurrentSpinnerChar] = useState(loadingChars[0]);
@@ -59,24 +59,12 @@ export default function TextReveal({ message, messageKey }) {
         return () => clearInterval(intervalId)
     }, [message.type])
 
-    if (message.type === 'loading') {
+    if (message.type === 'loading' && message.type === 'text') {
         return <span className={styles && styles.spinner ? styles.spinner : 'default-spinner-class'}>{currentSpinnerChar}</span>
     }
 
     if (message.type === 'image' && typeof message.content === 'string') {
-        // const markdownImageRegex = /!\[(.*?)\]\((.*?)\)/
-        // const match = message.content.match(markdownImageRegex)
-        // console.log(match)
         return <ImageReveal imageUrl={message.content}/>
-
-        // if (match && match[2]) {
-        //     const altText = match[1] || 'Generated Image'
-        //     const imageUrl = match[2]
-        //     return <ImageReveal imageUrl={message.content} altText={altText} />
-        // } else {
-        //     console.warn('MSG TYPE IS IMAGE BUT NO VALID CONTENT', message.content)
-        //     return <Markdown >{message.content || 'ERROR: INVALID IMAGE DATA'}</Markdown>
-        // }
     }
 
     return (

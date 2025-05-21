@@ -74,8 +74,6 @@ export default function RunningText({ speed, children }) {
                     </p>
                 ))}
             </div>
-
-
         </div>
     )
 }

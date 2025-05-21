@@ -20,44 +20,25 @@ export async function sendPayload(payload) {
          body: JSON.stringify(payload)
       })
 
-      if (!res.ok) {
-      let errorContent 
-      let errorMessageForThrow 
-
-      try {
-        errorContent = await res.json() 
-        if (typeof errorContent === 'object' && errorContent !== null) {
-          errorMessageForThrow = errorContent.message || errorContent.error?.message || errorContent.error || JSON.stringify(errorContent)
-        } else {
-          errorMessageForThrow = JSON.stringify(errorContent)
-        }
-      } catch (e) {
-        errorContent = await res.text()
-        errorMessageForThrow = errorContent || `API REQUEST FAILED: ${res.status} - ${res.statusText}`
+       if (!res.ok) {
+         let errorData
+         try {
+            errorData = await res.json()
+         } catch (e) {
+            const errorText = await res.text()
+            errorData = { error: errorText || `API REQUEST FAILED: &{res.status} - ${res.statusText}` }
+         }
+         throw new Error(errorData || `API REQUEST FAILED: ${res.status} - ${res.statusText}`)
       }
 
-      console.error('--- Server Error Response ---')
-      console.error('Status:', res.status, res.statusText)
-      console.error('Response Content:', errorContent) 
-      console.error('--- End Server Error Response ---')
-      throw new Error(errorMessageForThrow)
-    }
-
-    const data = await res.json()
-    return data
+      const data = await res.json()
+      return data
 
    } catch (error) {
+      console.error('ERROR SENDING PROMPT TO API', error.message)
+      throw error
+   }
 
-    console.error('--- ERROR IN sendPayload ---')
-
-    console.error('Error Message:', error.message)
-    console.error('Payload Sent:', JSON.stringify(payload, null, 2)) 
-    if (error.stack) {
-      console.error('Stack Trace:', error.stack)
-    }
-    console.error('--- END ERROR IN sendPayload ---')
-    throw error
-  }
 }
 
 export async function handleSubmit(promptText, currentMessageHistory, currentConversationId) {
@@ -67,7 +48,7 @@ export async function handleSubmit(promptText, currentMessageHistory, currentCon
    let payloadToSend
    let messageType = 'text'
    if (promptText.toLowerCase().startsWith('/imagine ')) {
-      const fullPrompt = promptText.substring(0).trim()
+      const fullPrompt = promptText.substring(8).trim()
       if (!fullPrompt) {
          return { error: 'INSERT PROMPT AFTER /IMAGINE', type: 'validation'}
       }
@@ -87,6 +68,7 @@ export async function handleSubmit(promptText, currentMessageHistory, currentCon
     let match
     while ((match = regex.exec(fullPrompt)) !== null) {
       output[match[1]] = match[2].trim()
+
     }
       payloadToSend = {
          requestType: 'image',
@@ -109,6 +91,7 @@ export async function handleSubmit(promptText, currentMessageHistory, currentCon
    }
    try {
       const apiResponse = await sendPayload(payloadToSend)
+      console.log(payloadToSend)
       return { ...apiResponse, messageType, originalUserCommand: promptText }
    } catch (error) {
       return { error: error.message || 'API SUBMISSION FAILED', messageType, originalUserCommand: promptText, type: 'api'}

@@ -53,7 +53,6 @@ export default function Main() {
 
       const result = await handleSubmit(promptText, currentMessageHistoryForApi, conversationId)
 
-      console.log("API Result (inside handleSendPrompt):", result) 
       if (result.type === 'validation') {
         setMessages(prevMessages => [
           ...prevMessages.filter(msg => msg.id !== LOADING_MESSAGE_ID), 

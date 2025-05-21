@@ -1,11 +1,14 @@
 .imageWrapper {
-   max-width: 800px;
    position: relative;
    display: inline-block;
    opacity: 0;
    overflow: hidden;
    padding: 0.3em;
-   background-color: rgb(204, 204, 200);
+   background-color: rgb(235, 235, 167);
+}
+
+.imageContainer {
+   width: 100%;
 }
 
 .imageWrapper img {
