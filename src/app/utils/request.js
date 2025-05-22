@@ -41,14 +41,14 @@ export async function sendPayload(payload) {
 
 }
 
-export async function handleSubmit(promptText, currentMessageHistory, currentConversationId) {
-   if (!promptText || !promptText.trim()) {
+export async function handleSubmit(textPrompt, imagePrompt, currentMessageHistory, currentConversationId) {
+   if (!textPrompt || !textPrompt.trim()) {
       return { error: 'EMPTY', type: 'validation' }
    }
    let payloadToSend
    let messageType = 'text'
-   if (promptText.toLowerCase().startsWith('/imagine ')) {
-      const fullPrompt = promptText.substring(8).trim()
+   if (imagePrompt) {
+      const fullPrompt = imagePrompt
       if (!fullPrompt) {
          return { error: 'INSERT PROMPT AFTER /IMAGINE', type: 'validation'}
       }
@@ -83,7 +83,7 @@ export async function handleSubmit(promptText, currentMessageHistory, currentCon
    } else {
       payloadToSend = {
          requestType: 'text',
-         currentPrompt: promptText,
+         currentPrompt: textPrompt,
          messageHistory: currentMessageHistory,
          conversationId: currentConversationId
       }
@@ -91,10 +91,9 @@ export async function handleSubmit(promptText, currentMessageHistory, currentCon
    }
    try {
       const apiResponse = await sendPayload(payloadToSend)
-      console.log(payloadToSend)
-      return { ...apiResponse, messageType, originalUserCommand: promptText }
+      return { ...apiResponse, messageType, originalUserCommand: textPrompt }
    } catch (error) {
-      return { error: error.message || 'API SUBMISSION FAILED', messageType, originalUserCommand: promptText, type: 'api'}
+      return { error: error.message || 'API SUBMISSION FAILED', messageType, originalUserCommand: textPrompt, type: 'api'}
    }
 }
 

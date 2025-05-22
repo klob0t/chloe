@@ -12,7 +12,7 @@ export default function Welcome({isLoading}) {
     const [messages, setMessages] = useState([
         {
             role: 'assistant',
-            type: 'loading', 
+            type: 'text-loading', 
             content: '' 
         }
     ])

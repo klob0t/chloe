@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import styles from './page.module.css'
 import gsap from 'gsap'
 
-export default function Input({ onSubmit, isLoading, mainAnim }) {
+export default function Input({ onSubmit, isLoading }) {
   const [currentText, setCurrentText] = useState('')
   const inputRef = useRef(null)
   const customCaretRef = useRef(null)
@@ -17,6 +17,8 @@ export default function Input({ onSubmit, isLoading, mainAnim }) {
       }
     }
   }, [isLoading])
+
+  //--------------------CUSTOM CARET--------------------------------
 
   const updateCaretPosition = useCallback(() => {
 
@@ -102,6 +104,8 @@ export default function Input({ onSubmit, isLoading, mainAnim }) {
     }
   }, [currentText, isLoading, updateCaretPosition])
 
+  //--------------------CUSTOM CARET--------------------------------
+
   const handleInput = (e) => {
     setCurrentText(e.currentTarget.innerText)
   }
@@ -151,6 +155,7 @@ export default function Input({ onSubmit, isLoading, mainAnim }) {
     }
   }
 
+  //-------HANDLE FOCUS & HANDLE BLUR--------
   const handleFocus = () => {
     if (!isLoading) {
       setIsFocused(true)
@@ -160,6 +165,7 @@ export default function Input({ onSubmit, isLoading, mainAnim }) {
   const handleBlur = () => {
     setIsFocused(false)
   }
+  //-------HANDLE FOCUS & HANDLE BLUR--------
 
   useEffect(() => {
     const currentInputRef = inputRef.current

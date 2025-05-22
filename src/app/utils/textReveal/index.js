@@ -5,12 +5,10 @@ import gsap from 'gsap'
 import styles from './page.module.css'
 import ImageReveal from '@/app/utils/imageReveal'
 
-export default function TextReveal({ message }) {
+export default function TextReveal({ message, messageKey }) {
     const [displayedContent, setDisplayedContent] = useState('')
     const loadingChars = ['\\', '|', '/', '—']
     const [currentSpinnerChar, setCurrentSpinnerChar] = useState(loadingChars[0]);
-
-    console.log(message)
 
     const markdownOptions = {
         wrapper: 'article',
@@ -51,7 +49,7 @@ export default function TextReveal({ message }) {
 
     useEffect(() => {
         let intervalId;
-        if (message.type === 'loading') {
+        if (message.type === 'text-loading') {
             let charIndex = 0
             intervalId = setInterval(() => {
                 charIndex = (charIndex + 1) % loadingChars.length
@@ -61,11 +59,14 @@ export default function TextReveal({ message }) {
         return () => clearInterval(intervalId)
     }, [message.type])
 
-    if (message.type === 'loading') {
-        return <span className={styles && styles.spinner ? styles.spinner : 'default-spinner-class'}>{currentSpinnerChar}</span>}
+    if (message.type === 'text-loading') {
+        return <span className={styles && styles.spinner ? styles.spinner : 'default-spinner-class'}>{currentSpinnerChar}</span>
+    }
 
-    if (message.type === 'image') {
+    if (message.type === 'image' && typeof message.content === 'string') {
+
         return <ImageReveal imageUrl={message.content}/>
+
     }
 
     return (
