@@ -10,6 +10,8 @@ export default function TextReveal({ message }) {
     const loadingChars = ['\\', '|', '/', '—']
     const [currentSpinnerChar, setCurrentSpinnerChar] = useState(loadingChars[0]);
 
+    console.log(message)
+
     const markdownOptions = {
         wrapper: 'article',
     }
@@ -59,11 +61,10 @@ export default function TextReveal({ message }) {
         return () => clearInterval(intervalId)
     }, [message.type])
 
-    if (message.type === 'loading' && message.type === 'text') {
-        return <span className={styles && styles.spinner ? styles.spinner : 'default-spinner-class'}>{currentSpinnerChar}</span>
-    }
+    if (message.type === 'loading') {
+        return <span className={styles && styles.spinner ? styles.spinner : 'default-spinner-class'}>{currentSpinnerChar}</span>}
 
-    if (message.type === 'image' && typeof message.content === 'string') {
+    if (message.type === 'image') {
         return <ImageReveal imageUrl={message.content}/>
     }
 
