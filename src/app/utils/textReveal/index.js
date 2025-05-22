@@ -4,6 +4,7 @@ import Markdown from 'markdown-to-jsx'
 import gsap from 'gsap'
 import styles from './page.module.css'
 import ImageReveal from '@/app/utils/imageReveal'
+import ImageLoading from '../imageLoading'
 
 export default function TextReveal({ message, messageKey }) {
     const [displayedContent, setDisplayedContent] = useState('')
@@ -63,10 +64,8 @@ export default function TextReveal({ message, messageKey }) {
         return <span className={styles && styles.spinner ? styles.spinner : 'default-spinner-class'}>{currentSpinnerChar}</span>
     }
 
-    if (message.type === 'image' && typeof message.content === 'string') {
-
-        return <ImageReveal imageUrl={message.content}/>
-
+    if (message.type === 'image-loading' || message.type === 'image' && typeof message.content === 'string') {
+        return <ImageReveal msgType={message.type} imageUrl={message.content}/>
     }
 
     return (
