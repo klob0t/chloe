@@ -6,6 +6,7 @@ import styles from './page.module.css'
 const PIXEL_SIZE = 32
 const COL_NUM = 34
 const ROW_NUM = 43
+const PIXEL_COLORS = ['#FF5733', '#33FF57', '#3357FF', '#FFFF33', '#FF33FF', '#33FFFF', '#A0A0A0', '#081057', '#00084D']
 
 const PixelOverlaySvg = () => (
    <svg
@@ -21,8 +22,8 @@ const PixelOverlaySvg = () => (
                   key={`rect-${rowIndex}-${colIndex}`}
                   x={colIndex * PIXEL_SIZE}
                   y={rowIndex * PIXEL_SIZE}
-                  width={PIXEL_SIZE + 5}
-                  height={PIXEL_SIZE + 5}
+                  width={PIXEL_SIZE + 1}
+                  height={PIXEL_SIZE + 1}
                   fill='#00084d'
                   className={styles.pixelRect}
                />
@@ -31,7 +32,7 @@ const PixelOverlaySvg = () => (
       </g>
       <defs>
          <clipPath id='clipPath_pixel_reveal_image_component'>
-            <rect width={PIXEL_SIZE * COL_NUM} height={PIXEL_SIZE * ROW_NUM} fill='white' />
+            <rect width={PIXEL_SIZE * COL_NUM} height={PIXEL_SIZE * ROW_NUM} fill='#00084d' />
          </clipPath>
       </defs>
    </svg>
@@ -42,20 +43,59 @@ export default function ImageReveal({ msgType, imageUrl, altText = 'Generated Im
    const imageRef = useRef(null)
    const animationPlayedRef = useRef(false)
 
+   const loadingAnimationTimelineRef = useRef(null)
+
    const [isImageLoaded, setIsImageLoaded] = useState(false)
 
    const handleImageLoad = () => {
       setIsImageLoaded(true)
    }
 
+   //-------------------LOADING ANIMATION----------------
    useEffect(() => {
+      console.log("LOADING/SETUP EFFECT - msgType: ", msgType, "URL", imageUrl)
+
+      if (loadingAnimationTimelineRef.current) {
+            loadingAnimationTimelineRef.current.kill()
+            loadingAnimationTimelineRef.current = null
+        }
+
       setIsImageLoaded(false)
       animationPlayedRef.current = false
 
-      if (wrapperRef.current) {
-         gsap.set(wrapperRef.current, { opacity: 0 })
+      if (!wrapperRef.current) return
 
-         const svgElement = wrapperRef.current.querySelector('svg')
+      const svgElement = wrapperRef.current.querySelector('svg')
+
+      if (msgType === 'image-loading') {
+         gsap.set(wrapperRef.current, { opacity: 1 })
+
+         if (svgElement) {
+            svgElement.style.display = 'block'
+
+            const selector = `.${styles.pixelRect}`
+            const svgRects = svgElement.querySelectorAll(selector)
+            console.log("Found svgRects:", svgRects.length)
+            if (svgRects.length > 0) {
+               gsap.set(svgRects, { opacity: 1 })
+
+               const ctx = gsap.context(() => {
+                  loadingAnimationTimelineRef.current = gsap.timeline()
+                  .to(svgRects, {
+                     fill: () => PIXEL_COLORS[Math.floor(Math.random() * PIXEL_COLORS.length)],
+                     duration: 0.1,
+                     stagger: {
+                            amount: 1,
+                            from: 'random',
+                            ease: 'power2.Out',
+                            repeat: -1,
+                            repeatRefresh: true // ✨ Add this line
+                        }
+                  })
+               }, svgElement)
+            }
+         }
+      } else if (msgType === 'image') {
          if (svgElement) {
             svgElement.style.display = 'block'
 
@@ -65,72 +105,87 @@ export default function ImageReveal({ msgType, imageUrl, altText = 'Generated Im
                gsap.set(svgRects, { opacity: 1 })
             }
          }
+      } else {
+         gsap.set(wrapperRef.current, { opacity: 0 })
+         if (svgElement) {
+            svgElement.style.display = 'none'
+         }
       }
-   }, [imageUrl])
 
+      return () => {
+         if (loadingAnimationTimelineRef.current) {
+            loadingAnimationTimelineRef.current.kill()
+            loadingAnimationTimelineRef.current = null
+         }
+      }
+   }, [imageUrl, msgType])
+
+
+//-------------------REVEAL ANIMATION--------------------
    useEffect(() => {
-      if (!wrapperRef.current || !imageRef.current || !styles?.pixelRect) {
+
+      if (!wrapperRef.current || !styles?.pixelRect) {
+         return
+      }
+
+      if (msgType !== 'image') {
          return
       }
 
       if (isImageLoaded && !animationPlayedRef.current) {
+
          const svgElement = wrapperRef.current.querySelector('svg')
          const selector = `.${styles.pixelRect}`
          const svgRects = svgElement ? svgElement.querySelectorAll(selector) : []
 
+         if (!imageRef.current) {
+            return
+         }
+
          if (!svgElement || svgRects.length === 0) {
+            gsap.set(wrapperRef.current, { opacity: 0 })
             gsap.to(wrapperRef.current, {
                opacity: 1,
-               duration: 0.1,
+               duration: 0.01,
                ease: 'none',
                onComplete: () => {
                   animationPlayedRef.current = true
-                  if (svgElement) {
-                     svgElement.style.display = 'none'
-                  }
+                  if (svgElement) { svgElement.style.display = 'none' }
                }
             })
             return
          }
 
+         gsap.set(wrapperRef.current, { opacity: 0 })
          svgElement.style.display = 'block'
 
          const ctx = gsap.context(() => {
             const tl = gsap.timeline({
                onComplete: () => {
                   animationPlayedRef.current = true
-                  if (svgElement) {
-                     svgElement.style.display = 'none'
-                  }
+                  if (svgElement) { svgElement.style.display = 'none' }
                }
             })
-
             tl.to(wrapperRef.current, {
                opacity: 1,
-               duration: 0.1,
+               duration: 0.01,
                ease: 'none'
             }).to(svgRects, {
                opacity: 0,
                duration: 0.01,
-               stagger: {
-                  amount: 1,
-                  from: 'random',
-                  ease: 'power2.Out'
-               }
+               stagger: { amount: 1, from: 'random', ease: 'power2.Out'}
             }, '+=1.2')
          }, wrapperRef)
-
-         return () => {
-            ctx.revert()
-         }
+         return () => { ctx.revert() }
       }
-   }, [isImageLoaded, imageUrl, styles?.pixelRect])
+
+   }, [isImageLoaded, msgType, imageUrl, styles?.pixelRect])
 
 
    return (
       <div ref={wrapperRef} className={styles.imageWrapper}>
          {imageUrl && (
-         <img ref={imageRef} src={imageUrl} alt={altText} onLoad={handleImageLoad} />)}
+            <img ref={imageRef} src={imageUrl} alt={altText} onLoad={handleImageLoad} />)}
          <PixelOverlaySvg />
       </div>
    )
@@ -140,56 +195,56 @@ export default function ImageReveal({ msgType, imageUrl, altText = 'Generated Im
 
 
 
-   // useEffect(() => {
-   //    if (imageUrl &&
-   //       wrapperRef.current &&
-   //       imageRef.current &&
-   //       !animationPlayedRef.current) {
+// useEffect(() => {
+//    if (imageUrl &&
+//       wrapperRef.current &&
+//       imageRef.current &&
+//       !animationPlayedRef.current) {
 
-   //       const selector = `.${styles.pixelRect}`
-   //       const svgRects = wrapperRef.current.querySelectorAll(selector)
+//       const selector = `.${styles.pixelRect}`
+//       const svgRects = wrapperRef.current.querySelectorAll(selector)
 
-   //       if (svgRects.length === 0) {
+//       if (svgRects.length === 0) {
 
-   //          return
-   //       }
+//          return
+//       }
 
-   //       gsap.set(wrapperRef.current, { opacity: 0 })
-   //       gsap.set(svgRects, { opacity: 1 })
+//       gsap.set(wrapperRef.current, { opacity: 0 })
+//       gsap.set(svgRects, { opacity: 1 })
 
-   //       const ctx = gsap.context(() => {
-   //          const tl = gsap.timeline({
-   //             onComplete: () => {
-   //                animationPlayedRef.current = true
-   //                const svgElement = wrapperRef.current.querySelector('svg')
-   //                if (svgElement) {
-   //                   svgElement.style.display = 'none'
-   //                }
-   //             }
-   //          })
+//       const ctx = gsap.context(() => {
+//          const tl = gsap.timeline({
+//             onComplete: () => {
+//                animationPlayedRef.current = true
+//                const svgElement = wrapperRef.current.querySelector('svg')
+//                if (svgElement) {
+//                   svgElement.style.display = 'none'
+//                }
+//             }
+//          })
 
-   //          tl.to(wrapperRef.current, {
-   //             opacity: 1,
-   //             duration: 1.5,
-   //             ease: 'none'
-   //          }) .to(svgRects, {
-   //                opacity: 0,
-   //                duration: 0.01,
-   //                stagger: {
-   //                   amount: 1,
-   //                   from: 'random',
-   //                   ease: 'power2.Out'
-   //                }
-   //             }, "+=1.2")
-   //       }, wrapperRef)
+//          tl.to(wrapperRef.current, {
+//             opacity: 1,
+//             duration: 1.5,
+//             ease: 'none'
+//          }) .to(svgRects, {
+//                opacity: 0,
+//                duration: 0.01,
+//                stagger: {
+//                   amount: 1,
+//                   from: 'random',
+//                   ease: 'power2.Out'
+//                }
+//             }, "+=1.2")
+//       }, wrapperRef)
 
-   //       return () => {
-   //          animationPlayedRef.current = false
-   //          ctx.revert()
-   //       }
-   //    } else {
+//       return () => {
+//          animationPlayedRef.current = false
+//          ctx.revert()
+//       }
+//    } else {
 
-   //    }
-   // }, [imageUrl])
+//    }
+// }, [imageUrl])
 
-   // if (!imageUrl) return null
+// if (!imageUrl) return null

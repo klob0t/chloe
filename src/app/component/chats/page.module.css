@@ -57,7 +57,7 @@
    color: var(--text-light-blue);
    text-align: left;
    margin-right: 1.2em;
-
+   width: 100%
 }
 
 .empty {
