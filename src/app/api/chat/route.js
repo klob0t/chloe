@@ -82,6 +82,8 @@ export async function POST(request) {
       g4fServerEndpoint = `${apiURL()}/api/v1/chat/completions`
     }
 
+    console.log(`--- LOG 2: Fetching from Python at: ${g4fServerEndpoint} ---`)
+
     const g4fResponse = await fetch(g4fServerEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
