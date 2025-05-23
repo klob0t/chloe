@@ -1,4 +1,10 @@
-An ai chatbot or what I call a digital bestfriend named chloe, powered by DeepSeek-R1 and Flux-Pro.
+# <p align='center'>  chloe </p>
+
+<p align="center">
+  <img width='200em' src="https://raw.githubusercontent.com/klob0t/chloe/refs/heads/main/public/chloe-logo.png" />
+</p>
+
+An AI chatbot or what I call a digital bestfriend named chloe, powered by DeepSeek-R1 for chat completions and Flux-Pro for image generations.
 
 <br />
 
@@ -24,3 +30,6 @@ An API package with multi-provider requests, with features like timeouts, load b
 A creative AI content platform that generates images, audios, and other media using advanced generative models. Pollinations AI empowers users and developers to turn text into visuals and multimedia experiences.
 
 [PollinationsAI](https://pollinations.ai) | [pollinations on Github](https://github.com/pollinations/pollinations)
+
+---
+<p align='center'>chloe@2025 &lt;3</p>
