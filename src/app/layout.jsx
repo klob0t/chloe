@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${monoSpaced.className}`} >
       <body>
         {children}
-        {/* <Analytics /> */}
+        <Analytics />
       </body>
     </html>
   );
