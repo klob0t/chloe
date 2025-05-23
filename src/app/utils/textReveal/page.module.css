@@ -3,7 +3,9 @@
 }
 
 .imageResponse {
-   width: 100%;
+   width: 80%;
    position: relative;
    display: flex;
+   padding: 0.6em;
+   background-color: var(--background-color-darker);
 }

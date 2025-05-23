@@ -50,7 +50,11 @@
 
 .role-assistant {
    color: var(--text-light-blue);
-   padding-right: 0.5em;
+   padding-right: 3em;
+   font-size: 0.25em;
+   transform: translateY(-10px);
+   line-height: 1.1em;
+   font-weight: 900;
 }
 
 .msgContent-assistant {

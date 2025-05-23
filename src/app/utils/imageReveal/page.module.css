@@ -1,30 +1,42 @@
+/* In your page.module.css */
+
+
 .imageWrapper {
-   position: relative;
-   display: inline-block;
-   overflow: hidden;
-   width: 100%;
-   height: 0;
-   padding-bottom: calc((1350 / 1099) * 100%);
-   /* background-color: rgb(255, 255, 255); */
+  position: relative; /* REQUIRED for child absolute positioning */
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 0;
+  padding-bottom: calc((1350 / 1099) * 101.5%);
 }
 
+/* THIS IS THE CRITICAL FIX: 
+  Make both children absolute to fill the wrapper.
+*/
+.imageWrapper img,
+.pixelGrid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 
 .imageWrapper img {
-   object-fit: contain;
-   display: block;
-   opacity: 1;
+  object-fit: contain;
+  /* Start the image hidden; GSAP will fade it in */
+  opacity: 0;
 }
 
-.pixelOverlay {
-   position: absolute;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: 100%;
-   pointer-events: none;
+.pixelGrid {
+  display: grid;
+  /* I see you fixed the numbers, great! Just ensure they match your JS constants */
+  grid-template-columns: repeat(33, 1fr);
+  grid-template-rows: repeat(42, 1fr);
+  overflow: hidden;
 }
 
-.pixelRect {
-   position: absolute;
-
+.pixelDiv {
+  width: 100%;
+  height: 100%;
 }

@@ -11,6 +11,16 @@ export default function Chats({ messages }) {
       return <Welcome className={styles.welcomeComp} />
    }
 
+   const ASSISTANT_ASCII_ART = 
+   `       _
+    __/ \\__
+   (  \\ /  )
+    >--o--<
+   (__/ \\__)
+      \\_/
+   
+   `
+
    return (
       <>
          <div className={styles.chatsContainer}>
@@ -37,7 +47,12 @@ export default function Chats({ messages }) {
                         key={msg.id || index}
                         className={`${styles.message} ${styles[msg.role]}`}
                      >
-                        <div className={styles[`role-${msg.role}`]}>{msg.role === 'user' ? '<' : '>'}</div>
+                        <div className={styles[`role-${msg.role}`]}>{msg.role === 'user' ? ('<'
+  ) : (
+    <pre className={styles.asciiArtDisplay}>
+      {ASSISTANT_ASCII_ART}
+    </pre>
+  )}</div>
                         <div className={styles[`msgContent-${msg.role}`]}>
                            <TextReveal message={msg} />
                         </div>
