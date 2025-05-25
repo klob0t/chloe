@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from 'react'
 import styles from './page.module.css'
 import { sendPayload } from '@/app/utils/request'
-import TextReveal from '@/app/utils/textReveal'
+import TextReveal from '@/app/utils/messageAnim'
 import RunningText from '@/app/component/runningText'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -25,8 +25,8 @@ export default function Welcome({isLoading}) {
                     currentPrompt: "greet the user warmly and offer what you can do to the user 5 words",
                     messageHistory: [],
                     conversationId: null,
-                    desiredProvider: 'PollinationsAI',
-                    desiredModel: 'gemini',
+                    desiredProvider: 'DeepInfraChat',
+                    desiredModel: 'deepseek-ai/DeepSeek-R1-Turbo'
                 }
                 const apiResponse = await sendPayload(payloadToNextApi)
                 if (apiResponse && typeof apiResponse.answer === 'string') {

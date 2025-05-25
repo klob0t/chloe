@@ -5,8 +5,7 @@ import Input from '@/app/component/input'
 import Chats from '@/app/component/chats'
 import { handleSubmit } from '@/app/utils/request'
 
-const TEXT_LOADING_ID = 'text-loading-placeholder'
-const IMAGE_LOADING_ID = 'image-loading-placeholder'
+const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
 export default function Main() {
   const [messages, setMessages] = useState([])
@@ -16,7 +15,7 @@ export default function Main() {
   const containerRef = useRef(null)
   const [conversationId, setConversationId] = useState(null)
 
-  //-------------------SCROLL TO LAST MESSAGE LINE---------------------
+  
   useEffect(() => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight
@@ -37,109 +36,96 @@ export default function Main() {
       observer.disconnect()
     }
   }, [])
-  //-------------------SCROLL TO LAST MESSAGE LINE---------------------
+  
 
-  //-------------------------HANDLE SEND PROMPT------------------------
+  
   const handleSendPrompt = async (textPrompt) => {
     if (!textPrompt || !textPrompt.trim()) {
       return
     }
 
-
     const currentMessageHistoryForApi = [...messages]
-
     setError('')
 
+    const newUserMessage = { role: 'user', content: textPrompt, id: `user-${generateId()}` }
 
-    const newUserMessage = { role: 'user', content: textPrompt, id: `user-${Date.now()}` }
-
-
+    const assistantPlaceholderId = `assistant-${generateId()}`
+    let placeholderType
     let imagePrompt
-    //--------SET IMAGE OR TEXT------------
+
 
     if (textPrompt.toLowerCase().startsWith('/imagine ')) {
-      const newUserMessage = { role: 'user', content: textPrompt, id: `user-${Date.now()}` }
       imagePrompt = textPrompt.substring(8).trim()
-      console.log(imagePrompt)
-      setMessages(prevMessages => [
-        ...prevMessages,
-        newUserMessage,
-        { role: 'assistant', type: 'image-loading', id: IMAGE_LOADING_ID, content: '' }
-      ])
-      setIsLoading(true)
+      placeholderType = 'image-loading'
     } else {
-      const newUserMessage = { role: 'user', content: textPrompt, id: `user-${Date.now()}` }
-      setMessages(prevMessages => [
-        ...prevMessages,
-        newUserMessage,
-        { role: 'assistant', type: 'text-loading', id: TEXT_LOADING_ID, content: '' }
-      ])
-      setIsLoading(true)
+      placeholderType = 'text-loading'
     }
+
+    setMessages(prevMessages => [
+      ...prevMessages,
+      newUserMessage,
+      { role: 'assistant', type: placeholderType, id: assistantPlaceholderId, content: '' }
+    ])
+
+    setIsLoading(true)
 
     try {
 
       const result = await handleSubmit(textPrompt, imagePrompt, currentMessageHistoryForApi, conversationId)
 
-      if (result.type === 'validation') {
-        setMessages(prevMessages => [
-          ...prevMessages.filter(msg => msg.id !== TEXT_LOADING_ID && msg.id !== IMAGE_LOADING_ID),
-          { role: 'assistant', content: result.error, id: `error-validation-${Date.now()}`, type: 'text' }
-        ])
-        return
-      }
+      setMessages(prevMessages =>
+        prevMessages.map(msg => {
+          if (msg.id === assistantPlaceholderId) {
+            let finalContent = result.answer
+            let finalType = result.messageType
 
-      if (result.type === 'api') {
-        setMessages(prevMessages => [
-          ...prevMessages.filter(msg => msg.id !== TEXT_LOADING_ID && msg.id !== IMAGE_LOADING_ID),
-          { role: 'assistant', type: 'text', content: result.error || 'An API error occurred.', id: `error-api-${Date.now()}` }
-        ])
-        setError(result.error || 'AN API ERROR OCCURRED.')
-        return
-      }
-      let assistantContent = result.answer
-      let finalMessageType = result.messageType
+            if (result.type === 'validation') {
+              finalContent = result.error
+              finalType = 'text'
+            } else if (result.type === 'api') {
+              finalContent = result.error || 'AN API ERROR OCCURRED'
+              finalType = 'text'
+              setError(finalContent)
+            } else if (result.messageType === 'image' && result.error) {
+              finalContent = `IMAGE GENERATION ERROR: ${result.error}`
+              finalType = 'text'
+            } else if (!finalContent && !result.error) {
+              finalContent = 'CHLOE CANT REACH THE SERVER AT THE MOMENT'
+              finalType = 'text'
+            }
 
-      if (result.messageType === 'image' && result.error) {
-        assistantContent = `IMAGE GENERATION ERROR: ${result.error}`
-        finalMessageType = 'text'
-      } else if (!assistantContent && finalMessageType === 'text' && !result.error) {
-        assistantContent = "CHLOE WASN'T RESPONDING"
-      } else if (!assistantContent && !result.error) {
-        assistantContent = "CHLOE WASN'T RESPONDING."
-        finalMessageType = 'text'
-      }
+            return {
+              ...msg,
+              type: finalType,
+              content: finalContent
+            }
+          }
+          return msg
+        })
+      )
 
-
-      setMessages(prevMessages => [
-        ...prevMessages.filter(msg => msg.id !== TEXT_LOADING_ID && msg.id !== IMAGE_LOADING_ID),
-        {
-          role: 'assistant',
-          type: finalMessageType,
-          content: assistantContent,
-          id: `assistant-${Date.now()}`
+      if (result.messageType === 'text' && !result.error) {
+        if (result.newConversationId) {
+          setConversationId(result.newConversationId)
+        } else if (result.conversationId) {
+          setConversationId(result.conversationId)
         }
-      ])
-
-      if (result.newConversationId && finalMessageType === 'text') {
-        setConversationId(result.newConversationId)
-      } else if (result.conversationId && finalMessageType === 'text' && !result.newConversationId) {
-        setConversationId(result.conversationId)
       }
-
     } catch (err) {
-      console.error("Unexpected error in handleSendPrompt:", err)
-      const unexpectedErrorMessage = `AN UNEXPECTED ERROR OCCURRED: ${err.message}`
+      console.error('UNEXPECTED ERROR IN handleSendPrompt: ', err)
+      const unexpectedErrorMessage = `AN UNEXPECTED ERROR OCCURRED:  ${err.message || String(err)}`
       setError(unexpectedErrorMessage)
-      setMessages(prevMessages => [
-        ...prevMessages.filter(msg => msg.id !== LOADING_MESSAGE_ID && msg.id !== newUserMessage.id),
-        { role: 'assistant', type: 'text', content: unexpectedErrorMessage, id: `error-critical-${Date.now()}` }
-      ])
+      setMessages(prevMessages =>
+        prevMessages.map(msg =>
+          msg.id === assistandPlaceholderId
+            ? { ...msg, type: 'text', content: unexpectedErrorMessage }
+            : msg
+        )
+      )
     } finally {
       setIsLoading(false)
     }
   }
-
   return (
     <div ref={containerRef} className={styles.mainContainer}>
       <div className={styles.chatWindow} ref={chatWindowRef}>

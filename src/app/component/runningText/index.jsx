@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useRef } from 'react'
 import gsap from 'gsap'
 import Markdown from 'markdown-to-jsx'
 import styles from './page.module.css'
+import { useGSAP } from '@gsap/react'
 
 export default function RunningText({ speed, children }) {
     const containerRef = useRef(null)
@@ -14,53 +15,46 @@ export default function RunningText({ speed, children }) {
     const N = 2
 
 
-    useEffect(() => {
+    useGSAP(() => {
 
-        const containerWidth = containerRef.current.offsetWidth
+        const containerWidth = containerRef.current.offsetWidth;
+    const instanceWidth = instanceRef.current[0].offsetWidth;
 
-        const instanceWidth = instanceRef.current[0].offsetWidth
+    
+    for (let i = 1; i < N; i++) {
+        gsap.set(instanceRef.current[i], {
+            position: 'absolute',
+            left: `${i / (N - 1) * 100}%`,
+        });
+    }
 
-        if (tl.current) {
-            tl.current.kill();
-        }
+    gsap.set(containerRef.current, {
+        left: '100%'
+    });
 
-        tl.current = gsap.timeline()
+    
+    const tl = gsap.timeline();
+    
+    tl.to(containerRef.current, {
+        xPercent: -100,
+        duration: 5,
+        ease: 'none',
+    });
 
-        for (let i = 1; i < N; i++) {
-            gsap.set(instanceRef.current[i], {
-                position: 'absolute',
-                left: `${i / (N - 1) * 100}%`,
-            })
-        }
+    
+    const wrapperTl = gsap.timeline({
+        repeat: -1
+    });
 
-        gsap.set(containerRef.current, {
-            left: '100%'
-        })
+    wrapperTl.to(wrapperRef.current, {
+        xPercent: -100,
+        duration: 5,
+        ease: 'none',
+    });
 
-        tl.current.to(containerRef.current, {
-            xPercent: -100,
-            duration: 5,
-            ease: 'none',
-        })
+    tl.add(wrapperTl);
 
-        const wrapperTl = gsap.timeline()
-
-        wrapperTl.to(wrapperRef.current, {
-            xPercent: -100,
-            duration: 5,
-            ease: 'none',
-            repeat: -1
-        })
-
-        tl.current.add(wrapperTl)
-
-        return () => {
-            if (tl.current) {
-                tl.current.kill()
-            }
-        }
-
-    }, [children, speed])
+    }, { dependencies: [children, speed] })
 
     return (
         <div ref={containerRef} className={styles.marqueeContainer}>

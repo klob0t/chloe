@@ -7,10 +7,10 @@ function apiURL() {
   return `http://localhost:${process.env.PORT || 3000}`
 }
 
-const DEFAULT_IMAGE_PROVIDER = 'PollinationsAI'
+const DEFAULT_IMAGE_PROVIDER = 'PollinationsImage'
 const DEFAULT_IMAGE_MODEL = 'flux-pro'
 const DEFAULT_TEXT_PROVIDER = 'PollinationsAI'
-const DEFAULT_TEXT_MODEL = 'deepseek-reasoning'
+const DEFAULT_TEXT_MODEL =  'deepseek-reasoning'
 
 export async function POST(request) {
   try {
@@ -72,6 +72,7 @@ export async function POST(request) {
 
       g4fPayload = {
          messages: g4fMessages,
+        //  referrer: 'roblox',`
          provider: desiredProvider || DEFAULT_TEXT_PROVIDER,
          model: desiredModel || DEFAULT_TEXT_MODEL,
          stream: false,

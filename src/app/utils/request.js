@@ -59,10 +59,10 @@ export async function handleSubmit(textPrompt, imagePrompt, currentMessageHistor
     } else if (!fullPrompt.includes("--")) { 
       output.imagePrompt = fullPrompt.trim()
     } else {
-      return { error: 'Image prompt description is missing before options.', type: 'validation' }
+      return { error: 'IMAGE PROMPT CANT BE EMPTY', type: 'validation' }
     }
     if (!output.imagePrompt) {
-        return { error: 'Image prompt description cannot be empty.', type: 'validation' }
+        return { error: 'IMAGE PROMPT CANT BE EMPTY', type: 'validation' }
     }
     const regex = /--(\w+)\s+([\w\d.-]+)/g
     let match
