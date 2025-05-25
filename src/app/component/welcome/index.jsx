@@ -25,8 +25,8 @@ export default function Welcome({isLoading}) {
                     currentPrompt: "greet the user warmly and offer what you can do to the user 5 words",
                     messageHistory: [],
                     conversationId: null,
-                    desiredProvider: 'DeepInfraChat',
-                    desiredModel: 'deepseek-ai/DeepSeek-R1-Turbo'
+                    desiredProvider: 'PollinationsAI',
+                    desiredModel: 'gemini'
                 }
                 const apiResponse = await sendPayload(payloadToNextApi)
                 if (apiResponse && typeof apiResponse.answer === 'string') {

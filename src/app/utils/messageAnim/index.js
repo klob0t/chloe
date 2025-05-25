@@ -54,11 +54,15 @@ export function ImageReveal({ status, imageUrl }) {
     const [isImageLoaded, setIsImageLoaded] = useState(false)
     const loadingAnim = useRef(null)
     const revealTl = useRef(null)
-    const image = imageRef.current
+    
+    
+    const coverRef = useRef(null)
+    const cover = coverRef.current
 
     const handleImageLoad = () => setIsImageLoaded(true)
 
     useGSAP(() => {
+        if (coverRef.current) gsap.set(cover, { opacity: 1 })
         if (!wrapperRef.current) return
         const pixels = gsap.utils.toArray(`.${styles.pixelDiv}`, wrapperRef.current)
 
@@ -130,10 +134,9 @@ export function ImageReveal({ status, imageUrl }) {
             })
 
             gsap.set(pixels, { autoAlpha: 1 })
-            if (imageRef.current) gsap.set(image, { autoAlpha: 0 })
+            if (coverRef.current) gsap.set(cover, { opacity: 1 })
 
             revealTl.current.to(pixels, {
-                backgroundColor: '#00084D',
                 scale: 1,
                 duration: 1.2,
                 ease: 'steps(3)',
@@ -152,10 +155,10 @@ export function ImageReveal({ status, imageUrl }) {
                     ease: 'power2.in'
                 }
             }, '-=0.5')
-            if (image) {
-                revealTl.current.to(image, {
-                    autoAlpha: 1,
-                    duration: 0.1
+            if (cover) {
+                revealTl.current.to(cover, {
+                    duration: 0.1,
+                    opacity: 0
                 }, '<')
             }
 
@@ -175,6 +178,7 @@ export function ImageReveal({ status, imageUrl }) {
                     className={styles.generatedImage}
                 />
             )}
+            <div ref={coverRef} className={styles.imageCover}></div>
             <PixelGrid />
         </div>
     )

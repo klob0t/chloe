@@ -10,8 +10,14 @@
    background-color: var(--background-color-darker);
 }
 
-
-
+.imageCover{
+   display: block;
+   overflow: hidden;
+   position: relative;
+   width: 100%;
+   aspect-ratio: 4/5;
+   background-color: var(--background-color-darker);
+}
 
 .imageWrapper {
   position: relative;
