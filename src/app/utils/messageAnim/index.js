@@ -52,9 +52,9 @@ export function ImageReveal({ status, imageUrl }) {
     const imageRef = useRef(null)
     const wrapperRef = useRef(null)
     const [isImageLoaded, setIsImageLoaded] = useState(false)
-    // const loadingAnim = useRef(null)
-    // const revealTl = useRef(null)
-    let tl = useRef(null)
+    const loadingAnim = useRef(null)
+    const revealTl = useRef(null)
+    const image = imageRef.current
 
     const handleImageLoad = () => setIsImageLoaded(true)
 
@@ -63,90 +63,105 @@ export function ImageReveal({ status, imageUrl }) {
         const pixels = gsap.utils.toArray(`.${styles.pixelDiv}`, wrapperRef.current)
 
         const cleanupAnimation = () => {
-            if (tl.current) {
-                tl.current.kill()
-                tl.current = null
+            if (loadingAnim.current) {
+                loadingAnim.current.kill()
+                revealTl.current = null
+            }
+            if (revealTl.current) {
+                revealTl.current.kill()
+                revealTl.current = null
             }
         }
 
-        if (status === 'loading' || status === 'revealing' && !isImageLoaded) {
+        if (status === 'idle') {
             gsap.set(wrapperRef.current, {
-                visibility: 'visible',
-                opacity: 1
+                opacity: 0,
+                visibility: 'hidden'
             })
-            gsap.set(pixels, {
-                scale: 0.5,
-                autoAlpha: 1,
-                backgroundColor: () => PIXEL_COLORS[Math.floor(Math.random() * PIXEL_COLORS.length)]
-            })
-        } else if (status === 'revealing' && isImageLoaded) {
-            gsap.set(wrapperRef.current, {
-                visibility: 'visible',
-                opacity: 1
-            })
-        } else {
-            gsap.set(wrapperRef.current, {
-                visibility: 'hidden',
-                opacity: 0
-            })
+            cleanupAnimation()
+            setIsImageLoaded(false)
             return
+        } else {
+            gsap.set(wrapperRef.current, { visibility: 'visible', opacity: 1 })
         }
 
-        if (status === 'loading') {
+        if (status === 'loading' || (status === 'revealing' && !isImageLoaded)) {
 
-            tl.current = gsap.timeline()
-            tl.current.to(pixels, {
-                backgroundColor: () => PIXEL_COLORS[Math.floor(Math.random() * PIXEL_COLORS.length)],
-                duration: 0.1,
-                ease: 'none',
-                stagger: {
-                    ease: 'power2.inOut',
-                    amount: 1,
-                    from: 'random',
-                    repeat: -1,
-                    repeatRefresh: true
+            if (revealTl.current) {
+                revealTl.current.kill()
+                revealTl.current = null
+            }
+
+            if (!loadingAnim.current || !loadingAnim.current.isActive()) {
+                if (loadingAnim.current) loadingAnim.current.kill()
+                gsap.set(pixels, {
+                    scale: 0.5,
+                    autoAlpha: 1,
+                    backgroundColor: '#00084D'
+                })
+                loadingAnim.current =
+
+                    gsap.to(pixels, {
+                        backgroundColor: () => PIXEL_COLORS[Math.floor(Math.random() * PIXEL_COLORS.length)],
+                        duration: 0.1,
+                        ease: 'none',
+                        stagger: {
+                            ease: 'power2.inOut',
+                            amount: 1,
+                            from: 'random',
+                            repeat: -1,
+                            repeatRefresh: true
+                        }
+                    })
+            }
+
+
+        }
+
+        if (status === 'revealing' && isImageLoaded) {
+
+            if (revealTl.current) {
+                revealTl.current.kill()
+            }
+            revealTl.current = gsap.timeline({
+                onComplete: () => {
+                    cleanupAnimation()
                 }
             })
-        } else if (status === 'revealing' && isImageLoaded) {
 
-            const image = imageRef.current
-            tl.current = gsap.timeline()
+            gsap.set(pixels, { autoAlpha: 1 })
+            if (imageRef.current) gsap.set(image, { autoAlpha: 0 })
 
-            if (image) tl.current.set(image, { opacity: 0 })
-
-            tl.current.to(pixels, {
+            revealTl.current.to(pixels, {
+                backgroundColor: '#00084D',
                 scale: 1,
                 duration: 1.2,
-                ease: 'steps(2)',
+                ease: 'steps(3)',
                 stagger: {
-                    ease: 'power2.out',
                     amount: 1,
-                    from: 'random',
+                    ease: 'power2.out',
+                    from: 'random'
                 }
             }).to(pixels, {
                 autoAlpha: 0,
                 duration: 0.1,
                 ease: 'none',
                 stagger: {
-                    ease: 'none',
                     amount: 1,
                     from: 'random',
-                },
-            }, "-=0.1")
-
+                    ease: 'power2.in'
+                }
+            }, '-=0.5')
             if (image) {
-                tl.current.to(image, {
-                    opacity: 1,
+                revealTl.current.to(image, {
+                    autoAlpha: 1,
                     duration: 0.1
                 }, '<')
             }
 
-            return () => {
-                cleanupAnimation()
-            }
         }
 
-    }, { scope: [wrapperRef], dependencies: [status, isImageLoaded, imageUrl] })
+    }, { scope: wrapperRef, dependencies: [status, isImageLoaded, imageUrl] })
 
 
     return (
