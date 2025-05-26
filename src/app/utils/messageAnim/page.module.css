@@ -21,13 +21,36 @@
 
 .imageWrapper {
   position: relative;
-  display: block;
+  display: flex;
   overflow: hidden;
   width: 100%;
   aspect-ratio: 4 / 5;
- 
 }
 
+.responseContainer {
+  display: flex;
+}
+
+.downloadBtn {
+  position: relative;
+  height: max-content;
+  align-self: flex-end;
+  font-size: 1.5em; 
+  z-index: 3;
+  cursor: pointer;
+  margin-left: 0.3em;
+}
+
+.downloadBtn p {
+    color: var(--text-dark-blue);
+    margin: 0;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.downloadBtn a {
+    text-decoration: none;
+}
 
 .imageWrapper img,
 .pixelGrid {
@@ -45,7 +68,6 @@
 
 .pixelGrid {
   display: grid;
- 
   grid-template-columns: repeat(17, 1fr);
   grid-template-rows: repeat(21, 1fr);
   overflow: hidden;

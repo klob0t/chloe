@@ -39,7 +39,6 @@ export default function Chats({ messages }) {
          {!messages && messages.length === 0 && <Welcome className={styles.welcomeComp} />}
          <div className={styles.messages}>
             {messages.map((msg) => {
-               console.log(msg)
                return (
                   <div
                      key={msg.id}

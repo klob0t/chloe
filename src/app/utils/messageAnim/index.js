@@ -7,15 +7,24 @@ import Markdown from 'markdown-to-jsx'
 
 //*=====HELPER COMPS=====
 
+const DownloadButton = memo(({ imageUrl }) => {
+    return (
+        <div className={styles.downloadBtn}>
+            <a
+                href={imageUrl}
+                download='generated @ chloethinks.vercel.app'
+                onClick={(e) => e.stopPropagation}>
+                <p>⤓</p>
+            </a>
+        </div>
+    )
+})
+DownloadButton.displayName = 'DownloadButton'
+
 const TextMessageDisplay = memo(({ text }) => (
     <Markdown options={{ wrapper: 'article' }}>{text || ''}</Markdown>
 ))
 TextMessageDisplay.displayName = 'TextMessageDisplay'
-
-const ImageResponseWrapper = memo(({ children }) => (
-    <div className={styles.imageResponse}>{children}</div>
-))
-ImageResponseWrapper.displayName = 'ImageResponseWrapper'
 
 const TypingSpinner = memo(() => {
     const loadingChars = ['\\', '|', '/', '—']
@@ -48,14 +57,15 @@ const PixelGrid = memo(forwardRef(function PixelGrid(props, ref) {
 }))
 PixelGrid.displayName = 'PixelGrid'
 
-export function ImageReveal({ status, imageUrl }) {
+export function ImageReveal({ status, imageUrl, onAnimComplete }) {
     const imageRef = useRef(null)
     const wrapperRef = useRef(null)
     const [isImageLoaded, setIsImageLoaded] = useState(false)
+    const [isDownload, setIsDownload] = useState(false)
     const loadingAnim = useRef(null)
     const revealTl = useRef(null)
-    
-    
+
+
     const coverRef = useRef(null)
     const cover = coverRef.current
 
@@ -130,6 +140,7 @@ export function ImageReveal({ status, imageUrl }) {
             revealTl.current = gsap.timeline({
                 onComplete: () => {
                     cleanupAnimation()
+                    if (onAnimComplete) onAnimComplete()
                 }
             })
 
@@ -168,7 +179,8 @@ export function ImageReveal({ status, imageUrl }) {
 
 
     return (
-        <div ref={wrapperRef} className={styles.imageWrapper} style={{ visibility: 'hidden' }}>
+        <div ref={wrapperRef} className={styles.imageWrapper} style={{ visibility: 'visible' }}>
+
             {imageUrl && (
                 <img
                     ref={imageRef}
@@ -186,6 +198,7 @@ export function ImageReveal({ status, imageUrl }) {
 
 export default function MessageAnim({ message }) {
     const [displayedContent, setDisplayedContent] = useState('')
+    const [isAnimationComplete, setIsAnimationComplete] = useState(false)
 
     useGSAP(() => {
         const isTextualMessage = !['text-loading', 'image-loading', 'image'].includes(message.type)
@@ -226,14 +239,22 @@ export default function MessageAnim({ message }) {
             const status = message.type === 'image-loading' ? 'loading' : 'revealing'
             const imageUrl = message.type === 'image' ? message.content : null
 
+            useEffect(() => {
+                setIsAnimationComplete(false)
+            }, [message.id])
+
             return (
-                <ImageResponseWrapper>
-                    <ImageReveal
+                <div className={styles.responseContainer}>
+                    <div className={styles.imageResponse}>       <ImageReveal
                         key={message.id}
                         status={status}
                         imageUrl={imageUrl}
+                        onAnimComplete={() => setIsAnimationComplete(true)}
                     />
-                </ImageResponseWrapper>
+                    </div>
+                    {isAnimationComplete && <DownloadButton imageUrl={imageUrl} />}
+                </div>
+
             )
         }
 
