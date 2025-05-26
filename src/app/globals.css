@@ -5,11 +5,13 @@
   --background-color-darker: #000b2e;
 }
 
+
 * {
   box-sizing: border-box; 
 }
 
 body, html{
+  font-family: var(--geistMono);
   background-color: var(--background-color);
   padding: 0;
   margin: 0;
@@ -17,6 +19,8 @@ body, html{
   width: 100vw;
   display: flex;
   font-feature-settings: 'ss03' on, 'ss08' on;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 p {
@@ -30,12 +34,18 @@ a {
 
 code {
   background-color: var(--background-color-darker);
-  padding: 0.2em;
+  padding: 0.3em 0.5em;
+  font-family: var(--geistMono);
 }
 
 blockquote {
   background-color: var(--background-color-darker);
-  padding: 0.2em;
+  padding: 0.5em 1em;
+  border-left: 2px solid var(--text-dark-blue);
+}
+
+pre > code {
+  padding: em 1em;
 }
 
 hr{

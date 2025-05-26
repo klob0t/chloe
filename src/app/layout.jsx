@@ -12,13 +12,14 @@ const monoSpaced = localFont({
     {
       path: '../app/assets/GeistMono-VariableFont_wght.ttf'
     }
-  ]
+  ],
+  variable: '--geistMono'
   });
 
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${monoSpaced.className}`} >
+    <html lang="en" className={`${monoSpaced.variable}`} >
       <body>
         {children}
         <Analytics />

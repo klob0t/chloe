@@ -172,11 +172,8 @@ export function ImageReveal({ status, imageUrl, onAnimComplete }) {
                     opacity: 0
                 }, '<')
             }
-
         }
-
     }, { scope: wrapperRef, dependencies: [status, isImageLoaded, imageUrl] })
-
 
     return (
         <div ref={wrapperRef} className={styles.imageWrapper} style={{ visibility: 'visible' }}>
