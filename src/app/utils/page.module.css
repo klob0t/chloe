@@ -1,0 +1,39 @@
+/* --- Custom Scrollbar Styles for the Code Block --- */
+
+/* --- For WebKit Browsers (Chrome, Safari, Edge) --- */
+
+/* We target the <pre> tag INSIDE our container */
+.codeBlock pre::-webkit-scrollbar {
+  width: 12px;
+  height: 3px;
+}
+
+.codeBlock pre::-webkit-scrollbar-track {
+  /* The track should be the same color as the main wrapper */
+  background: #00052a;
+}
+
+.codeBlock pre::-webkit-scrollbar-thumb {
+  /* Use a color from your theme for the thumb */
+  background-color: #0b489d;
+  /* This creates a nice "padding" effect */
+  /* border: 3px solid #00052a; */
+}
+
+.codeBlock pre::-webkit-scrollbar-thumb:hover {
+  background-color: #4893f5; /* Brighter on hover */
+}
+
+
+/* --- For Firefox --- */
+
+/* We again target the <pre> tag INSIDE our container */
+.codeBlock pre {
+  /* scrollbar-width: thin; */
+  /* scrollbar-color: #0b489d #00052a; */
+  scrollbar-gutter: auto
+  }
+
+.codeBlock code {
+   padding-left: 0;
+}

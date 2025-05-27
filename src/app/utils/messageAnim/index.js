@@ -4,6 +4,7 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import styles from './page.module.css'
 import Markdown from 'markdown-to-jsx'
+import { PreBlock, CodeBlock } from '@/app/utils/syntaxHighlighter'
 
 //*=====HELPER COMPS=====
 
@@ -22,7 +23,17 @@ const DownloadButton = memo(({ imageUrl }) => {
 DownloadButton.displayName = 'DownloadButton'
 
 const TextMessageDisplay = memo(({ text }) => (
-    <Markdown options={{ wrapper: 'article' }}>{text || ''}</Markdown>
+    <Markdown 
+        style={{display: 'grid', 
+    // This creates one column that will take up the available space
+    // but is explicitly forbidden from growing past it.
+    gridTemplateColumns: 'minmax(0, 1fr)',
+        }}
+        options={{ 
+            overrides: {
+                pre: PreBlock,
+            }
+        }}>{text || ''}</Markdown>
 ))
 TextMessageDisplay.displayName = 'TextMessageDisplay'
 
@@ -32,7 +43,7 @@ const TypingSpinner = memo(() => {
     useEffect(() => {
         const intervalId = setInterval(() => {
             setCharIndex(prevIndex => (prevIndex + 1) % loadingChars.length)
-        }, 100)
+        }, 90)
         return () => clearInterval(intervalId)
     }, [])
     return <div className={styles.TypingSpinner}>{loadingChars[charIndex]}</div>
@@ -44,7 +55,13 @@ TypingSpinner.displayName = 'TypingSpinner'
 
 const COL_NUM = 17
 const ROW_NUM = 21
-const PIXEL_COLORS = ['#000B2E', '#0963B3', '#2E9DFF', '#00084D']
+const PIXEL_COLORS = ['#4893f5', '#0b489d', '#050d41', '#00052a']
+
+
+//   --text-light-blue: #4893f5;
+//   --text-dark-blue: #093c84;
+//   --background-color: #050d41;
+//   --background-color-darker: #00052a;
 
 const PixelGrid = memo(forwardRef(function PixelGrid(props, ref) {
     return (
@@ -111,7 +128,7 @@ export function ImageReveal({ status, imageUrl, onAnimComplete }) {
                 gsap.set(pixels, {
                     scale: 0.5,
                     autoAlpha: 1,
-                    backgroundColor: '#00084D'
+                    backgroundColor: '#00052a'
                 })
                 loadingAnim.current =
 
@@ -128,8 +145,6 @@ export function ImageReveal({ status, imageUrl, onAnimComplete }) {
                         }
                     })
             }
-
-
         }
 
         if (status === 'revealing' && isImageLoaded) {
@@ -145,9 +160,10 @@ export function ImageReveal({ status, imageUrl, onAnimComplete }) {
             })
 
             gsap.set(pixels, { autoAlpha: 1 })
-            if (coverRef.current) gsap.set(cover, { opacity: 1 })
+            if (coverRef.current) gsap.set(cover, { opacity: 1, backgroundColor: '#00052a' })
 
             revealTl.current.to(pixels, {
+                backgroundColor: '#00052a',
                 scale: 1,
                 duration: 1.2,
                 ease: 'steps(3)',
@@ -157,6 +173,7 @@ export function ImageReveal({ status, imageUrl, onAnimComplete }) {
                     from: 'random'
                 }
             }).to(pixels, {
+                backgroundColor: '#00052a',
                 autoAlpha: 0,
                 duration: 0.1,
                 ease: 'none',

@@ -21,10 +21,14 @@
    font-size: 0.6rem;
    font-weight: 900;
    translate: -2% 0;
-   line-height: 1.3em;
+   line-height: 1em;
    padding: 0 0 0 0;
    display: flex;
    align-items: flex-end;
+}
+
+.welcomeAscii pre {
+   letter-spacing: -0.1em;
 }
 
 .welcomeMessage {

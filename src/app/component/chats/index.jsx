@@ -24,16 +24,15 @@ export default function Chats({ messages }) {
       <div className={styles.chatsContainer}>
          <Link href='/' className={styles.homePage}>
             <div className={styles.welcomeAscii}>
-               <pre>
-                  &nbsp;      __       ___                     <br />
-                  &nbsp;     /\ \     /\_ \                    <br />
-                  &nbsp;  ___\ \ \___ \//\ \     ___      __   <br />
-                  &nbsp; /'___\ \  _ `\ \ \ \   / __`\  /'__`\ <br />
-                  &nbsp;/\ \__/\ \ \ \ \ \_\ \_/\ \L\ \/\  __/ <br />
-                  &nbsp;\ \____\\ \_\ \_\/\____\ \____/\ \____\<br />
-                  &nbsp; \/____/ \/_/\/_/\/____/\/___/  \/____/<br />
-
-               </pre>
+                <pre>  
+                  &nbsp;      __     __                      <br />
+                  &nbsp;     /\ \   /\_`\                    <br />
+                  &nbsp;  ___\ \ \__\//\ \     ___     ___   <br />
+                  &nbsp; / ___\ \  _ `\ \ \   / __`\  / __`\ <br />
+                  &nbsp;/\ \__/\ \ \ \ \ \ \_/\ \_\ \/\  __/ <br />
+                  &nbsp;\ \____\\ \_\ \_\ \__\ \____/\ \____\<br />
+                  &nbsp; \/____/ \/_/\/_/\/__/\/___/  \/____/<br />
+                </pre>
             </div>
          </Link>
          {!messages && messages.length === 0 && <Welcome className={styles.welcomeComp} />}

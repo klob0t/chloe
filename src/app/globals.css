@@ -1,8 +1,8 @@
 :root{
-  --text-light-blue: #2e9dff;
-  --text-dark-blue: #0963b3;
-  --background-color: #030736;
-  --background-color-darker: #000514;
+  --text-light-blue: #4893f5;
+  --text-dark-blue: #0b489d;
+  --background-color: #050d41;
+  --background-color-darker: #00052a;
 }
 
 
@@ -34,18 +34,14 @@ a {
 
 code {
   background-color: var(--background-color-darker);
-  padding: 0.3em 0.5em;
   font-family: var(--geistMono);
+  padding: 0.1em 0.5em;
 }
 
 blockquote {
   background-color: var(--background-color-darker);
   padding: 0.5em 1em;
   border-left: 2px solid var(--text-dark-blue);
-}
-
-pre > code {
-  padding: em 1em;
 }
 
 hr{
