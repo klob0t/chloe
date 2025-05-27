@@ -4,15 +4,17 @@
 }
 
 .inputArea{
+   --top-border: 1px dashed var(--text-dark-blue);
    caret-color: transparent;
    color: var(--text-light-blue);
-   background-color: var(--background-color-darker);
+   /* background-color: var(--background-color-darker); */
    position: relative;
    white-space: pre-wrap;
    cursor:text;
    word-wrap: break-word;
    box-sizing: content-box;
-   /* border: 1px solid red; */
+   border-bottom: var(--top-border);
+   /* box-shadow: 0 -10px 5px var(--background-color); */
    min-height: 20px;
    line-height: 1.5;
    min-height: 1.5em;
@@ -64,14 +66,14 @@
    display: flex;
    height: fit-content;
    width: 100%;
-   background-color: var(--background-color);
+   
+   z-index: 3;
+   /* background-color: var(--background-color-darker); */
 }
 
 .disclaimerText {
    width: 100vw;
-
    color: var(--text-dark-blue);
-   font-size: 0.5em;
-   z-index: 3;
+   font-size: 0.6em;
    text-align: center;
 }
