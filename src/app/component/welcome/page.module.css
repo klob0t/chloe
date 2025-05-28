@@ -10,25 +10,11 @@
    position: relative;
 }
 
-.link{
+.link {
    position: absolute;
    top: 0;
    transform: translateY(20px);
 
-}
-
-.welcomeAscii {
-   font-size: 0.6rem;
-   font-weight: 900;
-   translate: -2% 0;
-   line-height: 1em;
-   padding: 0 0 0 0;
-   display: flex;
-   align-items: flex-end;
-}
-
-.welcomeAscii pre {
-   letter-spacing: -0.1em;
 }
 
 .welcomeMessage {
@@ -39,4 +25,25 @@
 
 .greetingContainer {
    height: 50px;
+}
+
+
+@media screen and (max-width: 768px) {
+   .welcomeAscii pre {
+      line-height: 1em !important;
+      letter-spacing: -0.2em !important;
+   }
+}
+
+.welcomeAscii {
+   font-size: 0.5rem;
+   font-weight: 900;
+   translate: 0 -1em;
+   display: flex;
+   color: var(--text-light-blue)
+}
+
+.welcomeAscii pre {
+   line-height: 0.8em;
+   letter-spacing: -0.25em;
 }

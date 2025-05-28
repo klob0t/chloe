@@ -23,13 +23,15 @@ export default function RunningText({ speed, children }) {
     
     for (let i = 1; i < N; i++) {
         gsap.set(instanceRef.current[i], {
+   
             position: 'absolute',
             left: `${i / (N - 1) * 100}%`,
         });
     }
 
     gsap.set(containerRef.current, {
-        left: '100%'
+        left: '100%',
+        opacity: 1,
     });
 
     

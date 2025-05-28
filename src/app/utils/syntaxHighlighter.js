@@ -16,7 +16,7 @@ export const CodeBlock = ({ className, children }) => {
       width: '100%',
       backgroundColor: '#00052a', 
       padding: '1em 0em 0em 0',
-      margin: '1em 0' 
+      margin: '0em 0 1em 0em' 
    }
 
    const preTagStyles = {
@@ -42,7 +42,6 @@ export const CodeBlock = ({ className, children }) => {
                lineNumberStyle={lineNumStyles}
                customStyle={preTagStyles}
                language={lang}
-               
                style={atomOneDarkReasonable}>
                {String(children).trim()}
             </SyntaxHighlighter></div>

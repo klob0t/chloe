@@ -54,7 +54,7 @@
    padding-right: 3em;
    margin-left: 0em;
    font-size: 0.25em;
-   transform: translateY(-9px);
+   transform: translateY(-7px);
    line-height: 1em;
    font-weight: 900;
 }
@@ -81,6 +81,32 @@
    animation: blink 1s step-end infinite
 }
 
+@media screen and (max-width: 768px) {
+   .role-assistant {
+      font-size: 0.25em;
+      transform: translateY(-5px) !important;
+      line-height: 1em !important;
+   }
+
+   .welcomeAscii pre {
+      line-height: 1em !important;
+      letter-spacing: -0.2em !important;
+   }
+}
+
+.welcomeAscii {
+   font-size: 0.5rem;
+   font-weight: 900;
+   translate: 0 -1em;
+   display: flex;
+   color: var(--text-light-blue)
+}
+
+.welcomeAscii pre {
+   line-height: 0.8em;
+   letter-spacing: -0.2em;
+}
+
 @keyframes blink {
 
    0%,
@@ -93,15 +119,3 @@
    }
 }
 
-.welcomeAscii {
-   font-size: 0.4rem;
-   font-weight: 900;
-   translate: 0 -1em;
-   line-height: 1em;
-   display: flex;
-   color: var(--text-light-blue)
-}
-
-.welcomeAscii pre {
-   letter-spacing: -0.1em;
-}

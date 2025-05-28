@@ -10,6 +10,17 @@
    background-color: var(--background-color-darker);
 }
 
+@media screen and (max-width: 768px) {
+  .imageResponse {
+    width: 90%
+  }
+
+  .imageWrapper {
+    width: 90%;
+    aspect-ratio: 4/5
+  }
+}
+
 .imageCover{
    display: block;
    overflow: hidden;
@@ -62,8 +73,7 @@
 }
 
 .imageWrapper img {
-  object-fit: contain;
- 
+  object-fit: cover;
 }
 
 .pixelGrid {

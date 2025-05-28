@@ -49,6 +49,14 @@
    translate: 0% 2%;
 }
 
+@media screen and (max-width : 756px) {
+   .customCaret {
+      translate: 50% -20%;
+      width: 9px
+   }
+   
+}
+
 @keyframes blink {
    0%, 100% {
       opacity: 1;
@@ -68,7 +76,6 @@
    width: 100%;
    
    z-index: 3;
-   /* background-color: var(--background-color-darker); */
 }
 
 .disclaimerText {
@@ -77,3 +84,4 @@
    font-size: 0.6em;
    text-align: center;
 }
+
