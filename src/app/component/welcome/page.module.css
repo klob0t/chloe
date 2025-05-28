@@ -44,6 +44,10 @@
 }
 
 .welcomeAscii pre {
-   line-height: 0.8em;
-   letter-spacing: -0.25em;
+   line-height: 1em;
+   letter-spacing: -0.2em;
+}
+
+.runningText {
+   transform: translateY(5em);
 }

@@ -19,6 +19,7 @@
 .marqueeWrapper p {
   /* font-size: 1.4rem; */
   color: var(--text-light-blue);
+  margin-bottom: 0 !important;
 }
 
 

@@ -8,6 +8,7 @@
 
 * {
   box-sizing: border-box;
+  letter-spacing: -0.025rem;
 }
 
 body,
@@ -24,8 +25,10 @@ html {
   flex-direction: column;
   font-size: 0.9em;
   font-weight: 300;
+  
   flex-grow: 1;
-  font-feature-settings: 'ss03' on, 'ss08' on;
+  letter-spacing: 0em;
+  font-feature-settings: 'ss03' on, 'ss08' on, 'ss06' on, 'ss04' on;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -47,6 +50,7 @@ html {
 p {
   margin-top: 0;
   margin-bottom: 1em;
+  
 }
 
 a {
@@ -79,6 +83,35 @@ ol {
   margin-top: 0;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
+}
+
+tr:nth-of-type(even) { 
+  background: #032052; }
+
+td{
+  padding: 0.4em;
+}
+
+tbody {
+  border: 1px solid var(--background-color-darker)
+}
+
+thead {
+  text-align: center;
+  background-color: var(--background-color-darker);
+}
+
+th {
+  padding: 0.5em 0
+}
+
+table {
+  border: 2px solid var(--background-color-darker);
+  border-collapse: collapse;
+}
+
+table td, table th {
+  border: 1px solid var(--background-color-darker)
 }

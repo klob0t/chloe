@@ -12,6 +12,13 @@ export const CodeBlock = ({ className, children }) => {
       langShow = 'Text'
    }
 
+   const customTheme = {
+      ...atomOneDarkReasonable,
+      'hljs-comment': { color: '#0b489d', fontStyle: 'italic' },
+      'hljs-title' : { color: '#4893f5' },
+      // 'hljs-identifier' : { color: '#4893f5' },
+   }
+
    const wrapperStyles = {
       width: '100%',
       backgroundColor: '#00052a', 
@@ -24,11 +31,13 @@ export const CodeBlock = ({ className, children }) => {
       padding: '0 0em 1em 1em',
       marginLeft: 0,
       marginBottom: 0,
-      overflowX: 'auto' 
+      overflowX: 'auto',
+      color: '#4894f5'
    }
    
    const lineNumStyles = {
-      color: '#0b489d'
+      color: '#0b489d',
+      textAlign: 'right'
    }
 
    return (
@@ -42,7 +51,7 @@ export const CodeBlock = ({ className, children }) => {
                lineNumberStyle={lineNumStyles}
                customStyle={preTagStyles}
                language={lang}
-               style={atomOneDarkReasonable}>
+               style={customTheme}>
                {String(children).trim()}
             </SyntaxHighlighter></div>
    )
