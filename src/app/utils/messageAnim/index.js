@@ -23,17 +23,18 @@ const DownloadButton = memo(({ imageUrl }) => {
 DownloadButton.displayName = 'DownloadButton'
 
 const TextMessageDisplay = memo(({ text }) => (
-    <Markdown 
-        style={{display: 'grid', 
-    // This creates one column that will take up the available space
-    // but is explicitly forbidden from growing past it.
-    gridTemplateColumns: 'minmax(0, 1fr)',
+    <Markdown
+        style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1fr)',
         }}
-        options={{ 
+        options={{
             overrides: {
                 pre: PreBlock,
+                hr: { component: 'hr' }
             }
-        }}>{text || ''}</Markdown>
+        }}
+        >{text || ''}</Markdown>
 ))
 TextMessageDisplay.displayName = 'TextMessageDisplay'
 

@@ -71,7 +71,9 @@ blockquote {
 
 hr {
   border: 0;
-  border-top: 1px solid var(--text-dark-blue)
+  border-top: 1px solid var(--text-dark-blue);
+  width: 100%;
+  margin-bottom: 1em;
 }
 
 strong {

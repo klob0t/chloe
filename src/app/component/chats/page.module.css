@@ -12,7 +12,6 @@
 .messages {
    display: flex;
    flex-direction: column;
-   /* width: 100% */
 }
 
 .message img {
@@ -35,18 +34,28 @@
 
 .message.user {
    align-self: flex-end;
+   display: flex;
+   max-width: 80%;
+   padding-bottom: 1em;
 }
 
 .role-user {
    color: var(--text-dark-blue);
    padding-left: 0.5em;
    order: 2;
+   transform: translateY(7px);
 }
 
 .msgContent-user {
+   position: relative;
    color: var(--text-dark-blue);
    order: 1;
-   text-align: right;
+   text-align: left;
+   border: 1px solid;
+   /* border-radius: 21px; */
+   align-items: flex-end;
+   padding: 0.4em 0.9em 0.4em 0.8em;
+   
 }
 
 .role-assistant {
