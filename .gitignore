@@ -43,5 +43,7 @@ yarn-error.log*
 # vercel
 .vercel
 
+/chloe
+
 notes.txt
 providers.txt

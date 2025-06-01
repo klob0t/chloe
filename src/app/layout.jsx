@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${monoSpaced.variable}`} >
       <body>
           {children}
-        <Analytics />
+        {/* <Analytics /> */}
         <IosZoomFix />
       </body>
     </html>

@@ -4,7 +4,7 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import styles from './page.module.css'
 import Markdown from 'markdown-to-jsx'
-import { PreBlock, CodeBlock } from '@/app/utils/syntaxHighlighter'
+import { PreBlock } from '@/app/utils/syntaxHighlighter'
 
 //*=====HELPER COMPS=====
 

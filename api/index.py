@@ -17,7 +17,6 @@ try:
     @app.middleware("http")
     async def log_requests(request: Request, call_next):
         
-        print(f"--- LOG 3: Python backend was successfully reached! Path: {request.url.path} ---")
         response = await call_next(request)
         return response
 
@@ -55,6 +54,5 @@ if not app:
     @app.api_route("/{path_name:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
     async def fallback_route(response_obj: Response, path_name: str = None):
         
-        print(f"--- LOG 3 (FALLBACK): Python fallback route hit! Error: {error_message_on_load} ---")
         response_obj.status_code = 500
         return {"error": error_message_on_load or "g4f FastAPI application could not be loaded. Python backend is misconfigured."}

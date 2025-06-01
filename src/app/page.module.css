@@ -26,5 +26,6 @@
    position: relative;
    color: red;
    justify-self: center;
+   align-self: center;
 }
 

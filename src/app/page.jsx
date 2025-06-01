@@ -1,8 +1,8 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import styles from './page.module.css'
-import Input from '@/app/component/input'
-import Chats from '@/app/component/chats'
+import Input from '@/app/components/input'
+import Chats from '@/app/components/chats'
 import { handleSubmit } from '@/app/utils/request'
 
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
@@ -90,7 +90,7 @@ export default function Main() {
               finalContent = `IMAGE GENERATION ERROR: ${result.error}`
               finalType = 'text'
             } else if (!finalContent && !result.error) {
-              finalContent = 'CHLOE CANT REACH THE SERVER AT THE MOMENT'
+              finalContent = 'CHLOE CANT REACH THE SERVER AT THE MOMENT (╥ᆺ╥;) PLEASE COME BACK LATER...'
               finalType = 'text'
             }
 
@@ -112,12 +112,12 @@ export default function Main() {
         }
       }
     } catch (err) {
-      console.error('UNEXPECTED ERROR IN handleSendPrompt: ', err)
+      console.error('UNEXPECTED ERROR IN SENDING PROMPT: ', err)
       const unexpectedErrorMessage = `AN UNEXPECTED ERROR OCCURRED:  ${err.message || String(err)}`
       setError(unexpectedErrorMessage)
       setMessages(prevMessages =>
         prevMessages.map(msg =>
-          msg.id === assistandPlaceholderId
+          msg.id === assistantPlaceholderId
             ? { ...msg, type: 'text', content: unexpectedErrorMessage }
             : msg
         )

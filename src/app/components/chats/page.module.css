@@ -29,7 +29,7 @@
    letter-spacing: 0.01px;
    box-sizing: border-box;
    padding: 0.4rem;
-   overflow-wrap: break-word !important;
+   
 }
 
 .message.user {
@@ -55,7 +55,7 @@
    /* border-radius: 21px; */
    align-items: flex-end;
    padding: 0.4em 0.9em 0.4em 0.8em;
-   
+   word-wrap: break-word;
 }
 
 .role-assistant {
@@ -73,6 +73,7 @@
    text-align: left;
    margin-right: 1.2em;
    width: 100% !important;
+   word-wrap: break-word;
 }
 
 .empty {
@@ -92,6 +93,7 @@
 
 @media screen and (max-width: 768px) {
    .role-assistant {
+      line-height: 1em;
       font-size: 0.25em;
       transform: translateY(-5px) !important;
    }

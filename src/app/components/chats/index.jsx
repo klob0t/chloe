@@ -1,6 +1,6 @@
 'use client'
 import styles from './page.module.css'
-import Welcome from '@/app/component/welcome'
+import Welcome from '@/app/components/welcome'
 import MessageAnim from '@/app/utils/messageAnim'
 import Link from 'next/link'
 

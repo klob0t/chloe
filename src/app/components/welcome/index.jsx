@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import styles from './page.module.css'
 import { sendPayload } from '@/app/utils/request'
 import TextReveal from '@/app/utils/messageAnim'
-import RunningText from '@/app/component/runningText'
+import RunningText from '@/app/components/runningText'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -24,9 +24,7 @@ export default function Welcome({isLoading}) {
                 const payloadToNextApi = {
                     currentPrompt: "greet the user warmly and offer what you can do to the user 5 words",
                     messageHistory: [],
-                    conversationId: null,
-                    desiredProvider: 'PollinationsAI',
-                    desiredModel: 'gemini'
+                    conversationId: null
                 }
                 const apiResponse = await sendPayload(payloadToNextApi)
                 if (apiResponse && typeof apiResponse.answer === 'string') {
@@ -40,7 +38,7 @@ export default function Welcome({isLoading}) {
                     setMessages([{
                         role: 'assistant',
                         type: 'text',
-                        content: "Sorry, I couldn't fetch a greeting."
+                        content: "THE SERVER IS NOT RESPONDING"
                     }]);
                 }
             } catch (err) {

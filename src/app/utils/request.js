@@ -12,7 +12,7 @@ export async function sendPayload(payload) {
                ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
                : `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`
 
-      const res = await fetch('/api/chat', {
+      const res = await fetch('/api/completions', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json'
@@ -20,7 +20,7 @@ export async function sendPayload(payload) {
          body: JSON.stringify(payload)
       })
 
-       if (!res.ok) {
+      if (!res.ok) {
          let errorData
          try {
             errorData = await res.json()
@@ -50,26 +50,26 @@ export async function handleSubmit(textPrompt, imagePrompt, currentMessageHistor
    if (imagePrompt) {
       const fullPrompt = imagePrompt
       if (!fullPrompt) {
-         return { error: 'INSERT PROMPT AFTER /IMAGINE', type: 'validation'}
+         return { error: 'INSERT PROMPT AFTER /IMAGINE', type: 'validation' }
       }
       const output = {}
-    const promptMatch = fullPrompt.match(/^(.*?)(?=\s--|$)/)
-    if (promptMatch && promptMatch[1]) { 
-      output.imagePrompt = promptMatch[1].trim()
-    } else if (!fullPrompt.includes("--")) { 
-      output.imagePrompt = fullPrompt.trim()
-    } else {
-      return { error: 'IMAGE PROMPT CANT BE EMPTY', type: 'validation' }
-    }
-    if (!output.imagePrompt) {
-        return { error: 'IMAGE PROMPT CANT BE EMPTY', type: 'validation' }
-    }
-    const regex = /--(\w+)\s+([\w\d.-]+)/g
-    let match
-    while ((match = regex.exec(fullPrompt)) !== null) {
-      output[match[1]] = match[2].trim()
+      const promptMatch = fullPrompt.match(/^(.*?)(?=\s--|$)/)
+      if (promptMatch && promptMatch[1]) {
+         output.imagePrompt = promptMatch[1].trim()
+      } else if (!fullPrompt.includes("--")) {
+         output.imagePrompt = fullPrompt.trim()
+      } else {
+         return { error: 'IMAGE PROMPT CANT BE EMPTY', type: 'validation' }
+      }
+      if (!output.imagePrompt) {
+         return { error: 'IMAGE PROMPT CANT BE EMPTY', type: 'validation' }
+      }
+      const regex = /--(\w+)\s+([\w\d.-]+)/g
+      let match
+      while ((match = regex.exec(fullPrompt)) !== null) {
+         output[match[1]] = match[2].trim()
 
-    }
+      }
       payloadToSend = {
          requestType: 'image',
          imagePrompt: output.imagePrompt,
@@ -93,7 +93,7 @@ export async function handleSubmit(textPrompt, imagePrompt, currentMessageHistor
       const apiResponse = await sendPayload(payloadToSend)
       return { ...apiResponse, messageType, originalUserCommand: textPrompt }
    } catch (error) {
-      return { error: error.message || 'API SUBMISSION FAILED', messageType, originalUserCommand: textPrompt, type: 'api'}
+      return { error: error.message || 'API SUBMISSION FAILED', messageType, originalUserCommand: textPrompt, type: 'api' }
    }
 }
 
@@ -118,3 +118,5 @@ export function parseAssistantMessage(content) {
       }
    }
 }
+
+
