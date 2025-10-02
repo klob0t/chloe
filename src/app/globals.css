@@ -1,16 +1,22 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --text-light: #4893f5;
+  --text-dark: #0b489d;
+  --background: #050d41;
+  --background-darker: #00052a;
 }
 
 html,
 body {
-  max-width: 100vw;
+  width: 100dvw;
+  height: 100dvh;
   overflow-x: hidden;
 }
 
 body {
   color: var(--foreground);
+  font-family: var(--font-geist-mono);
+  font-feature-settings: 'ss03' on, 'ss04' on, 'ss06' on, 'ss08' on;
+  padding: 2rem;
   background: var(--background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
