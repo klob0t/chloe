@@ -3,14 +3,8 @@
    height: 100%;
    display: flex;
    flex-direction: column;
-   justify-content: space-between;
-   align-items: center;
    overflow: hidden;
    position: relative;
    color: var(--text-light);
-}
-
-.landingPage svg {
-   color: var(--text-dark);
-   width: 50px
+   padding-bottom: 80px;
 }

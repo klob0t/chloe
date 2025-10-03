@@ -11,11 +11,14 @@
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@pollinations/react": "^2.0.7",
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.3.0",
     "geist": "^1.5.1",
     "gsap": "^3.13.0",
     "next": "^15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "three": "^0.180.0",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

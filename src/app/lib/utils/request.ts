@@ -3,6 +3,7 @@ interface Payload {
    system?: string
    id: string
    history: any[]
+   model: string
 }
 
 export async function request(prompt: Payload): Promise<any> {
@@ -24,11 +25,15 @@ export async function request(prompt: Payload): Promise<any> {
       })
 
       if (!res.ok) {
-         let errData
+         // Clone the response to avoid consuming the body twice
+         const clonedRes = res.clone()
          try {
-            errData = await res.json()
+            const errData = await res.json()
+            throw new Error(errData.error || `HTTP error! status: ${res.status}`)
          } catch (e) {
-            const errText = await res.text()
+            // If JSON parsing fails, try getting text from the cloned response
+            const errText = await clonedRes.text()
+            throw new Error(errText || `HTTP error! status: ${res.status}`)
          }
       }
 
