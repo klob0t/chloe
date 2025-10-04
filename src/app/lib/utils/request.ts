@@ -1,9 +1,6 @@
 interface Payload {
-   prompt: string
-   system?: string
-   id: string
-   history: any[]
-   model: string
+   messages: Array<{ role: string; content: string }>
+   model?: string
 }
 
 export async function request(prompt: Payload): Promise<any> {

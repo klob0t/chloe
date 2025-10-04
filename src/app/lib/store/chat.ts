@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 import { request } from '@/app/lib/utils/request'
 import { SYSTEM_PROMPT } from '@/app/lib/store/prompt'
 
@@ -20,16 +19,16 @@ interface ChatState {
     clearMessages: () => void
     setTyping: (typing: boolean) => void
     setLoading: (loading: boolean) => void
+    setMessages: (messages: Message[]) => void
 }
 
 export const useChatStore = create<ChatState>()(
-    persist(
-        (set, get) => ({
+    (set, get) => ({
             messages: [],
             isTyping: false,
             isLoading: false,
 
-            sendMessage: async (content: string, model = 'gemini-2.5-flash-lite') => {
+            sendMessage: async (content: string, model = 'openai-large') => {
                 const { messages } = get()
 
                 // Create user message
@@ -48,28 +47,26 @@ export const useChatStore = create<ChatState>()(
                 }))
 
                 try {
-                    // Prepare history for API (only send message content, not ids or timestamps)
-                    const history = messages.map(msg => ({
-                        role: msg.role,
-                        content: msg.content
-                    }))
+                    // Prepare messages array for OpenAI format
+                    const apiMessages = [
+                        { role: 'system', content: SYSTEM_PROMPT },
+                        ...messages.map(msg => ({
+                            role: msg.role,
+                            content: msg.content
+                        })),
+                        { role: 'user', content }
+                    ]
 
-                    // Add the new user message to history
-                    history.push({
-                        role: 'user',
-                        content
-                    })
-
-                    // Make API request
+                    
+                    // Make API request with OpenAI format
                     const payload = {
-                        prompt: content,
-                        system: SYSTEM_PROMPT,
-                        history,
-                        id: `req-${Date.now()}`,
+                        messages: apiMessages,
                         model
                     }
 
                     const response = await request(payload)
+
+                    
                     const assistantContent = response.response || response
 
                     // Create assistant message
@@ -116,11 +113,10 @@ export const useChatStore = create<ChatState>()(
 
             setLoading: (loading: boolean) => {
                 set({ isLoading: loading })
+            },
+
+            setMessages: (messages: Message[]) => {
+                set({ messages })
             }
-        }),
-        {
-            name: 'chloe-chat-storage',
-            partialize: (state) => ({ messages: state.messages })
-        }
-    )
+        })
 )

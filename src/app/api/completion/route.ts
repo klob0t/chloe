@@ -1,46 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const API_KEY = process.env.POLLINATIONS_API_KEY
-const TEXT_ENDPOINT = 'https://text.pollinations.ai/'
-const IMAGE_ENDPOINT = 'https://image.pollinations.ai/'
+const OPENAI_ENDPOINT = 'https://text.pollinations.ai/openai'
 
 export async function POST(request: NextRequest) {
    if (!API_KEY) return NextResponse.json({ error: 'Missing API Key!' })
 
    try {
       const payload = await request.json()
-      const { prompt, system, id, history, model } = payload
+      const { messages, model = 'openai' } = payload
 
-      if (!prompt) {
-         return NextResponse.json({ error: 'Missing prompt!' }, { status: 400 })
+      if (!messages || !Array.isArray(messages)) {
+         return NextResponse.json({ error: 'Missing or invalid messages array!' }, { status: 400 })
       }
 
-      let url = `${TEXT_ENDPOINT}${encodeURIComponent(prompt)}?`
-      if (system) {
-         url += `&system=${encodeURIComponent(system)}`
-      }
-      if (model) {
-         url += `&model=${encodeURIComponent(model)}`
+      const requestBody = {
+         messages,
+         model,
+         max_tokens: 1000
       }
 
-      const response = await fetch(url, {
-         method: 'GET',
+      const response = await fetch(OPENAI_ENDPOINT, {
+         method: 'POST',
          headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer sUOFZ6hqEiyvdNhn'
-         }
+         },
+         body: JSON.stringify(requestBody)
       })
 
       if (!response.ok) {
          const errorText = await response.text()
+         console.error('API Error:', errorText)
          return NextResponse.json({ error: 'API request failed', details: errorText }, { status: response.status })
       }
 
-      const data = await response.text()
+      const data = await response.json()
+
+      // Extract the content from the OpenAI response
+      const assistantMessage = data.choices?.[0]?.message?.content || data.response || ''
 
       return NextResponse.json({
-         response: data,
-         id: id || 'default'
+         response: assistantMessage,
+         usage: data.usage
       })
 
    } catch (error) {

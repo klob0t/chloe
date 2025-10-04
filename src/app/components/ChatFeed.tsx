@@ -17,18 +17,30 @@ export default function ChatFeed() {
         scrollToBottom()
     }, [messages, isTyping, isLoading])
 
+    const CHLOE_LOGOTYPE =
+        `
+         __      __                       
+        /\\ \\   /\\_ \\                   
+     ___\\ \\ \\__\\//\\ \\     ___     ___   
+    / ___\\ \\  _ \`\\ \\ \\   / __\`\\  / __\`\\ 
+   /\\ \\__/\\ \\ \\ \\ \\ \\ \\_/\\ \\_\\ \\/\\  __/ 
+   \\ \\____\\\\ \\_\\ \\_\\ \\__\\ \\____/\\ \\____\\
+    \\/____/ \\/_/\\/_/\\/__/\\/___/  \\/____/
+
+       `
+
     return (
         <div className={styles.chatFeed}>
+        <div>
+            <pre>
+                {CHLOE_LOGOTYPE}
+            </pre>
+        </div>
             <div className={styles.messagesContainer}>
-                {messages.length === 0 ? (
-                    <div className={styles.welcomeMessage}>
-                        <p>Hi! I'm Chloe. How can I help you today?</p>
-                    </div>
-                ) : (
-                    messages.map((message) => (
-                        <Message key={message.id} message={message} />
-                    ))
-                )}
+                {messages.map((message) => (
+                    <Message key={message.id} message={message} />
+                ))
+                }
                 {(isTyping || isLoading) && (
                     <div className={styles.spinnerWrapper}>
                         <Spinner />

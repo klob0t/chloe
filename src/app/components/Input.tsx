@@ -53,7 +53,6 @@ export default function Input({ onSendMessage }: InputProps) {
             onKeyDown={handleKeyDown}
             onInput={handleInput}
             onPaste={handlePaste}
-            placeholder="Type your message..."
             suppressContentEditableWarning={true}
          />
       </div>

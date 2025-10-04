@@ -26,7 +26,7 @@ export const useConversationStore = create<ConversationState>()(
       currentConversationId: null,
 
       createConversation: () => {
-        const id = `conv-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
         const newConversation: Conversation = {
           id,
           createdAt: Date.now(),

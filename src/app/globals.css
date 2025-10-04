@@ -16,7 +16,6 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-mono);
   font-feature-settings: 'ss03' on, 'ss04' on, 'ss06' on, 'ss08' on;
-  padding: 2rem;
   background: var(--background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

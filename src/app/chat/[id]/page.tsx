@@ -10,7 +10,7 @@ import styles from './chat.module.css'
 export default function ChatPage() {
     const params = useParams()
     const conversationId = params.id as string
-    const { messages, sendMessage } = useChatStore()
+    const { messages, sendMessage, setMessages } = useChatStore()
     const { setCurrentConversation, getConversation, updateConversationMessages } = useConversationStore()
 
     useEffect(() => {
@@ -19,17 +19,19 @@ export default function ChatPage() {
 
         // Load conversation messages if they exist
         const conversation = getConversation(conversationId)
+
         if (conversation && conversation.messages.length > 0) {
-            // Load messages into chat store (this would need to be implemented)
-            // For now, we'll keep the messages in the chat store
+            // Load messages into chat store
+            setMessages(conversation.messages)
+        } else {
+            // Clear messages for new conversation
+            setMessages([])
         }
-    }, [conversationId, setCurrentConversation, getConversation])
+    }, [conversationId, setCurrentConversation, getConversation, setMessages])
 
     // Save messages to conversation when they change
     useEffect(() => {
-        if (messages.length > 0) {
-            updateConversationMessages(conversationId, messages)
-        }
+        updateConversationMessages(conversationId, messages)
     }, [messages, conversationId, updateConversationMessages])
 
     return (
