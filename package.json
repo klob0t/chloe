@@ -13,6 +13,8 @@
     "@pollinations/react": "^2.0.7",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.3.0",
+    "@types/cheerio": "^0.22.35",
+    "cheerio": "^1.1.2",
     "geist": "^1.5.1",
     "gsap": "^3.13.0",
     "next": "^15.5.4",
