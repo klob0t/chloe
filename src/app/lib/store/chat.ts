@@ -39,9 +39,18 @@ export const useChatStore = create<ChatState>()(
                     timestamp: Date.now()
                 }
 
-                // Add user message to state
+                // Create empty assistant message for loading state
+                const assistantMessageId = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+                const assistantMessage: Message = {
+                    id: assistantMessageId,
+                    role: 'assistant',
+                    content: '',
+                    timestamp: Date.now()
+                }
+
+                // Add user and empty assistant message to state
                 set(state => ({
-                    messages: [...state.messages, userMessage],
+                    messages: [...state.messages, userMessage, assistantMessage],
                     isTyping: true,
                     isLoading: true
                 }))
@@ -57,7 +66,7 @@ export const useChatStore = create<ChatState>()(
                         { role: 'user', content }
                     ]
 
-                    
+
                     // Make API request with OpenAI format
                     const payload = {
                         messages: apiMessages,
@@ -66,20 +75,16 @@ export const useChatStore = create<ChatState>()(
 
                     const response = await request(payload)
 
-                    
+
                     const assistantContent = response.response || response
 
-                    // Create assistant message
-                    const assistantMessage: Message = {
-                        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                        role: 'assistant',
-                        content: assistantContent,
-                        timestamp: Date.now()
-                    }
-
-                    // Add assistant message to state
+                    // Update assistant message with content
                     set(state => ({
-                        messages: [...state.messages, assistantMessage],
+                        messages: state.messages.map(msg =>
+                            msg.id === assistantMessageId
+                                ? { ...msg, content: assistantContent }
+                                : msg
+                        ),
                         isTyping: false,
                         isLoading: false
                     }))
@@ -87,16 +92,13 @@ export const useChatStore = create<ChatState>()(
                 } catch (error) {
                     console.error('Failed to send message:', error)
 
-                    // Create error message
-                    const errorMessage: Message = {
-                        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                        role: 'assistant',
-                        content: 'Sorry, I encountered an error. Please try again.',
-                        timestamp: Date.now()
-                    }
-
+                    // Update the empty assistant message with error
                     set(state => ({
-                        messages: [...state.messages, errorMessage],
+                        messages: state.messages.map(msg =>
+                            msg.id === assistantMessageId
+                                ? { ...msg, content: 'Sorry, I encountered an error. Please try again.' }
+                                : msg
+                        ),
                         isTyping: false,
                         isLoading: false
                     }))

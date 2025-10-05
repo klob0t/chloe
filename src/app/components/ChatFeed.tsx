@@ -1,8 +1,9 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import { useChatStore } from '@/app/lib/store/chat'
-import Message from './Message'
-import { Spinner } from './Spinner'
+import Message from '@/app/components/Message'
+import { Spinner } from '@/app/components/Spinner'
+import Sidebar from '@/app/components/Sidebar'
 import styles from './chatFeed.module.css'
 
 export default function ChatFeed() {
@@ -31,21 +32,23 @@ export default function ChatFeed() {
 
     return (
         <div className={styles.chatFeed}>
-        <div>
-            <pre>
-                {CHLOE_LOGOTYPE}
-            </pre>
-        </div>
+            <div className={styles.chatFeedHeader}>
+                <div className={styles.chloeLogo}>
+                    <pre>
+                        {CHLOE_LOGOTYPE}
+                    </pre>
+                </div>
+                <div className={styles.chatFeedButtons}>
+                    <div className={styles.newChat}>
+                        +
+                    </div>
+                </div>
+            </div>
             <div className={styles.messagesContainer}>
                 {messages.map((message) => (
                     <Message key={message.id} message={message} />
                 ))
                 }
-                {(isTyping || isLoading) && (
-                    <div className={styles.spinnerWrapper}>
-                        <Spinner />
-                    </div>
-                )}
                 <div ref={messagesEndRef} />
             </div>
         </div>

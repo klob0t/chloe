@@ -55,6 +55,9 @@ export default function Input({ onSendMessage }: InputProps) {
             onPaste={handlePaste}
             suppressContentEditableWarning={true}
          />
+         <div className={styles.disclaimer}>
+            Chloe might make mistakes... please double-check the fact.
+         </div>
       </div>
    )
 }

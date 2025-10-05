@@ -18,16 +18,20 @@
 
 .userAvatar {
     order: 2;
-    margin-left: 1rem;
+    margin-left: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 100;
+    
+    transform: translateY(-15px);
 }
 
 .assistantAvatar {
     color: var(--text-light-blue);
     padding-right: 1rem;
     font-size: 0.3rem;
-    transform: translateY(-1px);
+    transform: translateY(-15px);
     font-weight: 700;
+    margin: 0rem 0.6rem 0rem 0rem;
 }
 
 .content {
@@ -38,4 +42,86 @@
     border-color: var(--text-light-blue);
     line-height: 1.5rem;
     font-weight: 200;
+    position: relative;
+}
+
+.userMessage .content {
+    border-top-right-radius: 0;
+}
+
+.assistantMessage .content {
+    border-top-left-radius: 0;
+}
+
+/* Triangle for user messages (top right corner) */
+.userMessage .content::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    right: -1rem;
+    width: 0;
+    height: 0;
+    border-left: 1rem solid #60a5fa;
+    border-bottom: 1rem solid transparent;
+}
+
+.userMessage .content::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -0.85rem;
+    width: 0;
+    height: 0;
+    border-left: 0.9rem solid var(--background);
+    border-bottom: 0.9rem solid transparent;
+}
+
+/* Triangle for assistant messages (top left corner) */
+.assistantMessage .content::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1rem;
+    width: 0;
+    height: 0;
+    border-right: 1rem solid #60a5fa;
+    border-bottom: 1rem solid transparent;
+}
+
+.assistantMessage .content::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -0.85rem;
+    width: 0;
+    height: 0;
+    border-right: 0.9rem solid var(--background);
+    border-bottom: 0.9rem solid transparent;
+}
+
+.assistantMessage li {
+    text-indent: 1rem;
+    list-style-position: inside
+}
+
+.content {
+    line-height: 160%;
+}
+
+.assistantMessage hr {
+    margin: 1rem 0rem;
+    color: transparent;
+    border-top: 1 px solid red;
+
+}
+
+.assistantMessage h1,
+.assistantMessage h2,
+.assistantMessage h3,
+.assistantMessage h4 {
+    margin: 1rem 0rem
+}
+
+.assistantMessage code {
+    font-family: var(--font-geist-mono);
 }

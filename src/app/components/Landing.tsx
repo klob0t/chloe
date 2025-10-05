@@ -4,13 +4,13 @@ import { request } from '@/app/lib/utils/request'
 import { SYSTEM_PROMPT } from '@/app/lib/store/prompt'
 import { useLoadingStore } from '@/app/lib/store/loading'
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import Logo from '@/app/components/Logo'
 import { Spinner } from './Spinner'
 import Input from '@/app/components/Input'
 import { useConversationStore } from '@/app/lib/store/conversation'
 import { useChatStore } from '@/app/lib/store/chat'
+import TextAnimation from '@/app/lib/tools/TextAnimation'
+import dynamic from 'next/dynamic'
 
 export default function Landing() {
     const [response, setResponse] = useState('')
@@ -19,6 +19,10 @@ export default function Landing() {
     const router = useRouter()
     const { createConversation } = useConversationStore()
     const { sendMessage, clearMessages } = useChatStore()
+
+    const Scene = dynamic(() => import('@/app/components/Scene'), {
+  ssr: false,
+})
 
     const welcomePrompt: string = "greet the user warmly and offer what you can do to the user 5 words"
 
@@ -66,19 +70,19 @@ export default function Landing() {
     return (
         <div className={styles.landingPage}>
             <div className={styles.landingWrapper}>
-                <div>
-                    <pre>
-                        &nbsp;      __     __                      <br />
-                        &nbsp;     /\ \   /\_`\                    <br />
-                        &nbsp;  ___\ \ \__\//\ \     ___     ___   <br />
-                        &nbsp; / ___\ \  _ `\ \ \   / __`\  / __`\ <br />
-                        &nbsp;/\ \__/\ \ \ \ \ \ \_/\ \_\ \/\  __/ <br />
-                        &nbsp;\ \____\\ \_\ \_\ \__\ \____/\ \____\<br />
-                        &nbsp; \/____/ \/_/\/_/\/__/\/___/  \/____/<br />
-                    </pre>
-                </div>
+                <Scene />
                 <div className={styles.greeting}>
-                    {error ? <p>{error}</p> : response ? <p>{typeof response === 'string' ? response : JSON.stringify(response)}</p> : <Spinner />}
+                    {error ? (
+                        <p>{error}</p>
+                    ) : response ? (
+                        <TextAnimation
+                            text={typeof response === 'string' ? response : JSON.stringify(response)}
+                            delay={0.5}
+                            duration={JSON.stringify(response).length / 5000}
+                        />
+                    ) : (
+                        <Spinner />
+                    )}
                 </div>
             </div>
             <Input onSendMessage={handleSendMessage} />

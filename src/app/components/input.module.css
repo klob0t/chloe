@@ -1,15 +1,13 @@
 .inputWrapper {
-   background-color: var(--background-darker);
    width: 100%;
    bottom: 0;
+   justify-content: center;
    position: fixed;
-   border-top: 1px solid var(--border-color);
 }
 
 .inputArea {
    min-height: 44px;
    background-color: var(--background-darker);
-   border-radius: 0.5rem;
    color: var(--text);
    line-height: 1.2rem;
    white-space: pre-wrap;
@@ -18,10 +16,20 @@
    align-items: center;
    padding: 0rem 1rem 0rem 1rem;
    font-size: 1.2rem;
+   margin: 1rem 1rem 0rem 1rem;
 }
 
 .inputArea:focus {
    outline: none;
    border: none;
    box-shadow: none;
+}
+
+.disclaimer {
+   font-size: 0.6rem;
+   width: 100%;
+   display: flex;
+   justify-content: center;
+   margin-left: auto;
+   color: var(--text-dark);
 }
