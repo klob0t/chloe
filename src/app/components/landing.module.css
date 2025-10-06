@@ -9,16 +9,15 @@
    width: 100dvw;
    height: 100dvh;
    font-size: 1.2rem;
-   border: 1px solid pink;
    display: flex;
    position: relative;
    display: flex;
    flex-direction: column;
    margin: auto;
-   border: 1px solid green;
    justify-content: center;
 }
 
 .greeting {
    text-align: center;
+   transform: translate(0, -4.5rem);
 }

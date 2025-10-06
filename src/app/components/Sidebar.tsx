@@ -112,9 +112,15 @@ export default function Sidebar() {
                )}
             </div>
             <div className={styles.sidebarFooter}>
-               made by &nbsp;<Link href='https://klob0t.xyz'>
+               made by<Link
+                  style={{
+                     display: 'inline-flex'
+                  }}
+                  href='https://klob0t.xyz'>
                   klob0t
-               </Link>&nbsp;❤️
+               </Link>&nbsp;
+               + support from <Link href='https://pollinations.ai'>
+                  Pollinations.ai</Link>
             </div>
          </div>
       </>

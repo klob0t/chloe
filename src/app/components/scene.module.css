@@ -2,3 +2,7 @@
    font-family: var(--font-geist-mono) !important;
    font-size: 2rem;
 }
+
+.canvas {
+   transform: translate(-3%, 0);
+}

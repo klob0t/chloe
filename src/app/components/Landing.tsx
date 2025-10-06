@@ -33,7 +33,7 @@ export default function Landing() {
                         { role: 'system', content: SYSTEM_PROMPT },
                         { role: 'user', content: 'greet the user warmly with Hi and offer what you can do to the user in 5 or less words' }
                     ],
-                    model: 'openai'
+                    model: 'openai-fast'
                 }
                 const data = await request(payload)
                 setResponse(data.response || data)

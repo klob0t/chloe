@@ -4,10 +4,12 @@ import { useRouter } from 'next/navigation'
 import { useChatStore } from '@/app/lib/store/chat'
 import { useSidebarStore } from '@/app/lib/store/sidebar'
 import Message from '@/app/components/Message'
-import { Spinner } from '@/app/components/Spinner'
 import { request } from '@/app/lib/utils/request'
 import { SYSTEM_PROMPT } from '@/app/lib/store/prompt'
 import styles from './chatFeed.module.css'
+import Link from 'next/link'
+import { GiHamburgerMenu } from 'react-icons/gi'
+import { AiOutlinePlus } from 'react-icons/ai'
 
 export default function ChatFeed() {
     const router = useRouter()
@@ -122,28 +124,44 @@ export default function ChatFeed() {
     }
 
 
+    const ASSISTANT_ASCII_ART =
+`   _
+ __/ \\__
+(  \\ /  )
+ >--o--<
+(__/ \\__)
+   \\_/
+   `
 
     return (
         <>
             <div className={`${styles.chatFeed} ${isOpen ? styles.sidebarOpen : ''}`}>
                 <div className={styles.chatFeedHeader}>
                     <div className={styles.chatFeedButtons}>
+                    <div className={styles.logo}>
+                            <Link href='/'>
+                                <pre>
+                                    {ASSISTANT_ASCII_ART}
+                                </pre>
+                            </Link>
+                        </div>
                         <div className={styles.hamburger} onClick={toggleSidebar}>
-                            ☰
+                            <GiHamburgerMenu />
                         </div>
                         <div className={styles.newChat} onClick={handleNewChat}>
-                            +
+                            <AiOutlinePlus />
                         </div>
+                        
                     </div>
                 </div>
-            <div className={styles.messagesContainer}>
-                {messages.map((message) => (
-                    <Message key={message.id} message={message} />
-                ))
-                }
-                <div ref={messagesEndRef} />
+                <div className={styles.messagesContainer}>
+                    {messages.map((message) => (
+                        <Message key={message.id} message={message} />
+                    ))
+                    }
+                    <div ref={messagesEndRef} />
+                </div>
             </div>
-        </div>
         </>
     )
 }

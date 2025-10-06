@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { request } from '@/app/lib/utils/request'
+import { request, requestImage, type ImageRequestPayload, type ImageResponse } from '@/app/lib/utils/request'
 import { SYSTEM_PROMPT } from '@/app/lib/store/prompt'
 
 export interface Message {
@@ -7,6 +7,8 @@ export interface Message {
     role: 'user' | 'assistant'
     content: string
     timestamp: number
+    messageType?: 'text' | 'image'
+    metadata?: Record<string, unknown>
 }
 
 interface Conversation {
@@ -18,6 +20,93 @@ interface Conversation {
 }
 
 type MessageUpdater = Message[] | ((messages: Message[]) => Message[])
+
+interface ParsedImageCommand {
+    payload?: ImageRequestPayload
+    error?: string
+}
+
+const parseImageCommand = (raw: string): ParsedImageCommand => {
+    const commandBody = raw.trim().slice('/imagine'.length).trim()
+    if (!commandBody) {
+        return { error: 'Image prompt cannot be empty.' }
+    }
+
+    const firstFlagIndex = commandBody.indexOf('--')
+    const prompt = (firstFlagIndex === -1 ? commandBody : commandBody.slice(0, firstFlagIndex)).trim()
+
+    if (!prompt) {
+        return { error: 'Image prompt cannot be empty.' }
+    }
+
+    const optionsSection = firstFlagIndex === -1 ? '' : commandBody.slice(firstFlagIndex)
+    const payload: ImageRequestPayload = {
+        imagePrompt: prompt
+    }
+
+    const optionRegex = /--(\w+)\s+("[^"]+"|[^\s]+)/g
+    let match: RegExpExecArray | null
+
+    while ((match = optionRegex.exec(optionsSection)) !== null) {
+        const key = match[1].toLowerCase()
+        let value = match[2]
+        if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.slice(1, -1)
+        }
+
+        const toNumber = (input: string) => {
+            const parsed = Number(input)
+            return Number.isFinite(parsed) ? parsed : undefined
+        }
+
+        switch (key) {
+            case 'seed': {
+                const parsed = toNumber(value)
+                if (parsed === undefined) return { error: `Invalid seed value: ${value}` }
+                payload.seed = parsed
+                break
+            }
+            case 'gs':
+            case 'guidance':
+            case 'guidancescale':
+            case 'guidance_scale': {
+                const parsed = toNumber(value)
+                if (parsed === undefined) return { error: `Invalid guidance value: ${value}` }
+                payload.guidanceScale = parsed
+                break
+            }
+            case 'steps':
+            case 'nis':
+            case 'inference':
+            case 'inference_steps': {
+                const parsed = toNumber(value)
+                if (parsed === undefined) return { error: `Invalid steps value: ${value}` }
+                payload.inferenceSteps = parsed
+                break
+            }
+            case 'model':
+                payload.desiredModel = value
+                break
+            case 'width': {
+                const parsed = toNumber(value)
+                if (parsed === undefined) return { error: `Invalid width value: ${value}` }
+                payload.width = parsed
+                break
+            }
+            case 'height': {
+                const parsed = toNumber(value)
+                if (parsed === undefined) return { error: `Invalid height value: ${value}` }
+                payload.height = parsed
+                break
+            }
+            default:
+                // Ignore unknown flags for now
+                break
+        }
+    }
+
+    return { payload }
+}
 
 interface ChatState {
     messages: Message[]
@@ -78,7 +167,9 @@ export const useChatStore = create<ChatState>()((set, get) => {
                                 id: msg.id,
                                 role: typeof msg.role === 'string' && msg.role === 'assistant' ? 'assistant' : 'user',
                                 content: typeof msg.content === 'string' ? msg.content : '',
-                                timestamp: typeof msg.timestamp === 'number' ? msg.timestamp : fallbackTimestamp
+                                timestamp: typeof msg.timestamp === 'number' ? msg.timestamp : fallbackTimestamp,
+                                messageType: msg.messageType === 'image' ? 'image' : 'text',
+                                metadata: isRecord(msg.metadata) ? { ...msg.metadata } : undefined
                             }))
 
                         const normalisedConversation: Conversation = {
@@ -130,7 +221,10 @@ export const useChatStore = create<ChatState>()((set, get) => {
             return Array.from(byId.values()).sort((a, b) => b.updatedAt - a.updatedAt)
         }
 
-        const cloneMessages = (items: Message[]): Message[] => items.map(message => ({ ...message }))
+        const cloneMessages = (items: Message[]): Message[] => items.map(message => ({
+            ...message,
+            metadata: message.metadata ? { ...message.metadata } : undefined
+        }))
 
         const resolveMessages = (current: Message[], next: MessageUpdater): Message[] =>
             typeof next === 'function'
@@ -159,12 +253,15 @@ export const useChatStore = create<ChatState>()((set, get) => {
                 const { messages, currentConversationId } = get()
                 console.log('Sending message. Current conversation ID:', currentConversationId, 'Existing messages:', messages.length)
 
+                const isImageCommand = content.trim().toLowerCase().startsWith('/imagine')
+
                 // Create user message
                 const userMessage: Message = {
                     id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     role: 'user',
                     content,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    messageType: 'text'
                 }
 
                 // Create empty assistant message for loading state
@@ -173,7 +270,8 @@ export const useChatStore = create<ChatState>()((set, get) => {
                     id: assistantMessageId,
                     role: 'assistant',
                     content: '',
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    messageType: isImageCommand ? 'image' : 'text'
                 }
 
                 // Add user and empty assistant message to state
@@ -191,7 +289,77 @@ export const useChatStore = create<ChatState>()((set, get) => {
                     saveConversation()
                 }
 
+                const updatePlaceholder = (updater: (message: Message) => Message) => {
+                    set(state => ({
+                        messages: state.messages.map(msg =>
+                            msg.id === assistantMessageId
+                                ? updater(msg)
+                                : msg
+                        ),
+                        isTyping: false,
+                        isLoading: false
+                    }))
+                }
+
+                const handleImageCommand = async () => {
+                    const parsed = parseImageCommand(content)
+                    if (parsed.error || !parsed.payload) {
+                        updatePlaceholder(msg => ({
+                            ...msg,
+                            content: parsed.error ?? 'Image prompt cannot be empty.',
+                            messageType: 'text'
+                        }))
+                        return
+                    }
+
+                    const logImageResponse = (label: string, payload: ImageRequestPayload, response?: ImageResponse, error?: unknown) => {
+                        console.groupCollapsed(label)
+                        console.log('Request payload:', payload)
+                        if (response) {
+                            console.log('Response JSON:', response)
+                        }
+                        if (error) {
+                            console.error('Error:', error)
+                        }
+                        console.groupEnd()
+                    }
+
+                   try {
+                        const response = await requestImage(parsed.payload)
+                        logImageResponse('🖼️ Image route success', parsed.payload, response)
+                        const imageUrl = (response.metadata?.['source'] as string | undefined) ?? response.response
+                        const responseMetadata = {
+                            ...response.metadata,
+                            prompt: parsed.payload.imagePrompt,
+                            seed: parsed.payload.seed,
+                            guidanceScale: parsed.payload.guidanceScale,
+                            inferenceSteps: parsed.payload.inferenceSteps,
+                            model: parsed.payload.desiredModel ?? response.metadata?.['model']
+                        }
+                        updatePlaceholder(msg => ({
+                            ...msg,
+                            content: imageUrl,
+                            metadata: responseMetadata,
+                            messageType: 'image'
+                        }))
+                   } catch (error) {
+                       logImageResponse('🖼️ Image route failed', parsed.payload, undefined, error)
+                        console.error('Failed to generate image:', error)
+                        const errorMessage = error instanceof Error ? error.message : String(error ?? 'Unknown error')
+                        updatePlaceholder(msg => ({
+                            ...msg,
+                            content: `Sorry, I could not generate that image. ${errorMessage}`,
+                            messageType: 'text'
+                        }))
+                    }
+                }
+
                 try {
+                    if (isImageCommand) {
+                        await handleImageCommand()
+                        return
+                    }
+
                     // Prepare messages array for OpenAI format
                     const apiMessages = [
                         { role: 'system', content: SYSTEM_PROMPT },
@@ -215,28 +383,20 @@ export const useChatStore = create<ChatState>()((set, get) => {
                     const assistantContent = response.response || response
 
                     // Update assistant message with content
-                    set(state => ({
-                        messages: state.messages.map(msg =>
-                            msg.id === assistantMessageId
-                                ? { ...msg, content: assistantContent }
-                                : msg
-                        ),
-                        isTyping: false,
-                        isLoading: false
+                    updatePlaceholder(msg => ({
+                        ...msg,
+                        content: assistantContent,
+                        messageType: 'text'
                     }))
 
                 } catch (error) {
                     console.error('Failed to send message:', error)
 
                     // Update the empty assistant message with error
-                    set(state => ({
-                        messages: state.messages.map(msg =>
-                            msg.id === assistantMessageId
-                                ? { ...msg, content: 'Sorry, I encountered an error. Please try again.' }
-                                : msg
-                        ),
-                        isTyping: false,
-                        isLoading: false
+                    updatePlaceholder(msg => ({
+                        ...msg,
+                        content: 'Sorry, I encountered an error. Please try again.',
+                        messageType: 'text'
                     }))
                 }
             },

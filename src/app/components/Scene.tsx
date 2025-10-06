@@ -1,7 +1,7 @@
 'use client'
 import { OrthographicCamera, useGLTF, AsciiRenderer } from "@react-three/drei"
 import { Canvas, useThree } from "@react-three/fiber"
-import React, { useRef } from 'react'
+import React, { useMemo, createRef } from 'react'
 import * as THREE from 'three'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
@@ -37,12 +37,12 @@ interface GLTFData {
 function AnimatedGroup({ children }: { children: React.ReactNode }) {
    return (
       <group
-         scale={[2, 2, 3]}
+         scale={[2, 1, 3]}
          position={[0, 0, 0]}
          rotation={[
+            90 * (Math.PI / 180),
             0 * (Math.PI / 180),
-            0 * (Math.PI / 180),
-            0 * (Math.PI / 180),
+            -10 * (Math.PI / 180),
          ]}>
          {children}
       </group>
@@ -50,52 +50,63 @@ function AnimatedGroup({ children }: { children: React.ReactNode }) {
 }
 
 function AnimatedInnerGroups({ children }: { children: React.ReactNode }) {
-   const groupRefs = [
-      useRef<THREE.Group>(null),
-      useRef<THREE.Group>(null),
-      useRef<THREE.Group>(null),
-      useRef<THREE.Group>(null),
-      useRef<THREE.Group>(null),
-   ]
+   const childArray = useMemo(() => React.Children.toArray(children), [children])
+   const groupRefs = useMemo(
+      () => childArray.map(() => createRef<THREE.Group>()),
+      [childArray.length]
+   )
 
    useGSAP(() => {
-      const validGroups = groupRefs.map(ref => ref.current).filter(Boolean) as THREE.Group[]
+      const validGroups = groupRefs
+         .map(ref => ref.current)
+         .filter((group): group is THREE.Group => !!group)
 
-      function createAnimationLoop() {
-         validGroups.forEach((group, index) => {
-            if (group) {
-               gsap.to(group.position, {
-                  y: 0.02,
-                  duration: 0.2,
-                  ease: 'power3.inOut',
-                  delay: index * 0.06,
-                  onComplete: () => {
-                     gsap.to(group.position, {
-                        y: 0,
-                        duration: 0.1,
-                        ease: "power3.inOut",
-                        delay: 0
-                     })
-                  }
-               })
-            }
-         })
+      const positionTweens = validGroups.map((group, index) => {
+         const initialZ = group.position.z
+         return gsap.timeline({ repeat: -1, delay: index * 0.1 })
+            .to(group.position, {
+               z: initialZ - 0.02,
+               duration: 0.4,
+               ease: 'power3.out'
+            })
+            .to(group.position, {
+               z: initialZ,
+               duration: 1,
+               ease: 'power3.inOut'
+            },'<0.2')
+      })
+
+      const rotationTweens = validGroups.map((group, index) =>
+         gsap.timeline({ repeat: -1, delay: index * 0.15 })
+            .to(group.rotation, {
+               z: `+=-${(Math.PI * 2).toFixed(3)}`,
+               duration: 2,
+               ease: 'power4.inOut'
+            })
+            .to({}, { duration: 2 })
+      )
+
+      return () => {
+         positionTweens.forEach(tween => tween.kill())
+         rotationTweens.forEach(tween => tween.kill())
       }
-
-      createAnimationLoop()
-
-      gsap.timeline({ repeat: -1 })
-         .call(createAnimationLoop)
-         .to({}, { duration: 1 })
-   }, [])
+   }, [groupRefs])
 
    return (
       <>
-         {React.Children.map(children, (child, index) => (
-            <group ref={groupRefs[index]}>
-               {child}
-            </group>
-         ))}
+         {childArray.map((child, index) => {
+            if (!React.isValidElement(child)) {
+               return child
+            }
+
+            const existingUserData = (child.props as { userData?: Record<string, unknown> }).userData ?? {}
+
+            return React.cloneElement(child, {
+               ref: groupRefs[index],
+               key: child.key ?? `inner-group-${index}`,
+               userData: { ...existingUserData, slot: index }
+            })
+         })}
       </>
    )
 }
@@ -107,20 +118,18 @@ export default function Scene() {
       <Canvas
          className={styles.canvas}
          shadows
-         dpr={[0.6, 1]}
          gl={{
             antialias: false,
             powerPreference: 'high-performance'
          }}
          style={{
             width: '100vw',
-            height: '20vh',
+            height: '40vh',
             background: 'transparent',
-            left: '4%',
          }}>
          <AnimatedGroup>
             <AnimatedInnerGroups>
-               <group>
+               <group position={[-0.442, 0.054, 0.052]}>
                   <mesh
                      castShadow
                      receiveShadow
@@ -134,7 +143,7 @@ export default function Scene() {
                      material={materials.Material}
                   />
                </group>
-               <group>
+               <group position={[-0.229, 0.054, 0.023]}>
                   <mesh
                      castShadow
                      receiveShadow
@@ -148,7 +157,7 @@ export default function Scene() {
                      material={materials.Material}
                   />
                </group>
-               <group>
+               <group position={[-0.062, 0.054, 0.017]}>
                   <mesh
                      castShadow
                      receiveShadow
@@ -162,7 +171,7 @@ export default function Scene() {
                      material={materials.Material}
                   />
                </group>
-               <group>
+               <group position={[0.153, 0.054, 0.065]}>
                   <mesh
                      castShadow
                      receiveShadow
@@ -176,7 +185,7 @@ export default function Scene() {
                      material={materials.Material}
                   />
                </group>
-               <group>
+               <group position={[0.356, 0.054, 0.057]}>
                   <mesh
                      castShadow
                      receiveShadow
@@ -193,21 +202,23 @@ export default function Scene() {
             </AnimatedInnerGroups>
             <color attach="background" args={['black']} />
             <directionalLight
-               position={[0, 3, 1]}
-               intensity={100}
+               position={[-1, 4, -1]}
+               intensity={26}
+               castShadow
                color='white'
             />
             <ambientLight
-               position={[0, 0, 0]}
+               position={[0, 1, 0]}
                intensity={0}
             />
          </AnimatedGroup>
          <SafeAsciiRenderer
-            characters=" X:>:0|/"
+            // characters=" .x->-+x"
+            characters=" 010!?X>!x<—"
             bgColor="transparent"
             fgColor="#4893f5"
             invert={false}
-            resolution={0.25}
+            resolution={0.15}
          />
          <OrthographicCamera
             makeDefault

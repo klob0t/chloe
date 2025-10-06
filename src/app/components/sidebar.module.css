@@ -39,10 +39,12 @@
    padding: 20px;
    border-top: 1px solid var(--text-light);
    display: flex;
-   align-items: center;
+   align-items: flex-end;
    font-size: 0.7rem;
+   flex-direction: column;
    color: var(--text-dark);
    justify-content: flex-end;
+   width: 100%;
 }
 
 .sidebarHeader h3 {

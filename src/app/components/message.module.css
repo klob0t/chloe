@@ -26,7 +26,7 @@
 }
 
 .assistantAvatar {
-    color: var(--text-light-blue);
+    color: var(--text-light);
     padding-right: 1rem;
     font-size: 0.3rem;
     transform: translateY(-15px);
@@ -39,7 +39,7 @@
     padding: 1rem;
     border-width: 1px;
     border-style: solid;
-    border-color: var(--text-light-blue);
+    border-color: var(--text-light);
     line-height: 1.5rem;
     font-weight: 200;
     position: relative;
@@ -61,7 +61,7 @@
     right: -1rem;
     width: 0;
     height: 0;
-    border-left: 1rem solid #60a5fa;
+    border-left: 1rem solid var(--text-light);
     border-bottom: 1rem solid transparent;
 }
 
@@ -84,7 +84,7 @@
     left: -1rem;
     width: 0;
     height: 0;
-    border-right: 1rem solid #60a5fa;
+    border-right: 1rem solid var(--text-light);
     border-bottom: 1rem solid transparent;
 }
 
@@ -124,4 +124,21 @@
 
 .assistantMessage code {
     font-family: var(--font-geist-mono);
+}
+
+.imageWrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+}
+
+.generatedImage {
+    max-width: 100%;
+    border: 1px solid var(--text-light);
+}
+
+.spinnerWrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0rem;
 }
