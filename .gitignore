@@ -10,6 +10,8 @@
 !.yarn/releases
 !.yarn/versions
 
+chloe-v1/
+
 # testing
 /coverage
 

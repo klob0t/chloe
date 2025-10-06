@@ -7,24 +7,20 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Spinner } from './Spinner'
 import Input from '@/app/components/Input'
-import { useConversationStore } from '@/app/lib/store/conversation'
 import { useChatStore } from '@/app/lib/store/chat'
 import TextAnimation from '@/app/lib/tools/TextAnimation'
 import dynamic from 'next/dynamic'
+
+const Scene = dynamic(() => import('@/app/components/Scene'), {
+    ssr: false,
+})
 
 export default function Landing() {
     const [response, setResponse] = useState('')
     const [error, setError] = useState('')
     const { setLoading } = useLoadingStore()
     const router = useRouter()
-    const { createConversation } = useConversationStore()
-    const { sendMessage, clearMessages } = useChatStore()
-
-    const Scene = dynamic(() => import('@/app/components/Scene'), {
-  ssr: false,
-})
-
-    const welcomePrompt: string = "greet the user warmly and offer what you can do to the user 5 words"
+    const { sendMessage, clearMessages, saveConversation, setCurrentConversationId } = useChatStore()
 
     useEffect(() => {
         const id = () => `${Date.now()}-${Math.random().toString(36)}`
@@ -35,7 +31,7 @@ export default function Landing() {
                 const payload = {
                     messages: [
                         { role: 'system', content: SYSTEM_PROMPT },
-                        { role: 'user', content: 'greet the user warmly and offer what you can do to the user in 10 or less words' }
+                        { role: 'user', content: 'greet the user warmly with Hi and offer what you can do to the user in 5 or less words' }
                     ],
                     model: 'openai'
                 }
@@ -55,22 +51,26 @@ export default function Landing() {
         // Clear any existing messages
         clearMessages()
 
-        // Create new conversation
-        const conversationId = createConversation()
+        // Generate a new conversation ID
+        const conversationId = `conv-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+
+        // Set the current conversation ID in the store
+        setCurrentConversationId(conversationId)
 
         // Navigate immediately to chat page
         router.push(`/chat/${conversationId}`)
 
         // Send the message after a short delay to ensure chat page has loaded
-        setTimeout(() => {
-            sendMessage(content)
-        }, 100)
+        setTimeout(() => sendMessage(content), 100)
     }
 
     return (
         <div className={styles.landingPage}>
+      
             <div className={styles.landingWrapper}>
-                <Scene />
+                  <div className={styles.ASCII}>
+                    <Scene />
+                </div>
                 <div className={styles.greeting}>
                     {error ? (
                         <p>{error}</p>

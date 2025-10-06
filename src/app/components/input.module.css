@@ -8,27 +8,31 @@
 .inputArea {
    min-height: 44px;
    background-color: var(--background-darker);
-   color: var(--text);
-   line-height: 1.2rem;
+   color: var(--text-light);
    white-space: pre-wrap;
    word-wrap: break-word;
    display: flex;
+   overflow-x: hidden;
    align-items: center;
    padding: 0rem 1rem 0rem 1rem;
-   font-size: 1.2rem;
+   font-size: 1rem;
+   border: 1px solid var(--text-dark);
    margin: 1rem 1rem 0rem 1rem;
 }
 
+
+
 .inputArea:focus {
    outline: none;
-   border: none;
+   border: 1px solid var(--text-light);
    box-shadow: none;
 }
 
 .disclaimer {
-   font-size: 0.6rem;
+   font-size: 0.8rem;
    width: 100%;
    display: flex;
+   margin: 0.2rem;
    justify-content: center;
    margin-left: auto;
    color: var(--text-dark);
