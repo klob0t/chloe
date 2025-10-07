@@ -20,7 +20,6 @@ export default function Landing() {
     const [error, setError] = useState('')
     const { setLoading } = useLoadingStore()
     const router = useRouter()
-    const { sendMessage, clearMessages, saveConversation, setCurrentConversationId } = useChatStore()
 
     useEffect(() => {
         const id = () => `${Date.now()}-${Math.random().toString(36)}`
@@ -47,22 +46,7 @@ export default function Landing() {
         fetchResponse()
     }, [setLoading])
 
-    const handleSendMessage = async (content: string) => {
-        // Clear any existing messages
-        clearMessages()
 
-        // Generate a new conversation ID
-        const conversationId = `conv-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-
-        // Set the current conversation ID in the store
-        setCurrentConversationId(conversationId)
-
-        // Navigate immediately to chat page
-        router.push(`/chat/${conversationId}`)
-
-        // Send the message after a short delay to ensure chat page has loaded
-        setTimeout(() => sendMessage(content), 100)
-    }
 
     return (
         <div className={styles.landingPage}>
@@ -85,7 +69,6 @@ export default function Landing() {
                     )}
                 </div>
             </div>
-            <Input onSendMessage={handleSendMessage} />
         </div>
     )
 }

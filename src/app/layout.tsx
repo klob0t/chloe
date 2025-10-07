@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { GeistMono } from 'geist/font/mono';
 import "./globals.css";
+import AppShell from "@/app/components/AppShell";
 
 export const metadata: Metadata = {
   title: "Chloe",
@@ -15,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${GeistMono.variable}`}>
-        {children}
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   )

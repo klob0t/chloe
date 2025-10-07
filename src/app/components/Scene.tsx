@@ -37,7 +37,7 @@ interface GLTFData {
 function AnimatedGroup({ children }: { children: React.ReactNode }) {
    return (
       <group
-         scale={[2, 1, 3]}
+         scale={[2, 1, 2]}
          position={[0, 0, 0]}
          rotation={[
             90 * (Math.PI / 180),
@@ -73,7 +73,7 @@ function AnimatedInnerGroups({ children }: { children: React.ReactNode }) {
                z: initialZ,
                duration: 1,
                ease: 'power3.inOut'
-            },'<0.2')
+            }, '<0.2')
       })
 
       const rotationTweens = validGroups.map((group, index) =>

@@ -3,24 +3,25 @@
    bottom: 0;
    justify-content: center;
    position: fixed;
+   display: flex;
+   flex-direction: column;
+   
+   background-color: var(--background);
 }
 
 .inputArea {
-   min-height: 44px;
-   background-color: var(--background-darker);
+   min-height: 45px;
    color: var(--text-light);
    white-space: pre-wrap;
    word-wrap: break-word;
    display: flex;
    overflow-x: hidden;
    align-items: center;
-   padding: 0rem 1rem 0rem 1rem;
    font-size: 1rem;
-   border: 1px solid var(--text-dark);
-   margin: 1rem 1rem 0rem 1rem;
+   border-bottom: 1px dashed var(--text-dark);
+   padding: 0 1rem 0 1rem;
+   width: 100%;
 }
-
-
 
 .inputArea:focus {
    outline: none;

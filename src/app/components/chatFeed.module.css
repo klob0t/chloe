@@ -5,72 +5,16 @@
     flex-direction: column;
 }
 
-.chatFeedHeader {
-    display: flex;
-    position: sticky;
-    width: 100dvw;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1rem 1rem 1rem;
-    z-index: 1;
-}
 
-.logo {
-    color: var(--text-light);
-    font-size: 0.4rem;
-    font-weight: 700;
-    text-align: center;
-    height: 20px;
-    width: 20px;
-    line-height: 0.4rem;
-    justify-content: center;
-    align-items: center;
-    vertical-align: middle;
-    padding: 1rem;
-    box-sizing: content-box;
-
-}
-
-.logo a {
-    text-decoration: none;
-    color: var(--text-light);
-}
-
-.logo pre {
-    transform: translate(-5.5, -11);
-}
-
-.logo:hover {
-    outline: 1px solid var(--text-light);
-    background-color: var(--background-darker);
-}
-
-.newChat {
-    width: 20px;
-    height: 20px;
-    font-size: 3rem;
-    font-weight: 100;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
-    cursor: pointer;
-    box-sizing: content-box
-}
-
-.newChat:hover {
-    outline: 1px solid var(--text-light);
-    background-color: var(--background-darker);
-}
 
 .messagesContainer {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 1rem 1rem 1rem 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    height: 90%;
     margin-bottom: 2rem;
 }
 
@@ -102,27 +46,3 @@
     font-size: 0.6rem;
 }
 
-.chatFeedButtons {
-    display: flex;
-    width: 100%;
-    align-items: center;
-}
-
-.hamburger {
-    width: 20px;
-    height: 20px;
-    font-size: 1.5rem;
-    font-weight: 100;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-sizing: content-box
-}
-
-.hamburger:hover {
-    outline: 1px solid var(--text-light);
-    background-color: var(--background-darker);
-}

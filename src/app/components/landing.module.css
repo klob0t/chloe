@@ -1,23 +1,33 @@
 .landingPage {
-   width: 100dvw;
+   width: 100%;
    height: 100dvh;
    max-width: 768px;
    color: var(--text-light);
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   flex-grow: 1;
+   margin: auto;
 }
 
 .landingWrapper {
-   width: 100dvw;
+   width: 100%;
    height: 100dvh;
    font-size: 1.2rem;
+   
+   flex-grow: 1;
    display: flex;
    position: relative;
    display: flex;
    flex-direction: column;
-   margin: auto;
+   margin-left: auto;
+   border: 1px solid orange;
+   align-items: center;
    justify-content: center;
 }
 
 .greeting {
    text-align: center;
    transform: translate(0, -4.5rem);
+   width: 100%;
 }

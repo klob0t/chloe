@@ -3,7 +3,6 @@ import { useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useChatStore } from '@/app/lib/store/chat'
 import ChatFeed from '@/app/components/ChatFeed'
-import Sidebar from '@/app/components/Sidebar'
 import Input from '@/app/components/Input'
 import styles from './chat.module.css'
 
@@ -29,9 +28,7 @@ export default function ChatPage() {
 
     return (
         <div className={styles.chatPage}>
-            <Sidebar />
             <ChatFeed />
-            <Input />
         </div>
     )
 }

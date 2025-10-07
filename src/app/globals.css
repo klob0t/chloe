@@ -3,6 +3,7 @@
   --text-dark: #0b489d;
   --background: #050d41;
   --background-darker: #00052a;
+  --sidebar-collapsed-width: 60px;
 }
 
 html,
@@ -20,6 +21,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.app-shell {
+  min-height: 100dvh;
+  width: 100dvw;
+}
+
+.app-content {
+  flex: 1;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -27,5 +37,5 @@ body {
 }
 
 a {
-  color: rgb(58, 173, 245)
+  color: rgb(58, 173, 245);
 }
