@@ -11,10 +11,12 @@ interface AppShellProps {
 export default function AppShell({ children }: AppShellProps) {
    return (
       <div className="app-shell">
-         <Sidebar />
+         <div className="app-overlay">
+            <Sidebar />
+            <Input />
+         </div>
          <main className="app-content">
             {children}
-            <Input />
          </main>
 
       </div>

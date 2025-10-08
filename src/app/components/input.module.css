@@ -1,32 +1,32 @@
 .inputWrapper {
    width: 100%;
    bottom: 0;
-   justify-content: center;
    position: fixed;
    display: flex;
    flex-direction: column;
-   
+   justify-content: center;
+   align-items: center;
+   margin-left: 60px;
    background-color: var(--background);
+   
+   /* z-index: 1; */
 }
 
 .inputArea {
-   min-height: 45px;
+   height: 45px;
+   border: 1px solid var(--text-dark);
+   width: 80%;
+   background: var(--background-darker);
+   max-width: 768px;
+   margin-left: -60px;
    color: var(--text-light);
-   white-space: pre-wrap;
-   word-wrap: break-word;
    display: flex;
-   overflow-x: hidden;
+   padding: 0 0 0 1rem;
    align-items: center;
-   font-size: 1rem;
-   border-bottom: 1px dashed var(--text-dark);
-   padding: 0 1rem 0 1rem;
-   width: 100%;
 }
 
 .inputArea:focus {
-   outline: none;
    border: 1px solid var(--text-light);
-   box-shadow: none;
 }
 
 .disclaimer {

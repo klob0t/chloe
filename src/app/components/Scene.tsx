@@ -129,7 +129,7 @@ export default function Scene() {
          }}>
          <AnimatedGroup>
             <AnimatedInnerGroups>
-               <group position={[-0.442, 0.054, 0.052]}>
+               <group position={[-0.39, 0.09, 0.018]}>
                   <mesh
                      castShadow
                      receiveShadow
@@ -143,7 +143,7 @@ export default function Scene() {
                      material={materials.Material}
                   />
                </group>
-               <group position={[-0.229, 0.054, 0.023]}>
+               <group position={[-0.181, 0.09, 0.018]}>
                   <mesh
                      castShadow
                      receiveShadow
@@ -157,7 +157,7 @@ export default function Scene() {
                      material={materials.Material}
                   />
                </group>
-               <group position={[-0.062, 0.054, 0.017]}>
+               <group position={[-0.024, 0.09, 0.018]}>
                   <mesh
                      castShadow
                      receiveShadow
@@ -171,7 +171,7 @@ export default function Scene() {
                      material={materials.Material}
                   />
                </group>
-               <group position={[0.153, 0.054, 0.065]}>
+               <group position={[0.192, 0.09, 0.018]}>
                   <mesh
                      castShadow
                      receiveShadow
@@ -185,7 +185,7 @@ export default function Scene() {
                      material={materials.Material}
                   />
                </group>
-               <group position={[0.356, 0.054, 0.057]}>
+               <group position={[0.41, 0.09, 0.018]}>
                   <mesh
                      castShadow
                      receiveShadow
