@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useChatStore } from '@/app/lib/store/chat'
 import { useSidebarStore } from '@/app/lib/store/sidebar'
@@ -16,12 +16,40 @@ export default function Sidebar() {
       loadConversation,
       deleteConversation,
       loadConversations,
-      debugLogConversations
+      debugLogConversations,
+      titleGenerationStatus,
+      ensureConversationTitle
    } = useChatStore()
 
-   const { isOpen, closeSidebar, toggleSidebar } = useSidebarStore()
+   const { isOpen, closeSidebar, toggleSidebar, openSidebar } = useSidebarStore()
    const router = useRouter()
    const pathname = usePathname()
+
+   const DESKTOP_BREAKPOINT = 1280
+   const [isDesktop, setIsDesktop] = useState(false)
+
+   useEffect(() => {
+      const updateIsDesktop = () => {
+         const nextIsDesktop = window.innerWidth >= DESKTOP_BREAKPOINT
+         setIsDesktop((prev) => {
+            if (prev !== nextIsDesktop) {
+               if (nextIsDesktop) {
+                  openSidebar()
+               } else {
+                  closeSidebar()
+               }
+            }
+            return nextIsDesktop
+         })
+      }
+
+      updateIsDesktop()
+      window.addEventListener('resize', updateIsDesktop)
+
+      return () => {
+         window.removeEventListener('resize', updateIsDesktop)
+      }
+   }, [closeSidebar, openSidebar])
 
    useEffect(() => {
       console.log('Sidebar: Loading conversations...')
@@ -44,6 +72,18 @@ export default function Sidebar() {
       [conversations]
    )
 
+   useEffect(() => {
+      sortedConversations.forEach(conversation => {
+         const status = titleGenerationStatus[conversation.id]
+         const hasTitle = Boolean(conversation.title && conversation.title.trim().length > 0 && conversation.title !== conversation.id)
+         const hasMessages = conversation.messages && conversation.messages.length > 0
+
+         if (!hasTitle && hasMessages && status !== 'loading' && status !== 'error') {
+            void ensureConversationTitle(conversation.id)
+         }
+      })
+   }, [sortedConversations, titleGenerationStatus, ensureConversationTitle])
+
    // Debug the store state when list changes
    useEffect(() => {
       debugLogConversations()
@@ -54,7 +94,9 @@ export default function Sidebar() {
       if (pathname !== `/chat/${id}`) {
          router.push(`/chat/${id}`)
       }
-      closeSidebar()
+      if (!isDesktop) {
+         closeSidebar()
+      }
    }
 
    const handleDeleteConversation = (e: React.MouseEvent, id: string) => {
@@ -68,6 +110,13 @@ export default function Sidebar() {
       const date = new Date(timestamp)
       return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
    }
+
+   const resolveTitle = (title?: string) => {
+      const trimmed = title?.trim()
+      return trimmed && trimmed.length > 0 ? trimmed : 'New chat'
+   }
+
+   const getTitleStatus = (id: string) => titleGenerationStatus[id] ?? 'idle'
 
 
    const ASSISTANT_ASCII_ART =
@@ -86,7 +135,9 @@ export default function Sidebar() {
          {isOpen ?
             (
                <>
-                  <div className={styles.overlay} onClick={closeSidebar} />
+                  {isDesktop ? null : (
+                     <div className={styles.overlay} onClick={closeSidebar} />
+                  )}
 
                   <div className={styles.sidebarOpen}>
 
@@ -110,30 +161,42 @@ export default function Sidebar() {
                               No chats yet
                            </div>
                         ) : (
-                           sortedConversations.map((conversation) => (
-                              <div
-                                 key={conversation.id}
-                                 className={`${styles.conversationItem} ${currentConversationId === conversation.id ? styles.active : ''
-                                    }`}
-                                 onClick={() => handleConversationClick(conversation.id)}
-                              >
-                                 <div className={styles.conversationContent}>
-                                    <div className={styles.conversationTitle}>
-                                       {conversation.id}
-                                    </div>
-                                    <div className={styles.conversationMeta}>
-                                       {formatDate(conversation.updatedAt)}
-                                    </div>
-                                 </div>
-                                 <button
-                                    className={styles.deleteButton}
-                                    onClick={(e) => handleDeleteConversation(e, conversation.id)}
-                                    title="Delete conversation"
+                           sortedConversations.map((conversation) => {
+                              const titleLabel = resolveTitle(conversation.title)
+                              const titleStatus = getTitleStatus(conversation.id)
+                              const isLoadingTitle = titleStatus === 'loading'
+                              const isTitleError = titleStatus === 'error'
+
+                              return (
+                                 <div
+                                    key={conversation.id}
+                                    className={`${styles.conversationItem} ${currentConversationId === conversation.id ? styles.active : ''
+                                       }`}
+                                    onClick={() => handleConversationClick(conversation.id)}
                                  >
-                                    ×
-                                 </button>
-                              </div>
-                           ))
+                                    <div className={styles.conversationContent}>
+                                       <div
+                                          className={`${styles.conversationTitle} ${styles.conversationTitleRow}`}
+                                          title={titleLabel}
+                                       >
+                                          <span className={styles.conversationTitleText}>{titleLabel}</span>
+                                          {isLoadingTitle ? <span className={styles.titleSpinner} aria-label="Generating title" /> : null}
+                                          {isTitleError ? <span className={styles.titleError} title="Title generation failed">!</span> : null}
+                                       </div>
+                                       <div className={styles.conversationMeta}>
+                                          {formatDate(conversation.updatedAt)}
+                                       </div>
+                                    </div>
+                                    <button
+                                       className={styles.deleteButton}
+                                       onClick={(e) => handleDeleteConversation(e, conversation.id)}
+                                       title="Delete conversation"
+                                    >
+                                       ×
+                                    </button>
+                                 </div>
+                              )
+                           })
                         )}
                      </div>
                      <div className={styles.sidebarFooter}>

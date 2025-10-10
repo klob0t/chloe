@@ -19,6 +19,135 @@ interface Conversation {
     title?: string
 }
 
+type TitleGenerationStatus = 'idle' | 'loading' | 'error'
+
+const DEFAULT_CONVERSATION_TITLE = 'New chat'
+const MAX_CONVERSATION_TITLE_LENGTH = 60
+const MAX_MESSAGES_FOR_TITLE = 8
+
+const TITLE_SYSTEM_PROMPT = [
+    'You are an assistant that creates short, descriptive titles for chat transcripts.',
+    'Return a concise title of at most six words using sentence case.',
+    'Do not include quotation marks, emojis, or trailing punctuation.'
+].join(' ')
+
+const normaliseWhitespace = (value: string) => value.replace(/\s+/g, ' ').trim()
+
+const truncateTitle = (value: string) =>
+    value.length > MAX_CONVERSATION_TITLE_LENGTH
+        ? `${value.slice(0, MAX_CONVERSATION_TITLE_LENGTH - 1).trimEnd()}…`
+        : value
+
+const capitaliseFirst = (value: string) =>
+    value.length === 0 ? value : value.charAt(0).toUpperCase() + value.slice(1)
+
+const generateConversationTitle = (messages: Message[]): string => {
+    const firstMeaningfulUserMessage = messages.find(message =>
+        message.role === 'user' &&
+        message.messageType !== 'image' &&
+        typeof message.content === 'string' &&
+        normaliseWhitespace(message.content).length > 0 &&
+        !message.content.trim().startsWith('/')
+    )
+
+    const fallbackMessage = messages.find(message =>
+        typeof message.content === 'string' &&
+        normaliseWhitespace(message.content).length > 0
+    )
+
+    const rawTitle = firstMeaningfulUserMessage?.content ?? fallbackMessage?.content ?? DEFAULT_CONVERSATION_TITLE
+    const normalisedTitle = normaliseWhitespace(rawTitle)
+
+    if (!normalisedTitle) {
+        return DEFAULT_CONVERSATION_TITLE
+    }
+
+    return capitaliseFirst(truncateTitle(normalisedTitle))
+}
+
+const postProcessGeneratedTitle = (value: string): string | null => {
+    if (typeof value !== 'string') {
+        return null
+    }
+
+    const withoutQuotes = value.replace(/^['"]|['"]$/g, '')
+    const normalisedTitle = normaliseWhitespace(withoutQuotes)
+
+    if (!normalisedTitle) {
+        return null
+    }
+
+    return capitaliseFirst(truncateTitle(normalisedTitle))
+}
+
+const hasStableTitle = (conversation: Conversation | undefined): boolean => {
+    if (!conversation?.title) {
+        return false
+    }
+
+    const trimmed = normaliseWhitespace(conversation.title)
+    if (!trimmed) {
+        return false
+    }
+
+    if (trimmed.toLowerCase() === DEFAULT_CONVERSATION_TITLE.toLowerCase()) {
+        return false
+    }
+
+    if (conversation && trimmed === conversation.id) {
+        return false
+    }
+
+    return true
+}
+
+const filterMessagesForTitle = (messages: Message[]) =>
+    messages
+        .filter(message =>
+            message.messageType !== 'image' &&
+            typeof message.content === 'string' &&
+            normaliseWhitespace(message.content).length > 0
+        )
+        .slice(-MAX_MESSAGES_FOR_TITLE)
+
+const hasMeaningfulUserMessage = (messages: Message[]) =>
+    messages.some(message =>
+        message.role === 'user' &&
+        message.messageType !== 'image' &&
+        typeof message.content === 'string' &&
+        normaliseWhitespace(message.content).length > 0
+    )
+
+const buildConversationSnippet = (messages: Message[]) =>
+    filterMessagesForTitle(messages)
+        .map(message => {
+            const speaker = message.role === 'assistant' ? 'Assistant' : 'User'
+            return `${speaker}: ${normaliseWhitespace(message.content)}`
+        })
+        .join('\n')
+
+const requestGeneratedTitle = async (messages: Message[]): Promise<string | null> => {
+    const snippet = buildConversationSnippet(messages)
+    if (!snippet) {
+        return null
+    }
+
+    const payload = {
+        messages: [
+            { role: 'system', content: TITLE_SYSTEM_PROMPT },
+            {
+                role: 'user',
+                content: `Here is the conversation transcript. Reply with only a short title.\n\n${snippet}`
+            }
+        ],
+        model: 'openai'
+    }
+
+    const response = await request(payload)
+    const rawTitle = typeof response === 'string' ? response : (response.response ?? response)
+    return postProcessGeneratedTitle(rawTitle)
+}
+
 type MessageUpdater = Message[] | ((messages: Message[]) => Message[])
 
 interface ParsedImageCommand {
@@ -114,6 +243,7 @@ interface ChatState {
     isLoading: boolean
     conversations: Conversation[]
     currentConversationId: string | null
+    titleGenerationStatus: Record<string, TitleGenerationStatus>
 
     // Actions
     sendMessage: (content: string, model?: string) => Promise<void>
@@ -127,6 +257,7 @@ interface ChatState {
     deleteConversation: (id: string) => void
     loadConversations: () => void
     debugLogConversations: () => void
+    ensureConversationTitle: (id: string) => Promise<void>
 }
 
 // Add a global store instance counter
@@ -231,6 +362,34 @@ export const useChatStore = create<ChatState>()((set, get) => {
                 ? (next as (messages: Message[]) => Message[])(current)
                 : next
 
+        const updateTitleStatus = (conversationId: string, status: TitleGenerationStatus) => {
+            set(state => {
+                const nextStatus = { ...state.titleGenerationStatus }
+                if (status === 'idle') {
+                    delete nextStatus[conversationId]
+                } else {
+                    nextStatus[conversationId] = status
+                }
+                return { titleGenerationStatus: nextStatus }
+            })
+        }
+
+        const applyConversationTitleUpdate = (conversation: Conversation, title: string) => {
+            const updatedConversation: Conversation = {
+                ...conversation,
+                title
+            }
+
+            const persisted = readPersistedConversations()
+            const merged = mergeAndSortConversations(persisted, get().conversations, [updatedConversation])
+
+            persistConversations(merged)
+            set(state => ({
+                ...state,
+                conversations: merged
+            }))
+        }
+
         return {
             // Add debug function to log current state
             debugLogConversations: () => {
@@ -248,6 +407,7 @@ export const useChatStore = create<ChatState>()((set, get) => {
             isLoading: false,
             conversations: [],
             currentConversationId: null,
+            titleGenerationStatus: {},
 
             sendMessage: async (content: string, model = 'openai-large') => {
                 const { messages, currentConversationId } = get()
@@ -449,8 +609,10 @@ export const useChatStore = create<ChatState>()((set, get) => {
                     updatedAt: now
                 }
 
-                if (title) {
-                    conversationRecord.title = title
+                const resolvedTitle = title ?? existing?.title
+
+                if (resolvedTitle) {
+                    conversationRecord.title = resolvedTitle
                 }
 
                 const updatedConversations = mergeAndSortConversations(combinedExisting, [conversationRecord])
@@ -465,6 +627,10 @@ export const useChatStore = create<ChatState>()((set, get) => {
                     conversations: updatedConversations,
                     currentConversationId: conversationId
                 }))
+
+                if (!hasStableTitle(conversationRecord) && safeMessages.length > 0 && hasMeaningfulUserMessage(safeMessages)) {
+                    void get().ensureConversationTitle(conversationId)
+                }
             },
 
             loadConversation: (id: string) => {
@@ -575,6 +741,56 @@ export const useChatStore = create<ChatState>()((set, get) => {
                 } catch (error) {
                     console.error('Failed to load conversations:', error)
                     console.error('localStorage data was:', savedConversations)
+                }
+            },
+
+            ensureConversationTitle: async (id: string) => {
+                if (typeof window === 'undefined') {
+                    return
+                }
+
+                const currentStatus = get().titleGenerationStatus[id]
+                if (currentStatus === 'loading') {
+                    return
+                }
+
+                const state = get()
+                const inMemoryConversation = state.conversations.find(conv => conv.id === id)
+                const persistedList = inMemoryConversation ? [] : readPersistedConversations()
+                const persistedConversation = persistedList.find(conv => conv.id === id)
+                const targetConversation = inMemoryConversation || persistedConversation
+
+                if (!targetConversation) {
+                    return
+                }
+
+                if (hasStableTitle(targetConversation)) {
+                    if (currentStatus) {
+                        updateTitleStatus(id, 'idle')
+                    }
+                    return
+                }
+
+                if (!hasMeaningfulUserMessage(targetConversation.messages)) {
+                    return
+                }
+
+                updateTitleStatus(id, 'loading')
+
+                try {
+                    const generatedTitle = await requestGeneratedTitle(targetConversation.messages)
+                    const finalTitle = generatedTitle ?? generateConversationTitle(targetConversation.messages)
+
+                    if (!finalTitle) {
+                        updateTitleStatus(id, 'error')
+                        return
+                    }
+
+                    applyConversationTitleUpdate(targetConversation, finalTitle)
+                    updateTitleStatus(id, 'idle')
+                } catch (error) {
+                    console.error('Failed to generate conversation title:', error)
+                    updateTitleStatus(id, 'error')
                 }
             }
         }

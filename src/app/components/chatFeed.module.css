@@ -10,7 +10,7 @@
     overscroll-behavior: contain;
     padding: 0 0;
     scrollbar-width: thick;
-    scrollbar-color: var(--text-light) transparent;
+    scrollbar-color: var(--text-dark) transparent;
 
     /* border: 1px solid red; */
 }
