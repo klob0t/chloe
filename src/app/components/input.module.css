@@ -1,40 +1,103 @@
 .inputWrapper {
-   width: 100%;
-   bottom: 0;
    position: fixed;
+   bottom: 0;
+   left: 0;
+   width: 100%;
    display: flex;
    flex-direction: column;
-   justify-content: center;
    align-items: center;
+   gap: 0.5rem;
+   padding: 1rem 0 1.5rem;
    margin-left: 60px;
    background-color: var(--background);
-   
-   /* z-index: 1; */
+   z-index: 1;
+}
+
+.inputContainer {
+   width: 80%;
+   max-width: 768px;
+   margin-left: -60px;
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+}
+
+.inputRow {
+   display: flex;
+   align-items: flex-end;
+   gap: 0.5rem;
 }
 
 .inputArea {
-   height: 45px;
+   flex: 1;
+   min-height: 45px;
    border: 1px solid var(--text-dark);
-   width: 80%;
    background: var(--background-darker);
-   max-width: 768px;
-   margin-left: -60px;
    color: var(--text-light);
-   display: flex;
-   padding: 0 0 0 1rem;
-   align-items: center;
+   padding: 0.75rem 1rem;
+   font: inherit;
+   resize: none;
+   line-height: 1.4;
+   border-radius: 6px;
+   overflow: hidden;
 }
 
 .inputArea:focus {
-   border: 1px solid var(--text-light);
+   outline: none;
+   border-color: var(--text-light);
+}
+
+.inputArea:disabled {
+   opacity: 0.6;
+   cursor: not-allowed;
+}
+
+.sendButton {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   border-radius: 50%;
+   width: 44px;
+   height: 44px;
+   border: 1px solid var(--text-dark);
+   background: var(--background-darker);
+   color: var(--text-light);
+   transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.sendButton:disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+}
+
+.sendButton:not(:disabled):hover {
+   border-color: var(--text-light);
+   color: var(--text-light);
+   background: rgba(72, 147, 245, 0.08);
+}
+
+.hint {
+   font-size: 0.75rem;
+   color: var(--text-dark);
+   text-align: right;
 }
 
 .disclaimer {
    font-size: 0.8rem;
    width: 100%;
    display: flex;
-   margin: 0.2rem;
    justify-content: center;
-   margin-left: auto;
    color: var(--text-dark);
+}
+
+@media (max-width: 768px) {
+   .inputWrapper {
+      margin-left: 0;
+      padding: 1rem 1rem 1.5rem;
+   }
+
+   .inputContainer {
+      width: 100%;
+      margin-left: 0;
+   }
 }

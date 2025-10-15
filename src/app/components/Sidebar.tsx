@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useChatStore } from '@/app/lib/store/chat'
 import { useSidebarStore } from '@/app/lib/store/sidebar'
@@ -30,17 +30,7 @@ export default function Sidebar() {
 
    useEffect(() => {
       const updateIsDesktop = () => {
-         const nextIsDesktop = window.innerWidth >= DESKTOP_BREAKPOINT
-         setIsDesktop((prev) => {
-            if (prev !== nextIsDesktop) {
-               if (nextIsDesktop) {
-                  openSidebar()
-               } else {
-                  closeSidebar()
-               }
-            }
-            return nextIsDesktop
-         })
+         setIsDesktop(window.innerWidth >= DESKTOP_BREAKPOINT)
       }
 
       updateIsDesktop()
@@ -49,7 +39,23 @@ export default function Sidebar() {
       return () => {
          window.removeEventListener('resize', updateIsDesktop)
       }
-   }, [closeSidebar, openSidebar])
+   }, [])
+
+   const previousIsDesktop = useRef<boolean | null>(null)
+
+   useEffect(() => {
+      if (previousIsDesktop.current === isDesktop) {
+         return
+      }
+
+      previousIsDesktop.current = isDesktop
+
+      if (isDesktop) {
+         openSidebar()
+      } else {
+         closeSidebar()
+      }
+   }, [isDesktop, openSidebar, closeSidebar])
 
    useEffect(() => {
       console.log('Sidebar: Loading conversations...')
@@ -200,15 +206,24 @@ export default function Sidebar() {
                         )}
                      </div>
                      <div className={styles.sidebarFooter}>
-                        made by<Link
-                           style={{
-                              display: 'inline-flex'
-                           }}
-                           href='https://klob0t.xyz'>
-                           klob0t
-                        </Link>&nbsp;
-                        + support from <Link href='https://pollinations.ai'>
-                           Pollinations.ai</Link>
+                        <div className={styles.logo}>
+                           <Link href='/'>
+                              <pre>
+                                 {ASSISTANT_ASCII_ART}
+                              </pre>
+                           </Link>
+                        </div>
+                        <div className={styles.footerLinks}>
+                           made by<Link
+                              style={{
+                                 display: 'inline-flex'
+                              }}
+                              href='https://klob0t.xyz'>
+                              klob0t
+                           </Link>&nbsp;
+                           + support from <Link href='https://pollinations.ai'>
+                              Pollinations.ai</Link>
+                        </div>
                      </div>
                   </div>
                </>

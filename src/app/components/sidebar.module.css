@@ -31,9 +31,7 @@
    justify-content: space-between;
 }
 
-.sidebarFooter {
-   padding: 20px;
-   border-top: 1px solid var(--text-light);
+.footerLinks {
    display: flex;
    align-items: flex-end;
    font-size: 0.7rem;
@@ -41,6 +39,16 @@
    color: var(--text-dark);
    justify-content: flex-end;
    width: 100%;
+}
+
+.sidebarFooter {
+   display: flex;
+   flex-direction: row;
+   justify-content: center;;
+   width: 100%;
+   align-items: center;
+   padding: 20px;
+   border-top: 1px solid var(--text-light);
 }
 
 .sidebarHeader h3 {
@@ -243,7 +251,6 @@
    justify-content: center;
    align-items: center;
    vertical-align: middle;
-   padding: 1rem;
    box-sizing: content-box;
 
 }
