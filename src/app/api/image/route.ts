@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 
-const DEFAULT_MODEL = process.env.POLLINATIONS_IMAGE_MODEL || 'flux'
+const DEFAULT_MODEL = process.env.POLLINATIONS_IMAGE_MODEL || 'gptimage'
 const DEFAULT_WIDTH = Number(process.env.POLLINATIONS_IMAGE_WIDTH ?? 1080)
 const DEFAULT_HEIGHT = Number(process.env.POLLINATIONS_IMAGE_HEIGHT ?? 1350)
 const IMAGE_BASE_URL = process.env.POLLINATIONS_IMAGE_BASE_URL || 'https://image.pollinations.ai/prompt/'
 const MAX_RETRIES = Number(process.env.POLLINATIONS_IMAGE_RETRIES ?? 1)
+const API_KEY = process.env.POLLINATIONS_API_KEY
 
 interface ImageRequestPayload {
    imagePrompt?: string
@@ -50,11 +51,17 @@ export async function POST(request: NextRequest) {
       if (guidance !== undefined) requestUrl.searchParams.set('guidance', guidance.toString())
       requestUrl.searchParams.set('enhance', 'true')
       requestUrl.searchParams.set('safe', 'false')
+      requestUrl.searchParams.set('logo', 'false')
+      requestUrl.searchParams.set('nologo', 'true')
+      requestUrl.searchParams.set('aspect', '4:5')
 
       const attemptFetch = async () => {
          const response = await fetch(requestUrl, {
             method: 'GET',
-            headers: { Accept: 'image/*' },
+            headers: {
+               Accept: 'image/*',
+               ...(API_KEY ? { Authorization: `Bearer ${API_KEY}` } : {})
+            },
             cache: 'no-store'
          })
 

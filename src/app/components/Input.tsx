@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useCallback, KeyboardEvent, ChangeEvent } 
 import styles from './input.module.css'
 import { useChatStore } from '@/app/lib/store/chat'
 import { useRouter, usePathname } from 'next/navigation'
-import { FiSend } from 'react-icons/fi'
+import { IoMdArrowUp } from 'react-icons/io'
 
 interface InputProps {
    onSendMessage?: (content: string) => Promise<void>
@@ -31,22 +31,23 @@ export default function Input({ onSendMessage }: InputProps) {
    }, [inputValue])
 
    const ensureActiveConversation = useCallback(() => {
-      const pathConversationId = pathname.startsWith('/chat/') ? pathname.split('/')[2] : null
-      let nextConversationId = currentConversationId ?? pathConversationId
+      const onChatRoute = pathname.startsWith('/chat/')
+      const segments = pathname.split('/').filter(Boolean)
+      const pathConversationId = onChatRoute && segments.length >= 2 ? segments[1] : null
 
-      if (!nextConversationId) {
-         nextConversationId = `conv-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+      if (!onChatRoute || !pathConversationId) {
+         const newConversationId = `conv-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
          clearMessages()
-         setCurrentConversationId(nextConversationId)
-      } else if (currentConversationId !== nextConversationId) {
-         setCurrentConversationId(nextConversationId)
+         setCurrentConversationId(newConversationId)
+         router.push(`/chat/${newConversationId}`)
+         return newConversationId
       }
 
-      if (nextConversationId && pathname !== `/chat/${nextConversationId}`) {
-         router.push(`/chat/${nextConversationId}`)
+      if (currentConversationId !== pathConversationId) {
+         setCurrentConversationId(pathConversationId)
       }
 
-      return nextConversationId
+      return pathConversationId
    }, [clearMessages, currentConversationId, pathname, router, setCurrentConversationId])
 
    const sendContent = useCallback(() => {
@@ -92,7 +93,6 @@ export default function Input({ onSendMessage }: InputProps) {
                   rows={1}
                   value={inputValue}
                   disabled={isLoading}
-                  placeholder="Ask Chloe anything..."
                   aria-label="Chat prompt input"
                   className={styles.inputArea}
                   onKeyDown={handleKeyDown}
@@ -105,10 +105,16 @@ export default function Input({ onSendMessage }: InputProps) {
                   disabled={!inputValue.trim() || isLoading}
                   aria-label="Send message"
                >
-                  <FiSend />
+                  <IoMdArrowUp />
                </button>
             </div>
-            <span className={styles.hint}>Press Enter to send · Shift+Enter for newline</span>
+
+            <div className={styles.hints}>
+               <span className={styles.hint}>Type /imagine to generate image</span>
+               <span className={styles.hint}>Press Enter to send · Shift+Enter for newline</span>
+
+            </div>
+
          </div>
          <div className={styles.disclaimer}>
             Chloe might make mistakes... please double-check the fact.

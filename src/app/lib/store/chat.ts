@@ -24,6 +24,7 @@ type TitleGenerationStatus = 'idle' | 'loading' | 'error'
 const DEFAULT_CONVERSATION_TITLE = 'New chat'
 const MAX_CONVERSATION_TITLE_LENGTH = 60
 const MAX_MESSAGES_FOR_TITLE = 8
+const MIN_MESSAGES_FOR_TITLE = 5
 
 const TITLE_SYSTEM_PROMPT = [
     'You are an assistant that creates short, descriptive titles for chat transcripts.',
@@ -117,6 +118,9 @@ const hasMeaningfulUserMessage = (messages: Message[]) =>
         typeof message.content === 'string' &&
         normaliseWhitespace(message.content).length > 0
     )
+
+const hasEnoughMessagesForTitle = (messages: Message[]) =>
+    filterMessagesForTitle(messages).length >= MIN_MESSAGES_FOR_TITLE
 
 const buildConversationSnippet = (messages: Message[]) =>
     filterMessagesForTitle(messages)
@@ -487,15 +491,21 @@ export const useChatStore = create<ChatState>()((set, get) => {
                    try {
                         const response = await requestImage(parsed.payload)
                         logImageResponse('🖼️ Image route success', parsed.payload, response)
-                        const imageUrl = (response.metadata?.['source'] as string | undefined) ?? response.response
+                        const imageUrl = response.response ?? (response.metadata?.['source'] as string | undefined) ?? ''
                         const responseMetadata = {
                             ...response.metadata,
                             prompt: parsed.payload.imagePrompt,
-                            seed: parsed.payload.seed,
-                            guidanceScale: parsed.payload.guidanceScale,
-                            inferenceSteps: parsed.payload.inferenceSteps,
-                            model: parsed.payload.desiredModel ?? response.metadata?.['model']
+                            seed: parsed.payload.seed ?? response.metadata?.['seed'],
+                            guidanceScale: parsed.payload.guidanceScale ?? response.metadata?.['guidanceScale'],
+                            inferenceSteps: parsed.payload.inferenceSteps ?? response.metadata?.['inferenceSteps'],
+                            model: parsed.payload.desiredModel ?? response.metadata?.['model'],
+                            width: parsed.payload.width ?? response.metadata?.['width'],
+                            height: parsed.payload.height ?? response.metadata?.['height']
                         }
+                        if (!imageUrl) {
+                            throw new Error('Image response did not include a renderable URL')
+                        }
+
                         updatePlaceholder(msg => ({
                             ...msg,
                             content: imageUrl,
@@ -520,13 +530,27 @@ export const useChatStore = create<ChatState>()((set, get) => {
                         return
                     }
 
+                    const sanitiseMessageContent = (msg: Message) => {
+                        if (msg.messageType === 'image') {
+                            const prompt = typeof msg.metadata?.['prompt'] === 'string' ? msg.metadata?.['prompt'] : null
+                            const description = prompt ? `Image generated for prompt: ${prompt}` : 'Generated image'
+                            return description
+                        }
+
+                        return typeof msg.content === 'string' ? msg.content : ''
+                    }
+
+                    const serialisedHistory = messages
+                        .map(msg => ({
+                            role: msg.role,
+                            content: sanitiseMessageContent(msg)
+                        }))
+                        .filter(entry => entry.content.trim().length > 0)
+
                     // Prepare messages array for OpenAI format
                     const apiMessages = [
                         { role: 'system', content: SYSTEM_PROMPT },
-                        ...messages.map(msg => ({
-                            role: msg.role,
-                            content: msg.content
-                        })),
+                        ...serialisedHistory,
                         { role: 'user', content }
                     ]
 
@@ -772,6 +796,10 @@ export const useChatStore = create<ChatState>()((set, get) => {
                 }
 
                 if (!hasMeaningfulUserMessage(targetConversation.messages)) {
+                    return
+                }
+
+                if (!hasEnoughMessagesForTitle(targetConversation.messages)) {
                     return
                 }
 

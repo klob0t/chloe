@@ -1,0 +1,60 @@
+.imageContainer {
+   width: 100%;
+   max-width: min(960px, 100%);
+   display: flex;
+   flex-direction: column;
+   align-items: stretch;
+   margin: 0 auto;
+}
+
+.imageWrapper {
+   position: relative;
+   width: 100%;
+   background-color: var(--background);
+   overflow: hidden;
+   aspect-ratio: 4 / 5;
+   min-height: 260px;
+}
+
+.generatedImage {
+   position: absolute;
+   inset: 0;
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+}
+
+.imageCover {
+   position: absolute;
+   inset: 0;
+   width: 100%;
+   height: 100%;
+   background-color: var(--background-darker);
+   opacity: 1;
+   pointer-events: none;
+}
+
+.pixelGrid {
+   position: absolute;
+   inset: 0;
+   width: 100%;
+   height: 100%;
+   display: grid;
+   grid-template-columns: repeat(17, 1fr);
+   grid-template-rows: repeat(21, 1fr);
+   opacity: 1;
+   pointer-events: none;
+}
+
+.pixelDiv {
+   width: 100%;
+   height: 100%;
+   transform: scale(0.6);
+   background-color: rgba(72, 147, 245, 0.25);
+}
+
+@media (max-width: 768px) {
+   .imageContainer {
+      align-items: center;
+   }
+}

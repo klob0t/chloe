@@ -14,6 +14,13 @@
     max-width: 80%;
     display: flex;
     margin: 1rem;
+    align-items: flex-start;
+}
+
+.assistantMessageImage {
+    width: 100%;
+    max-width: 80%;
+    margin: 1rem;
 }
 
 .userAvatar {
@@ -32,6 +39,7 @@
     transform: translateY(-15px);
     font-weight: 700;
     margin: 0rem 0.6rem 0rem 0rem;
+    flex-shrink: 0;
 }
 
 .content {
@@ -51,6 +59,13 @@
 
 .assistantMessage .content {
     border-top-left-radius: 0;
+}
+
+.assistantMessageImage .content {
+    padding: 1rem;
+    border: none;
+    border: 1px solid var(--text-light);
+    background: none;
 }
 
 /* Triangle for user messages (top right corner) */
@@ -134,7 +149,6 @@
 
 .generatedImage {
     max-width: 100%;
-    border: 1px solid var(--text-light);
 }
 
 .spinnerWrapper {

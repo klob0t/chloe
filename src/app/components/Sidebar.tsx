@@ -136,7 +136,7 @@ export default function Sidebar() {
 
 
    return (
-      <>
+      <div className={styles.sidebar}>
          {/* Overlay */}
          {isOpen ?
             (
@@ -151,7 +151,7 @@ export default function Sidebar() {
 
                         <h3>Chats</h3>
                         <button className={styles.closeButton} onClick={closeSidebar}>
-                           ×
+                           &lt;
                         </button>
                      </div>
                      <div className={styles.conversationList}>
@@ -246,8 +246,6 @@ export default function Sidebar() {
                </div>
             )
          }
-
-
-      </>
+      </div>
    )
 }
