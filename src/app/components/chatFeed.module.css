@@ -6,11 +6,11 @@
     bottom: calc(1rem + 1rem);
     display: flex;
     justify-content: center;
-    margin-bottom: 4rem;
+    margin-bottom: 3rem;
     overflow-y: auto;
     scrollbar-width: thick;
     scrollbar-color: var(--text-dark) transparent;
-    padding: 0rem 0rem 2rem 0rem;
+    padding: 0rem 0rem 0rem 0rem;
     /* border: 1px solid pink; */
 }
 
@@ -19,9 +19,9 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    padding: 1.5rem 1rem 3rem 0rem;
+    padding: 1.5rem 0rem 0rem 0rem;
     /* border: 1px solid red; */
-    margin: 0 auto;
+    margin: 0 0;
 
 }
 
@@ -49,11 +49,10 @@
     
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
     .chatFeed {
-        top: 1rem;
         left: 1rem;
-        right: 1rem;
+        right: 0rem;
         bottom: calc(6.5rem + env(safe-area-inset-bottom));
     }
 
@@ -61,7 +60,7 @@
         width: 100%;
         padding: 1rem 0 3rem;
     }
-}
+} */
 
 .messagesContainer::-webkit-scrollbar {
     width: 6px;

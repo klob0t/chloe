@@ -13,6 +13,7 @@
 .assistantMessage {
     max-width: 80%;
     display: flex;
+    
     margin: 1rem;
     align-items: flex-start;
 }
@@ -28,7 +29,7 @@
     margin-left: 1.6rem;
     font-size: 1.5rem;
     font-weight: 100;
-    
+
     transform: translateY(-15px);
 }
 
@@ -47,23 +48,16 @@
     padding: 1rem;
     border-width: 1px;
     border-style: solid;
-    border-color: var(--text-light);
+    border-color: var(--text-darker);
     line-height: 1.5rem;
     font-weight: 200;
     position: relative;
 }
 
-.userMessage .content {
-    border-top-right-radius: 0;
-}
 
-.assistantMessage .content {
-    border-top-left-radius: 0;
-}
 
 .assistantMessageImage .content {
     padding: 1rem;
-    border: none;
     border: 1px solid var(--text-light);
     background: none;
 }
@@ -115,8 +109,14 @@
 }
 
 .assistantMessage li {
-    text-indent: 1rem;
+    text-indent: 0rem;
+
+    margin: 0rem 0rem 0.5rem 0rem;
     list-style-position: inside
+}
+
+.assistantMessage p {
+    margin: 0rem 0rem 0.5rem 0rem;
 }
 
 .content {
@@ -126,7 +126,8 @@
 .assistantMessage hr {
     margin: 1rem 0rem;
     color: transparent;
-    border-top: 1 px solid red;
+    background-color: transparent;
+    border: 1px solid var(--text-dark);
 
 }
 
@@ -155,4 +156,36 @@
     display: flex;
     justify-content: center;
     margin-bottom: 0rem;
+}
+
+.codeBlock {
+    width: 100%;
+}
+
+.inlineCode {
+    font-family: var(--font-geist-mono);
+    background-color: rgba(72, 148, 245, 0.15);
+    border: 1px solid rgba(72, 148, 245, 0.35);
+    border-radius: 0.25rem;
+    padding: 0.1rem 0.35rem;
+    white-space: pre-wrap;
+}
+
+.content table, 
+.content th, 
+.content td {
+    border: 1px solid var(--text-dark);
+    border-collapse: collapse;
+}
+
+.content table {
+    width: 100%;
+}
+
+.content thead > tr {
+    background-color: var(--background-darker)
+}
+
+.content td {
+    padding: 0.5rem;
 }

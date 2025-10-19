@@ -109,11 +109,11 @@ export default function Input({ onSendMessage }: InputProps) {
                </button>
             </div>
 
-            <div className={styles.hints}>
+            {/* <div className={styles.hints}>
                <span className={styles.hint}>Type /imagine to generate image</span>
                <span className={styles.hint}>Press Enter to send · Shift+Enter for newline</span>
 
-            </div>
+            </div> */}
 
          </div>
          <div className={styles.disclaimer}>

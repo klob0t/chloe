@@ -96,7 +96,7 @@
    color: var(--text-dark);
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
    .inputWrapper {
       margin-left: 0;
       padding: 1rem 1rem 1.5rem;
@@ -106,4 +106,4 @@
       width: 100%;
       margin-left: 0;
    }
-}
+} */
