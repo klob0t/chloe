@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import styles from './imageReveal.module.css'
 import Image from 'next/image'
+import { RiDownloadLine } from 'react-icons/ri'
 
 const COLS = 17
 const ROWS = 21
@@ -216,7 +217,7 @@ export default function ImageReveal({ status, imageUrl, width, height, onComplet
                   onClick={handleDownload}
                   disabled={isDownloading}
                >
-                  {isDownloading ? '…' : '⤓'}
+                  {isDownloading ? (<span>...</span>): (<RiDownloadLine />)}
                   <span className={styles.srOnly}>Download image</span>
                </button>
             ) : null}
