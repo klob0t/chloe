@@ -563,8 +563,8 @@ export const useChatStore = create<ChatState>()((set, get) => {
 
                     const response = await request(payload)
 
-
-                    const assistantContent = response.response || response
+                    // Ensure assistant content is always a string
+                    const assistantContent = typeof response?.response === 'string' ? response.response : ''
 
                     // Update assistant message with content
                     updatePlaceholder(msg => ({
