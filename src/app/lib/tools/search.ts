@@ -13,14 +13,27 @@ export interface SearchResponse {
   results: SearchResult[]
   answers: string[]
   corrections: string[]
-  infoboxes: any[]
+  infoboxes: unknown[]
   suggestions: string[]
   unresponsive_engines: string[]
 }
 
+export type ToolFunctionArguments = {
+  query: string
+  category?: string
+}
+
+export interface ToolCallPayload {
+  id: string
+  type: 'function'
+  function: {
+    name: string
+    arguments: string
+  }
+}
+
 export async function performSearch(query: string, category: string = 'general'): Promise<SearchResponse> {
   try {
-    // Use our local search API
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
     const params = new URLSearchParams({
       q: query,
@@ -31,7 +44,7 @@ export async function performSearch(query: string, category: string = 'general')
     const response = await fetch(`${baseUrl}/api/search?${params}`, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
     })
 
@@ -39,76 +52,82 @@ export async function performSearch(query: string, category: string = 'general')
       throw new Error(`Local search API error: ${response.status}`)
     }
 
-    const data = await response.json()
-    return data as SearchResponse
+    const data: SearchResponse = await response.json()
+    return data
   } catch (error) {
     console.error('Search failed:', error)
-    throw new Error(`Search failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    throw new Error(`Search failed: ${message}`)
   }
 }
 
 export const SEARCH_TOOL = {
-  type: "function" as const,
+  type: 'function' as const,
   function: {
-    name: "search_web",
-    description: "Search the web for current information using multiple search engines. Use this when the user asks for recent news, current events, weather, stock prices, or any information that might have changed recently.",
+    name: 'search_web',
+    description: 'Search the web for current information using multiple search engines. Use this when the user asks for recent news, current events, weather, stock prices, or any information that might have changed recently.',
     parameters: {
-      type: "object",
+      type: 'object',
       properties: {
         query: {
-          type: "string",
-          description: "The search query - what you want to find information about"
+          type: 'string',
+          description: 'The search query - what you want to find information about'
         },
         category: {
-          type: "string",
-          enum: ["general", "news", "images", "videos", "science", "it"],
+          type: 'string',
+          enum: ['general', 'news', 'images', 'videos', 'science', 'it'],
           description: "The category of search - defaults to 'general'",
-          default: "general"
+          default: 'general'
         }
       },
-      required: ["query"]
+      required: ['query']
     }
   }
 }
 
-export async function handleToolCall(toolCall: any): Promise<string> {
-  if (toolCall.function.name === "search_web") {
-    const args = JSON.parse(toolCall.function.arguments)
-    const { query, category = "general" } = args
+const parseToolArguments = (rawArguments: string): ToolFunctionArguments => {
+  try {
+    const parsed = JSON.parse(rawArguments) as ToolFunctionArguments
+    return parsed
+  } catch (error) {
+    console.error('Failed to parse tool arguments:', error)
+    throw new Error('Invalid tool arguments payload')
+  }
+}
 
-    console.log(`🔍 Tool call received - Query: "${query}", Category: "${category}"`)
-
-    try {
-      const results = await performSearch(query, category)
-
-      console.log(`📊 Search results received:`, {
-        query: results.query,
-        totalResults: results.number_of_results,
-        actualResultsCount: results.results?.length || 0,
-        results: results.results?.map(r => ({ title: r.title, url: r.url, content: r.content?.substring(0, 100) + '...' }))
-      })
-
-      if (!results.results || results.results.length === 0) {
-        console.log(`❌ No results found for query: "${query}"`)
-        return `No search results found for "${query}".`
-      }
-
-      const formatted = results.results
-        .slice(0, 5)
-        .map((result, index) =>
-          `${index + 1}. **${result.title}**\n   ${result.content.substring(0, 200)}...\n   🔗 ${result.url}`
-        ).join('\n\n')
-
-      const finalResponse = `Search Results for "${query}":\n\n${formatted}`
-      console.log(`✅ Formatted response length: ${finalResponse.length} characters`)
-
-      return finalResponse
-    } catch (error) {
-      console.error(`❌ Search failed for query "${query}":`, error)
-      return `Search failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-    }
+export async function handleToolCall(toolCall: ToolCallPayload): Promise<string> {
+  if (toolCall.function.name !== 'search_web') {
+    console.warn('Unknown tool requested:', toolCall.function.name)
+    return 'Unknown tool'
   }
 
-  console.log(`❓ Unknown tool called: ${toolCall.function.name}`)
-  return "Unknown tool"
+  const { query, category = 'general' } = parseToolArguments(toolCall.function.arguments)
+
+  try {
+    const results = await performSearch(query, category)
+
+    console.log('Search tool results:', {
+      query: results.query,
+      totalResults: results.number_of_results,
+      preview: results.results.slice(0, 3).map(result => ({
+        title: result.title,
+        url: result.url
+      }))
+    })
+
+    if (!results.results || results.results.length === 0) {
+      return `No search results found for "${query}".`
+    }
+
+    const formattedResults = results.results
+      .slice(0, 5)
+      .map((result, index) => `${index + 1}. **${result.title}**\n   ${result.content.substring(0, 200)}...\n   ${result.url}`)
+      .join('\n\n')
+
+    return `Search Results for "${query}":\n\n${formattedResults}`
+  } catch (error) {
+    console.error('Search tool failed:', error)
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return `Search failed: ${message}`
+  }
 }

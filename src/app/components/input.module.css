@@ -80,6 +80,7 @@
    border-color: var(--text-light);
    color: var(--text-light);
    background: rgba(72, 147, 245, 0.08);
+   cursor: pointer;
 }
 
 .hint {

@@ -16,7 +16,7 @@ interface SearchResponse {
   results: SearchResult[]
   answers: string[]
   corrections: string[]
-  infoboxes: any[]
+  infoboxes: unknown[]
   suggestions: string[]
   unresponsive_engines: string[]
 }
@@ -132,8 +132,8 @@ async function performSearXNGSearch(query: string): Promise<SearchResult[]> {
             if (encodedUrl) {
               try {
                 link = decodeURIComponent(encodedUrl)
-              } catch (e) {
-                console.warn('Failed to decode redirect URL:', link)
+              } catch (error) {
+        console.warn('Failed to decode redirect URL:', link, error)
               }
             }
           }
@@ -291,3 +291,4 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+

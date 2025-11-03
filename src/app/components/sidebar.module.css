@@ -114,11 +114,14 @@
 .conversationItem:hover {
    background: var(--background-darker);
    border-color: var(--text-dark);
+   color: var(--text-light)
 }
 
 .conversationItem.active {
    background: var(--text-dark);
    border-color: #4893f5;
+   
+   color: var(--text-light);
 }
 
 .conversationContent {
@@ -127,8 +130,15 @@
 }
 
 .conversationTitle {
-   color: #fff;
-   font-weight: 500;
+   color: var(--text-light);
+   font-weight: 400;
+   margin-bottom: 4px;
+   font-size: 14px;
+}
+
+.conversationTitleActive{
+   color: var(--text-light);
+   font-weight: 400;
    margin-bottom: 4px;
    font-size: 14px;
 }
@@ -169,14 +179,19 @@
 }
 
 .conversationMeta {
-   color: #999;
+   color: var(--text-dark);
+   font-size: 12px;
+}
+
+.conversationMetaActive {
+   color: var(--background);
    font-size: 12px;
 }
 
 .deleteButton {
    background: none;
    border: none;
-   color: #999;
+   color: var(--text-dark);
    font-size: 18px;
    cursor: pointer;
    padding: 4px 8px;
@@ -186,16 +201,15 @@
 
 .deleteButton:hover {
    color: #ff4444;
-   background: rgba(255, 68, 68, 0.1);
 }
 
 .conversationItem.active .deleteButton {
-   color: rgba(255, 255, 255, 0.8);
+   color: var(--text-light);
 }
 
 .conversationItem.active .deleteButton:hover {
-   color: #fff;
-   background: rgba(255, 255, 255, 0.2);
+
+   color: red;
 }
 
 /* Mobile responsive */

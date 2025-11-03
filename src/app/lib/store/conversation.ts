@@ -1,22 +1,22 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import type { Message } from '@/app/lib/store/chat'
 
 interface Conversation {
   id: string
   title?: string
   createdAt: number
-  messages: any[]
+  messages: Message[]
 }
 
 interface ConversationState {
   conversations: Record<string, Conversation>
   currentConversationId: string | null
 
-  // Actions
   createConversation: () => string
   setCurrentConversation: (id: string) => void
   getConversation: (id: string) => Conversation | null
-  updateConversationMessages: (id: string, messages: any[]) => void
+  updateConversationMessages: (id: string, messages: Message[]) => void
 }
 
 export const useConversationStore = create<ConversationState>()(
@@ -53,7 +53,7 @@ export const useConversationStore = create<ConversationState>()(
         return conversations[id] || null
       },
 
-      updateConversationMessages: (id: string, messages: any[]) => {
+      updateConversationMessages: (id: string, messages: Message[]) => {
         set(state => ({
           conversations: {
             ...state.conversations,

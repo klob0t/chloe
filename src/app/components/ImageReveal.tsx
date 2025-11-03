@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import styles from './imageReveal.module.css'
 import Image from 'next/image'
+import { PiDownloadSimple } from 'react-icons/pi'
 
 const COLS = 17
 const ROWS = 21
@@ -51,104 +52,104 @@ export default function ImageReveal({ status, imageUrl, width, height, onComplet
    }, [])
 
    useEffect(() => {
-         const wrapper = wrapperRef.current
-         if (!wrapper) return
+      const wrapper = wrapperRef.current
+      if (!wrapper) return
 
-         const pixels = Array.from(wrapper.querySelectorAll<HTMLDivElement>('[data-pixel]'))
-         if (pixels.length === 0) {
-            return
+      const pixels = Array.from(wrapper.querySelectorAll<HTMLDivElement>('[data-pixel]'))
+      if (pixels.length === 0) {
+         return
+      }
+
+      const cover = coverRef.current
+
+      const setWrapperVisibility = (visible: boolean) => {
+         gsap.set(wrapper, {
+            visibility: visible ? 'visible' : 'hidden',
+            opacity: visible ? 1 : 0
+         })
+      }
+
+      if (status === 'idle') {
+         stopAnimation()
+         setWrapperVisibility(false)
+         if (cover) {
+            gsap.set(cover, { opacity: 1 })
          }
+         return
+      }
 
-         const cover = coverRef.current
+      setWrapperVisibility(true)
 
-         const setWrapperVisibility = (visible: boolean) => {
-            gsap.set(wrapper, {
-               visibility: visible ? 'visible' : 'hidden',
-               opacity: visible ? 1 : 0
-            })
-         }
+      if (status === 'loading' || (status === 'revealing' && !isImageLoaded)) {
+         revealTimeline.current?.kill()
+         revealTimeline.current = null
 
-         if (status === 'idle') {
-            stopAnimation()
-            setWrapperVisibility(false)
-            if (cover) {
-               gsap.set(cover, { opacity: 1 })
-            }
-            return
-         }
-
-         setWrapperVisibility(true)
-
-         if (status === 'loading' || (status === 'revealing' && !isImageLoaded)) {
-            revealTimeline.current?.kill()
-            revealTimeline.current = null
-
-            if (!loadingAnim.current || !loadingAnim.current.isActive()) {
-               loadingAnim.current?.kill()
-               loadingAnim.current = gsap.to(pixels, {
-                  backgroundColor: () => PIXEL_COLORS[Math.floor(Math.random() * PIXEL_COLORS.length)],
-                  duration: 0.01,
-                  ease: 'none',
-                  repeat: -1,
-                  repeatRefresh: true,
-                  stagger: {
-                     amount: 0.1,
-                     from: 'random',
-                     ease: 'power2.inOut'
-                  }
-               })
-            }
-            if (cover) {
-               gsap.set(cover, { opacity: 1 })
-            }
-            return
-         }
-
-         if (status === 'revealing' && isImageLoaded) {
+         if (!loadingAnim.current || !loadingAnim.current.isActive()) {
             loadingAnim.current?.kill()
-            loadingAnim.current = null
-
-            revealTimeline.current?.kill()
-
-            revealTimeline.current = gsap.timeline({
-               onComplete: () => {
-                  stopAnimation()
-                  onComplete?.()
+            loadingAnim.current = gsap.to(pixels, {
+               backgroundColor: () => PIXEL_COLORS[Math.floor(Math.random() * PIXEL_COLORS.length)],
+               duration: 0.01,
+               ease: 'none',
+               repeat: -1,
+               repeatRefresh: true,
+               stagger: {
+                  amount: 0.1,
+                  from: 'random',
+                  ease: 'power2.inOut'
                }
             })
-
-            if (cover) {
-               gsap.set(cover, { opacity: 1, backgroundColor: '#00052a' })
-            }
-
-            gsap.set(pixels, { autoAlpha: 1 })
-
-            revealTimeline.current
-               .to(pixels, {
-                  backgroundColor: '#00052a',
-                  duration: 0.5,
-                  ease: 'steps(3)',
-                  stagger: {
-                     amount: 0.1,
-                     ease: 'power2.out',
-                     from: 'random'
-                  }
-               })
-               .to(pixels, {
-                  autoAlpha: 0,
-                  duration: 0.02,
-                  ease: 'none',
-                  stagger: {
-                     amount: 0.8,
-                     from: 'random'
-                  }
-               }, '-=0.6')
-               .to(cover, {
-                  opacity: 0,
-                  duration: 0.12
-               }, '<')
          }
-      }, [status, isImageLoaded, stopAnimation, onComplete])
+         if (cover) {
+            gsap.set(cover, { opacity: 1 })
+         }
+         return
+      }
+
+      if (status === 'revealing' && isImageLoaded) {
+         loadingAnim.current?.kill()
+         loadingAnim.current = null
+
+         revealTimeline.current?.kill()
+
+         revealTimeline.current = gsap.timeline({
+            onComplete: () => {
+               stopAnimation()
+               onComplete?.()
+            }
+         })
+
+         if (cover) {
+            gsap.set(cover, { opacity: 1, backgroundColor: '#00052a' })
+         }
+
+         gsap.set(pixels, { autoAlpha: 1 })
+
+         revealTimeline.current
+            .to(pixels, {
+               backgroundColor: '#00052a',
+               duration: 0.5,
+               ease: 'steps(3)',
+               stagger: {
+                  amount: 0.1,
+                  ease: 'power2.out',
+                  from: 'random'
+               }
+            })
+            .to(pixels, {
+               autoAlpha: 0,
+               duration: 0.02,
+               ease: 'none',
+               stagger: {
+                  amount: 0.8,
+                  from: 'random'
+               }
+            }, '-=0.6')
+            .to(cover, {
+               opacity: 0,
+               duration: 0.12
+            }, '<')
+      }
+   }, [status, isImageLoaded, stopAnimation, onComplete])
 
    useEffect(() => () => {
       stopAnimation()
@@ -216,7 +217,9 @@ export default function ImageReveal({ status, imageUrl, width, height, onComplet
                   onClick={handleDownload}
                   disabled={isDownloading}
                >
-                  {isDownloading ? '…' : '⤓'}
+                  <div>
+                     {isDownloading ? <span>...</span> : <PiDownloadSimple />}
+                  </div>
                   <span className={styles.srOnly}>Download image</span>
                </button>
             ) : null}

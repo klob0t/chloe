@@ -7,6 +7,7 @@ import styles from './sidebar.module.css'
 import Link from 'next/link'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import { AiOutlinePlus } from 'react-icons/ai'
+import { RiArrowLeftSLine } from "react-icons/ri"
 import { startNewConversation } from '@/app/lib/utils/handleNewChat'
 
 export default function Sidebar() {
@@ -114,7 +115,14 @@ export default function Sidebar() {
 
    const formatDate = (timestamp: number) => {
       const date = new Date(timestamp)
-      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      const format = {
+         weekday: 'short',
+         year: 'numeric',
+         month: 'short',
+         day: 'numeric'
+      }
+
+      return date.toLocaleDateString('en-GB', format) + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
    }
 
    const resolveTitle = (title?: string) => {
@@ -182,14 +190,14 @@ export default function Sidebar() {
                                  >
                                     <div className={styles.conversationContent}>
                                        <div
-                                          className={`${styles.conversationTitle} ${styles.conversationTitleRow}`}
+                                          className={`${styles.conversationTitleRow}  ${currentConversationId === conversation.id ? styles.conversationTitleActive  : styles.conversationTitle}`}
                                           title={titleLabel}
                                        >
                                           <span className={styles.conversationTitleText}>{titleLabel}</span>
                                           {isLoadingTitle ? <span className={styles.titleSpinner} aria-label="Generating title" /> : null}
                                           {isTitleError ? <span className={styles.titleError} title="Title generation failed">!</span> : null}
                                        </div>
-                                       <div className={styles.conversationMeta}>
+                                       <div className={`${styles.conversationTitleRow}  ${currentConversationId === conversation.id ? styles.conversationMetaActive  : styles.conversationMeta}`}>
                                           {formatDate(conversation.updatedAt)}
                                        </div>
                                     </div>
