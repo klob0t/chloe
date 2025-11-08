@@ -148,8 +148,13 @@ const requestGeneratedTitle = async (messages: Message[]): Promise<string | null
     }
 
     const response = await request(payload)
-    const rawTitle = typeof response === 'string' ? response : (response.response ?? response)
-    return postProcessGeneratedTitle(rawTitle)
+
+    if (typeof response === 'string') {
+        return postProcessGeneratedTitle(response)
+    }
+
+    const rawTitle = typeof response.response === 'string' ? response.response : null
+    return rawTitle ? postProcessGeneratedTitle(rawTitle) : null
 }
 
 type MessageUpdater = Message[] | ((messages: Message[]) => Message[])

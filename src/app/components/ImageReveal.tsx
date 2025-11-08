@@ -91,6 +91,7 @@ export default function ImageReveal({ status, imageUrl, width, height, onComplet
                duration: 0.01,
                ease: 'none',
                repeat: -1,
+               scale: 0.4,
                repeatRefresh: true,
                stagger: {
                   amount: 0.1,
@@ -126,8 +127,9 @@ export default function ImageReveal({ status, imageUrl, width, height, onComplet
 
          revealTimeline.current
             .to(pixels, {
-               backgroundColor: '#00052a',
+               backgroundColor: 'var(--background)',
                duration: 0.5,
+               scale: 1,
                ease: 'steps(3)',
                stagger: {
                   amount: 0.1,

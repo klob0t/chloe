@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-const DEFAULT_MODEL = process.env.POLLINATIONS_IMAGE_MODEL || 'kontext'
+const DEFAULT_MODEL = process.env.POLLINATIONS_IMAGE_MODEL || 'flux'
 const DEFAULT_WIDTH = Number(process.env.POLLINATIONS_IMAGE_WIDTH ?? 1080)
 const DEFAULT_HEIGHT = Number(process.env.POLLINATIONS_IMAGE_HEIGHT ?? 1350)
 const IMAGE_BASE_URL = process.env.POLLINATIONS_IMAGE_BASE_URL || 'https://image.pollinations.ai/prompt/'
