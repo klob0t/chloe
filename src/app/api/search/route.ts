@@ -23,6 +23,9 @@ interface SearchResponse {
 
 // URL Rotator class - combines TheSearXNG approach with sequential rotation
 class UrlRotator {
+  private urls: string[]
+  private currentIndex: number
+
   constructor(urls: string[]) {
     this.urls = urls;
     this.currentIndex = Math.floor(Math.random() * urls.length); // Start at random position
@@ -98,12 +101,10 @@ async function performSearXNGSearch(query: string): Promise<SearchResult[]> {
     ]
 
     let foundItems = null
-    let workingSelector = null
 
     for (const selector of selectors) {
       foundItems = $(selector)
       if (foundItems.length > 0) {
-        workingSelector = selector
         console.log(`Found ${foundItems.length} items with selector '${selector}'`)
         break
       }
@@ -133,7 +134,7 @@ async function performSearXNGSearch(query: string): Promise<SearchResult[]> {
               try {
                 link = decodeURIComponent(encodedUrl)
               } catch (error) {
-        console.warn('Failed to decode redirect URL:', link, error)
+                console.warn('Failed to decode redirect URL:', link, error)
               }
             }
           }
@@ -175,10 +176,13 @@ async function performSearXNGSearch(query: string): Promise<SearchResult[]> {
     return results.slice(0, 8)
 
   } catch (error) {
-    if (error.name === 'AbortError') {
-      console.log(`SearXNG search timed out for ${searxngInstanceBaseUrl}`)
-    } else {
-      console.error('SearXNG search error:', error)
+    if (error instanceof Error) {
+
+      if (error.name === 'AbortError') {
+        console.log(`SearXNG search timed out for ${searxngInstanceBaseUrl}`)
+      } else {
+        console.error('SearXNG search error:', error)
+      }
     }
     return []
   }
@@ -188,7 +192,6 @@ async function performSearXNGSearch(query: string): Promise<SearchResult[]> {
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const query = searchParams.get('q')
-  const category = searchParams.get('category') || 'general'
   const format = searchParams.get('format') || 'json'
 
   if (!query) {

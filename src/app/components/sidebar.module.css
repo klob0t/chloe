@@ -239,13 +239,11 @@
    align-items: center;
    justify-content: center;
    cursor: pointer;
-   transition: all 0.2s;
    box-sizing: content-box;
 }
 
 .hamburger:hover {
-   outline: 1px solid var(--text-light);
-   background-color: var(--background-darker);
+   transform: translateY(2px);
 }
 
 .sidebarClosed {
@@ -288,8 +286,7 @@
 }
 
 .logo:hover {
-   outline: 1px solid var(--text-light);
-   background-color: var(--background-darker);
+   transform: translateY(3px);
 }
 
 .newChat {

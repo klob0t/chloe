@@ -1,12 +1,10 @@
 'use client'
 import { useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
 import { useChatStore } from '@/app/lib/store/chat'
 import Message from '@/app/components/Message'
 import styles from './chatFeed.module.css'
 
 export default function ChatFeed() {
-    const router = useRouter()
     const {
         messages,
         isTyping,

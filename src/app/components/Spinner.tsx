@@ -10,7 +10,7 @@ export function Spinner() {
          setCharIndex(prevIndex => (prevIndex + 1) % chars.length)
       }, 90)
       return () => clearInterval(intervalId)
-   }, [])
+   }, [chars.length])
 
 
    return (

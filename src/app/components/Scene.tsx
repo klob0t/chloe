@@ -1,18 +1,80 @@
 'use client'
-import { OrthographicCamera, useGLTF, AsciiRenderer } from "@react-three/drei"
-import { Canvas, useThree } from "@react-three/fiber"
-import React, { useMemo, createRef } from 'react'
+import { OrthographicCamera, useGLTF } from "@react-three/drei"
+import type { AsciiRendererProps } from "@react-three/drei/core/AsciiRenderer"
+import { Canvas, useFrame, useThree } from "@react-three/fiber"
+import React, { createRef, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
+import { AsciiEffect } from 'three-stdlib'
 import styles from './scene.module.css'
 
-function SafeAsciiRenderer(props: React.ComponentProps<typeof AsciiRenderer>) {
-   const size = useThree(state => state.size)
-   if (!Number.isFinite(size.width) || !Number.isFinite(size.height) || size.width === 0 || size.height === 0) {
-      return null
-   }
-   return <AsciiRenderer {...props} />
+type GroupChildElement = React.ReactElement<JSX.IntrinsicElements['group'] & { userData?: Record<string, unknown> }>
+
+function SafeAsciiRenderer({
+   renderIndex = 1,
+   bgColor = 'black',
+   fgColor = 'white',
+   characters = ' .:-+*=%@#',
+   invert = true,
+   color = false,
+   resolution = 0.15
+}: AsciiRendererProps) {
+   const { size, gl, scene, camera } = useThree()
+   const hasValidSize = useRef(false)
+
+   const effect = useMemo(() => {
+      const ascii = new AsciiEffect(gl, characters, { invert, color, resolution })
+      ascii.domElement.style.position = 'absolute'
+      ascii.domElement.style.top = '0px'
+      ascii.domElement.style.left = '0px'
+      ascii.domElement.style.pointerEvents = 'none'
+      return ascii
+   }, [gl, characters, invert, color, resolution])
+
+   useLayoutEffect(() => {
+      effect.domElement.style.color = fgColor
+      effect.domElement.style.backgroundColor = bgColor
+   }, [effect, fgColor, bgColor])
+
+   useEffect(() => {
+      const parent = gl.domElement.parentNode
+      if (!parent) {
+         return
+      }
+
+      gl.domElement.style.opacity = '0'
+      parent.appendChild(effect.domElement)
+
+      return () => {
+         gl.domElement.style.opacity = '1'
+         parent.removeChild(effect.domElement)
+      }
+   }, [effect, gl.domElement])
+
+   useEffect(() => {
+      const width = Number.isFinite(size.width) ? Math.floor(size.width) : 0
+      const height = Number.isFinite(size.height) ? Math.floor(size.height) : 0
+
+      if (width <= 0 || height <= 0) {
+         hasValidSize.current = false
+         effect.domElement.style.display = 'none'
+         return
+      }
+
+      effect.domElement.style.display = 'block'
+      effect.setSize(width, height)
+      hasValidSize.current = true
+   }, [effect, size.width, size.height])
+
+   useFrame(() => {
+      if (!hasValidSize.current) {
+         return
+      }
+      effect.render(scene, camera)
+   }, renderIndex)
+
+   return null
 }
 
 interface GLTFData {
@@ -35,9 +97,16 @@ interface GLTFData {
 }
 
 function AnimatedGroup({ children }: { children: React.ReactNode }) {
+   const { width } = useThree(state => state.viewport)
+
+   const responsiveScale = useMemo(() => {
+      const factor = Math.min(Math.max(width / 6, 0.8), 1)
+      return [2 * factor, 1 * factor, 2 * factor] as const
+   }, [width])
+
    return (
       <group
-         scale={[2, 1, 2]}
+         scale={responsiveScale}
          position={[0, 0, 0]}
          rotation={[
             90 * (Math.PI / 180),
@@ -53,7 +122,7 @@ function AnimatedInnerGroups({ children }: { children: React.ReactNode }) {
    const childArray = useMemo(() => React.Children.toArray(children), [children])
    const groupRefs = useMemo(
       () => childArray.map(() => createRef<THREE.Group>()),
-      [childArray.length]
+      [childArray]
    )
 
    useGSAP(() => {
@@ -101,7 +170,9 @@ function AnimatedInnerGroups({ children }: { children: React.ReactNode }) {
 
             const existingUserData = (child.props as { userData?: Record<string, unknown> }).userData ?? {}
 
-            return React.cloneElement(child, {
+            const element = child as GroupChildElement
+
+            return React.cloneElement(element, {
                ref: groupRefs[index],
                key: child.key ?? `inner-group-${index}`,
                userData: { ...existingUserData, slot: index }
@@ -213,7 +284,6 @@ export default function Scene() {
             />
          </AnimatedGroup>
          <SafeAsciiRenderer
-            // characters=" .x->-+x"
             characters=" 010!?X>!x<—"
             bgColor="transparent"
             fgColor="#4893f5"
@@ -231,4 +301,4 @@ export default function Scene() {
    )
 }
 
-useGLTF.preload('/logo3.glb')
+useGLTF.preload('/logo3.glb')   

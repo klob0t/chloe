@@ -50,7 +50,7 @@
     border-style: solid;
     border-color: var(--text-darker);
     line-height: 1.5rem;
-    font-weight: 200;
+    font-weight: 300;
     position: relative;
 }
 
@@ -166,7 +166,6 @@
     font-family: var(--font-geist-mono);
     background-color: rgba(72, 148, 245, 0.15);
     border: 1px solid rgba(72, 148, 245, 0.35);
-    border-radius: 0.25rem;
     padding: 0.1rem 0.35rem;
     white-space: pre-wrap;
 }

@@ -4,6 +4,8 @@ import styles from './input.module.css'
 import { useChatStore } from '@/app/lib/store/chat'
 import { useRouter, usePathname } from 'next/navigation'
 import { IoMdArrowUp } from 'react-icons/io'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
 
 interface InputProps {
    onSendMessage?: (content: string) => Promise<void>
@@ -19,6 +21,27 @@ export default function Input({ onSendMessage }: InputProps) {
    const inputRef = useRef<HTMLTextAreaElement>(null)
    const router = useRouter()
    const pathname = usePathname()
+
+   const { contextSafe } = useGSAP({ scope: inputRef })
+   const flashInput = contextSafe(() => {
+      const target = inputRef.current
+      if (!target) return
+
+      const baseColor = getComputedStyle(target).getPropertyValue('background-color') || 'var(--background-darker)'                                                           
+
+    gsap.timeline()                                                                                                                      
+      .to(target, {                                                                                                                      
+        backgroundColor: 'var(--text-light)',
+        duration: 0.02,                                                                                                                  
+        ease: 'power1.inOut',                                                                                                            
+      })                                                                                                                                 
+      .to(target, {                                                                                                                      
+        backgroundColor: baseColor,                                                                                                      
+        duration: 0.18,                                                                                                                  
+        ease: 'power1.inOut',                                                                                                            
+      })                                                                                                                                 
+      .repeat(1)         // repeat the two-step sequence once => two blinks total                                                        
+  })     
 
    useEffect(() => {
       const element = inputRef.current
@@ -57,6 +80,7 @@ export default function Input({ onSendMessage }: InputProps) {
       }
 
       ensureActiveConversation()
+      flashInput()
 
       setInputValue('')
 
@@ -68,12 +92,14 @@ export default function Input({ onSendMessage }: InputProps) {
       void Promise.resolve(send(content)).catch(error => {
          console.error('Failed to send message', error)
       })
-   }, [ensureActiveConversation, inputValue, isLoading, onSendMessage, sendMessage])
+   }, [ensureActiveConversation, inputValue, isLoading, onSendMessage, sendMessage, flashInput])
 
    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
          e.preventDefault()
          sendContent()
+         flashInput()
+
       }
    }
 

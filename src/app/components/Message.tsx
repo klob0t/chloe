@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useMemo, useRef, useState, type HTMLAttributes, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type HTMLAttributes, type ReactNode, type CSSProperties } from 'react'
 import styles from './message.module.css'
 import { Message as MessageType } from '@/app/lib/store/chat'
 import { useChatStore } from '@/app/lib/store/chat'
@@ -64,14 +64,14 @@ const CodeBlock = ({ className, children }: Pick<MarkdownCodeProps, 'className' 
         'hljs-title': { color: '#4893f5' }
     }
 
-    const wrapperStyles = {
+    const wrapperStyles: CSSProperties = {
         width: '100%',
         backgroundColor: '#00052a',
         padding: '1rem 0rem 0rem 0',
         margin: '1rem 0 1rem 0'
     }
 
-    const preTagStyles = {
+    const preTagStyles: CSSProperties = {
         backgroundColor: 'transparent',
         padding: '0 0em 1rem 1rem',
         marginLeft: 0,
@@ -80,7 +80,7 @@ const CodeBlock = ({ className, children }: Pick<MarkdownCodeProps, 'className' 
         color: '#4894f5'
     }
 
-    const lineNumStyles = {
+    const lineNumStyles: CSSProperties = {
         color: '#0b489d',
         textAlign: 'right'
     }

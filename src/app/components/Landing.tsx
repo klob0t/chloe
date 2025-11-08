@@ -4,11 +4,10 @@ import { request } from '@/app/lib/utils/request'
 import { SYSTEM_PROMPT } from '@/app/lib/store/prompt'
 import { useLoadingStore } from '@/app/lib/store/loading'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Spinner } from './Spinner'
-import { useChatStore } from '@/app/lib/store/chat'
 import TextAnimation from '@/app/lib/tools/TextAnimation'
 import dynamic from 'next/dynamic'
+import { CompletionResponse } from '@/app/lib/utils/request'
 
 const Scene = dynamic(() => import('@/app/components/Scene'), {
     ssr: false,
@@ -18,7 +17,12 @@ export default function Landing() {
     const [response, setResponse] = useState('')
     const [error, setError] = useState('')
     const { setLoading } = useLoadingStore()
-    const router = useRouter()
+
+    const toDisplayString = (result: CompletionResponse): string => {
+        if (typeof result.response === 'string') return result.response
+        return JSON.stringify(result)
+    }
+    // const router = useRouter()
 
     useEffect(() => {
         const id = () => `${Date.now()}-${Math.random().toString(36)}`
@@ -34,7 +38,11 @@ export default function Landing() {
                     model: 'openai-fast'
                 }
                 const data = await request(payload)
-                setResponse(data.response || data)
+                setResponse(
+                    typeof data.response === 'string'
+                        ? data.response
+                        : JSON.stringify(data)
+                )
             } catch (err) {
                 setError('Failed to load greeting')
                 console.error(err)
@@ -49,9 +57,9 @@ export default function Landing() {
 
     return (
         <div className={styles.landingPage}>
-      
+
             <div className={styles.landingWrapper}>
-                  <div className={styles.ASCII}>
+                <div className={styles.ASCII}>
                     <Scene />
                 </div>
                 <div className={styles.greeting}>

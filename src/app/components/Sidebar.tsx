@@ -7,7 +7,6 @@ import styles from './sidebar.module.css'
 import Link from 'next/link'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import { AiOutlinePlus } from 'react-icons/ai'
-import { RiArrowLeftSLine } from "react-icons/ri"
 import { startNewConversation } from '@/app/lib/utils/handleNewChat'
 
 export default function Sidebar() {
@@ -120,7 +119,7 @@ export default function Sidebar() {
          year: 'numeric',
          month: 'short',
          day: 'numeric'
-      }
+      } as const
 
       return date.toLocaleDateString('en-GB', format) + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
    }
