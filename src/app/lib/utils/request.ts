@@ -49,8 +49,18 @@ export async function request(prompt: Payload): Promise<CompletionResponse> {
          }
       }
 
-      const data = await res.json()
-      return data as CompletionResponse
+      const rawBody = await res.text()
+
+      if (!rawBody) {
+         return {}
+      }
+
+      try {
+         const data = JSON.parse(rawBody)
+         return data as CompletionResponse
+      } catch {
+         return { response: rawBody }
+      }
    } catch (error: unknown) {
       console.error('Error sending prompt', error instanceof Error ? error.message : error)
       throw error

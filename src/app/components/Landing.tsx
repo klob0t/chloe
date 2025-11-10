@@ -3,29 +3,40 @@ import styles from './landing.module.css'
 import { request } from '@/app/lib/utils/request'
 import { SYSTEM_PROMPT } from '@/app/lib/store/prompt'
 import { useLoadingStore } from '@/app/lib/store/loading'
-import { useEffect, useState } from 'react'
-import { Spinner } from './Spinner'
-import TextAnimation from '@/app/lib/tools/TextAnimation'
+import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { CompletionResponse } from '@/app/lib/utils/request'
+import { TextScramble } from '@/app/components/TextScramble'
 
 const Scene = dynamic(() => import('@/app/components/Scene'), {
     ssr: false,
 })
 
+const SCRAMBLE_PLACEHOLDERS = [
+    '!-_\\/=+*^?',
+    '-_\\/=+*^?!',
+    '_\\/=+*^?!-',
+    '\\/=+*^?!-_',
+    '/=+*^?!-_\\',
+    '=+*^?!-_\\/',
+    '+*^?!-_\\/=',
+    '*^?!-_\\/=+',
+    '^?!-_\\/=+*',
+    '?!-_\\/=+*^',
+] as const
+
+const SCRAMBLE_HOLD_DURATION = 1
+
+const fallbackGreeting = 'Hi! How can I help you today?'
+
 export default function Landing() {
-    const [response, setResponse] = useState('')
+    const [response, setResponse] = useState<string | null>(null)
     const [error, setError] = useState('')
     const { setLoading } = useLoadingStore()
-
-    const toDisplayString = (result: CompletionResponse): string => {
-        if (typeof result.response === 'string') return result.response
-        return JSON.stringify(result)
-    }
-    // const router = useRouter()
+    const scramblePlaceholders = useMemo(() => [...SCRAMBLE_PLACEHOLDERS], [])
 
     useEffect(() => {
-        const id = () => `${Date.now()}-${Math.random().toString(36)}`
+        let isActive = true
+
         const fetchResponse = async () => {
             setError('')
             setLoading(true)
@@ -38,42 +49,54 @@ export default function Landing() {
                     model: 'openai-fast'
                 }
                 const data = await request(payload)
-                setResponse(
-                    typeof data.response === 'string'
+                const resolvedResponse =
+                    typeof data.response === 'string' && data.response.trim().length > 0
                         ? data.response
-                        : JSON.stringify(data)
-                )
+                        : fallbackGreeting
+
+                if (!isActive) {
+                    return
+                }
+
+                setResponse(resolvedResponse)
             } catch (err) {
-                setError('Failed to load greeting')
                 console.error(err)
+                if (!isActive) {
+                    return
+                }
+
+                setError('Failed to load greeting')
+                setResponse(fallbackGreeting)
             } finally {
-                setLoading(false)
+                if (isActive) {
+                    setLoading(false)
+                }
             }
         }
+
         fetchResponse()
+
+        return () => {
+            isActive = false
+        }
     }, [setLoading])
-
-
 
     return (
         <div className={styles.landingPage}>
-
             <div className={styles.landingWrapper}>
                 <div className={styles.ASCII}>
                     <Scene />
                 </div>
                 <div className={styles.greeting}>
-                    {error ? (
-                        <p>{error}</p>
-                    ) : response ? (
-                        <TextAnimation
-                            text={typeof response === 'string' ? response : JSON.stringify(response)}
-                            delay={0.5}
-                            duration={JSON.stringify(response).length / 5000}
-                        />
-                    ) : (
-                        <Spinner />
-                    )}
+                    <TextScramble
+                        as="p"
+                        className={styles.greetingScramble}
+                        phrases={scramblePlaceholders}
+                        text={response}
+                        holdDuration={SCRAMBLE_HOLD_DURATION}
+                        aria-live="polite"
+                    />
+                    {error ? <p className={styles.greetingError}>{error}</p> : null}
                 </div>
             </div>
         </div>

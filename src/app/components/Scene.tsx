@@ -134,30 +134,21 @@ function AnimatedInnerGroups({ children }: { children: React.ReactNode }) {
          const initialZ = group.position.z
          return gsap.timeline({ repeat: -1, delay: index * 0.1 })
             .to(group.position, {
-               z: initialZ - 0.02,
+               z: initialZ - 0.06,
                duration: 0.4,
                ease: 'power3.out'
             })
             .to(group.position, {
                z: initialZ,
-               duration: 1,
-               ease: 'power3.inOut'
+               duration: 0.6,
+               ease: 'power3.in'
             }, '<0.2')
       })
 
-      const rotationTweens = validGroups.map((group, index) =>
-         gsap.timeline({ repeat: -1, delay: index * 0.15 })
-            .to(group.rotation, {
-               z: `+=-${(Math.PI * 2).toFixed(3)}`,
-               duration: 2,
-               ease: 'power4.inOut'
-            })
-            .to({}, { duration: 2 })
-      )
+  
 
       return () => {
          positionTweens.forEach(tween => tween.kill())
-         rotationTweens.forEach(tween => tween.kill())
       }
    }, [groupRefs])
 
@@ -288,7 +279,7 @@ export default function Scene() {
             bgColor="transparent"
             fgColor="#4893f5"
             invert={false}
-            resolution={0.15}
+            resolution={0.2}
          />
          <OrthographicCamera
             makeDefault

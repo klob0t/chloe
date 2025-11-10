@@ -8,8 +8,6 @@
     justify-content: center;
     margin-bottom: 3rem;
     overflow-y: auto;
-    scrollbar-width: thick;
-    scrollbar-color: var(--text-dark) transparent;
     padding: 0rem 0rem 0rem 0rem;
     /* border: 1px solid pink; */
 }
@@ -25,29 +23,7 @@
 
 }
 
-.chatFeed::-webkit-scrollbar {
-    width: 0.4rem;
-    
-    border-radius: 0px !important;
-}
 
-.chatFeed::-webkit-scrollbar-track {
-    background: var(--background-darker);
-    
-    border-radius: 0px !important;
-}
-
-.chatFeed::-webkit-scrollbar-thumb {
-    background-color: var(--text-light);
-    border-radius: 0px !important;
-}
-
-.chatFeed::-webkit-scrollbar-thumb:hover {
-    background-color: var(--text-dark);
-    
-    border-radius: 0px !important;
-    
-}
 
 /* @media (max-width: 768px) {
     .chatFeed {
@@ -62,23 +38,7 @@
     }
 } */
 
-.messagesContainer::-webkit-scrollbar {
-    width: 6px;
-}
 
-.messagesContainer::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.messagesContainer::-webkit-scrollbar-thumb {
-    background-color: #4b5563;
-}
-
-
-
-.messagesContainer::-webkit-scrollbar-thumb:hover {
-    background-color: #6b7280;
-}
 
 
 .spinnerWrapper {

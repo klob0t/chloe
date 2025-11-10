@@ -27,27 +27,23 @@ export default function Input({ onSendMessage }: InputProps) {
       const target = inputRef.current
       if (!target) return
 
-      const baseColor = getComputedStyle(target).getPropertyValue('background-color') || 'var(--background-darker)'                                                           
+      const baseColor = getComputedStyle(target).getPropertyValue('background-color') || 'var(--background-darker)'
 
-    gsap.timeline()                                                                                                                      
-      .to(target, {                                                                                                                      
-        backgroundColor: 'var(--text-light)',
-        duration: 0.02,                                                                                                                  
-        ease: 'power1.inOut',                                                                                                            
-      })                                                                                                                                 
-      .to(target, {                                                                                                                      
-        backgroundColor: baseColor,                                                                                                      
-        duration: 0.18,                                                                                                                  
-        ease: 'power1.inOut',                                                                                                            
-      })                                                                                                                                 
-      .repeat(1)         // repeat the two-step sequence once => two blinks total                                                        
-  })     
+      gsap.timeline()
+         .to(target, {
+            backgroundColor: 'var(--text-light)',
+            duration: 0.02,
+            ease: 'power1.inOut',
+         }).to(target, {
+            backgroundColor: baseColor,
+            duration: 0.18,
+            ease: 'power1.inOut',
+         }).repeat(1)                                                  
+   })
 
    useEffect(() => {
       const element = inputRef.current
-      if (!element) {
-         return
-      }
+      if (!element) return
 
       element.style.height = 'auto'
       element.style.height = `${element.scrollHeight}px`
@@ -81,7 +77,6 @@ export default function Input({ onSendMessage }: InputProps) {
 
       ensureActiveConversation()
       flashInput()
-
       setInputValue('')
 
       requestAnimationFrame(() => {

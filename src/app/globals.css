@@ -1,8 +1,8 @@
 :root {
   --text-light: #4893f5;
   --text-dark: #0b489d;
-  --background: #050d41;
-  --background-darker: #00052a;
+  --background: #050e41;
+  --background-darker: #020625;
   --sidebar-collapsed-width: 60px;
 }
 
@@ -43,4 +43,30 @@ body {
 
 a {
   color: rgb(188, 214, 251);
+}
+
+::-webkit-scrollbar {
+  width: 12px;            
+  height: 12px;          
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background); 
+  border-radius: 0;   
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-dark);   
+  border-radius: 0;    
+  border: 0;             
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: #f2f2f2;     
+}
+
+.body {
+  scrollbar-width: auto;            
+  scrollbar-color: #9aa0a6 #f2f2f2;  
 }

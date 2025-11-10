@@ -1,10 +1,13 @@
 'use client'
 
-import type { AppRouterInstance } from 'next/navigation'
 import { request } from '@/app/lib/utils/request'
 import { SYSTEM_PROMPT } from '@/app/lib/store/prompt'
 import { useChatStore, type Message } from '@/app/lib/store/chat'
 import { useSidebarStore } from '@/app/lib/store/sidebar'
+
+type RouterLike = {
+   push: (href: string) => void
+}
 
 const createEmptyAssistantMessage = (): Message => ({
    id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
@@ -15,7 +18,20 @@ const createEmptyAssistantMessage = (): Message => ({
 
 const createConversationId = () => `conv-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 
-export const startNewConversation = async (router: AppRouterInstance) => {
+const extractResponseText = (result: unknown): string | null => {
+   if (typeof result === 'string') {
+      return result
+   }
+
+   if (result && typeof result === 'object' && 'response' in result) {
+      const maybeResponse = (result as { response?: unknown }).response
+      return typeof maybeResponse === 'string' ? maybeResponse : null
+   }
+
+   return null
+}
+
+export const startNewConversation = async (router: RouterLike) => {
    const {
       messages,
       saveConversation,
@@ -55,7 +71,11 @@ export const startNewConversation = async (router: AppRouterInstance) => {
       }
 
       const data = await request(payload)
-      const response = data.response || data
+      const response = extractResponseText(data)
+
+      if (!response) {
+         throw new Error('No assistant response returned')
+      }
 
       setMessages(existing =>
          existing.map(message =>

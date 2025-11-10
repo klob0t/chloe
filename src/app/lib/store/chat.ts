@@ -24,12 +24,10 @@ type TitleGenerationStatus = 'idle' | 'loading' | 'error'
 const DEFAULT_CONVERSATION_TITLE = 'New chat'
 const MAX_CONVERSATION_TITLE_LENGTH = 60
 const MAX_MESSAGES_FOR_TITLE = 8
-const MIN_MESSAGES_FOR_TITLE = 5
+const MIN_MESSAGES_FOR_TITLE = 2
 
 const TITLE_SYSTEM_PROMPT = [
-    'You are an assistant that creates short, descriptive titles for chat transcripts.',
-    'Return a concise title of at most six words using sentence case.',
-    'Do not include quotation marks, emojis, or trailing punctuation.'
+    'You are an assistant that creates short, descriptive titles for chat transcripts. Return a concise title of at most six words using sentence case. Do not include quotation marks, emojis, or trailing punctuation.'
 ].join(' ')
 
 const normaliseWhitespace = (value: string) => value.replace(/\s+/g, ' ').trim()
@@ -144,7 +142,7 @@ const requestGeneratedTitle = async (messages: Message[]): Promise<string | null
                 content: `Here is the conversation transcript. Reply with only a short title.\n\n${snippet}`
             }
         ],
-        model: 'openai'
+        model: 'openai-fast'
     }
 
     const response = await request(payload)

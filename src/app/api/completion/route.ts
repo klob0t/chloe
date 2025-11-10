@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { SEARCH_TOOL, handleToolCall, type ToolCallPayload } from '@/app/lib/tools/search'
+import { SEARCH_TOOL, handleToolCall, type ToolCallPayload } from '@/app/lib/utils/search'
 
 const API_KEY = process.env.POLLINATIONS_API_KEY
 const OPENAI_ENDPOINT = 'https://text.pollinations.ai/openai'

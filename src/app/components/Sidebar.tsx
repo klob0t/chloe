@@ -8,6 +8,22 @@ import Link from 'next/link'
 import { GiHamburgerMenu } from 'react-icons/gi'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { startNewConversation } from '@/app/lib/utils/handleNewChat'
+import { TextScramble } from '@/app/components/TextScramble'
+
+const TITLE_SCRAMBLE_PLACEHOLDERS = [
+   '!-_\\/=+*^?',
+   '-_\\/=+*^?!',
+   '_\\/=+*^?!-',
+   '\\/=+*^?!-_',
+   '/=+*^?!-_\\',
+   '=+*^?!-_\\/',
+   '+*^?!-_\\/=',
+   '*^?!-_\\/=+',
+   '^?!-_\\/=+*',
+   '?!-_\\/=+*^',
+] as const
+
+const TITLE_SCRAMBLE_HOLD_DURATION = 200
 
 export default function Sidebar() {
    const {
@@ -24,6 +40,7 @@ export default function Sidebar() {
    const { isOpen, closeSidebar, toggleSidebar, openSidebar } = useSidebarStore()
    const router = useRouter()
    const pathname = usePathname()
+   const titleScramblePlaceholders = useMemo(() => [...TITLE_SCRAMBLE_PLACEHOLDERS], [])
 
    const DESKTOP_BREAKPOINT = 1280
    const [isDesktop, setIsDesktop] = useState(false)
@@ -192,8 +209,15 @@ export default function Sidebar() {
                                           className={`${styles.conversationTitleRow}  ${currentConversationId === conversation.id ? styles.conversationTitleActive  : styles.conversationTitle}`}
                                           title={titleLabel}
                                        >
-                                          <span className={styles.conversationTitleText}>{titleLabel}</span>
-                                          {isLoadingTitle ? <span className={styles.titleSpinner} aria-label="Generating title" /> : null}
+                                          <TextScramble
+                                             as="span"
+                                             phrases={titleScramblePlaceholders}
+                                             className={`${styles.conversationTitleText} ${styles.titleScramble}`}
+                                             text={isLoadingTitle ? null : titleLabel}
+                                             holdDuration={TITLE_SCRAMBLE_HOLD_DURATION}
+                                             aria-label={isLoadingTitle ? 'Generating title' : undefined}
+                                             aria-live="polite"
+                                          />
                                           {isTitleError ? <span className={styles.titleError} title="Title generation failed">!</span> : null}
                                        </div>
                                        <div className={`${styles.conversationTitleRow}  ${currentConversationId === conversation.id ? styles.conversationMetaActive  : styles.conversationMeta}`}>

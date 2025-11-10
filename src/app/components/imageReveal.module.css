@@ -78,9 +78,7 @@
 
 .downloadButton:hover:not(:disabled),
 .downloadButton:focus-visible:not(:disabled) {
-   transform: translateY(1px);
-   background: rgba(72, 147, 245, 0.25);
-   border-color: rgba(72, 147, 245, 0.65);
+   transform: translateY(5px);
 }
 
 .downloadButton:disabled {

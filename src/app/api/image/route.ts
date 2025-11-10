@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
+import { randomInt } from "node:crypto"
 
-const DEFAULT_MODEL = process.env.POLLINATIONS_IMAGE_MODEL || 'flux'
-const DEFAULT_WIDTH = Number(process.env.POLLINATIONS_IMAGE_WIDTH ?? 1080)
-const DEFAULT_HEIGHT = Number(process.env.POLLINATIONS_IMAGE_HEIGHT ?? 1350)
+const DEFAULT_MODEL = process.env.POLLINATIONS_IMAGE_MODEL || 'kontext'
 const IMAGE_BASE_URL = process.env.POLLINATIONS_IMAGE_BASE_URL || 'https://image.pollinations.ai/prompt/'
 const MAX_RETRIES = Number(process.env.POLLINATIONS_IMAGE_RETRIES ?? 1)
 const API_KEY = process.env.POLLINATIONS_API_KEY
@@ -33,10 +32,12 @@ export async function POST(request: NextRequest) {
          return NextResponse.json({ error: 'Image prompt is required.' }, { status: 400 })
       }
 
+      const seedRandom = randomInt(0, 2 ** 32)
+
       const model = body.desiredModel || DEFAULT_MODEL
-      const width = normaliseNumber(body.width) ?? DEFAULT_WIDTH
-      const height = normaliseNumber(body.height) ?? DEFAULT_HEIGHT
-      const seed = normaliseNumber(body.seed)
+      const width = 1080
+      const height = 1350
+      const seed = normaliseNumber(body.seed) ?? seedRandom
       const steps = normaliseNumber(body.inferenceSteps)
       const guidance = normaliseNumber(body.guidanceScale)
 
