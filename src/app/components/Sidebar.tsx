@@ -172,8 +172,13 @@ export default function Sidebar() {
                   <div className={styles.sidebarOpen}>
 
                      <div className={styles.sidebarHeader}>
-
-                        <h3>Chats</h3>
+                        <div className={styles.logo}>
+                           <Link href='/'>
+                              <pre>
+                                 {ASSISTANT_ASCII_ART}
+                              </pre>
+                           </Link>
+                        </div>
                         <button className={styles.closeButton} onClick={closeSidebar}>
                            &lt;
                         </button>
@@ -206,7 +211,7 @@ export default function Sidebar() {
                                  >
                                     <div className={styles.conversationContent}>
                                        <div
-                                          className={`${styles.conversationTitleRow}  ${currentConversationId === conversation.id ? styles.conversationTitleActive  : styles.conversationTitle}`}
+                                          className={`${styles.conversationTitleRow}  ${currentConversationId === conversation.id ? styles.conversationTitleActive : styles.conversationTitle}`}
                                           title={titleLabel}
                                        >
                                           <TextScramble
@@ -220,7 +225,7 @@ export default function Sidebar() {
                                           />
                                           {isTitleError ? <span className={styles.titleError} title="Title generation failed">!</span> : null}
                                        </div>
-                                       <div className={`${styles.conversationTitleRow}  ${currentConversationId === conversation.id ? styles.conversationMetaActive  : styles.conversationMeta}`}>
+                                       <div className={`${styles.conversationTitleRow}  ${currentConversationId === conversation.id ? styles.conversationMetaActive : styles.conversationMeta}`}>
                                           {formatDate(conversation.updatedAt)}
                                        </div>
                                     </div>
@@ -237,13 +242,7 @@ export default function Sidebar() {
                         )}
                      </div>
                      <div className={styles.sidebarFooter}>
-                        <div className={styles.logo}>
-                           <Link href='/'>
-                              <pre>
-                                 {ASSISTANT_ASCII_ART}
-                              </pre>
-                           </Link>
-                        </div>
+                       
                         <div className={styles.footerLinks}>
                            made by<Link
                               style={{

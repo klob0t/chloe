@@ -6,6 +6,7 @@
 - Shared state and helpers are under `src/app/lib` (`store` holds Zustand slices, `utils/request.ts` wraps API calls, `tools` powers the search tool wiring).
 - API handlers live in `src/app/api/*/route.ts` and expect a `POLLINATIONS_API_KEY` during runtime.
 - `public/` stores static assets such as `logo3.glb`. `chloe-v1/` is a legacy snapshot—reference only when needed.
+- ALWAYS explain the modification or any fix you are going to do before making changes.
 
 ## Build, Test, and Development Commands
 - `npm install` – install dependencies; rerun after touching `package.json`.

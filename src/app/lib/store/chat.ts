@@ -17,6 +17,12 @@ interface Conversation {
     createdAt: number
     updatedAt: number
     title?: string
+    summary?: ConversationSummary | null
+}
+
+interface ConversationSummary {
+    text: string
+    summarisedCount: number
 }
 
 type TitleGenerationStatus = 'idle' | 'loading' | 'error'
@@ -244,11 +250,82 @@ const parseImageCommand = (raw: string): ParsedImageCommand => {
     return { payload }
 }
 
+const tryParseJsonString = (value: string) => {
+    try {
+        return JSON.parse(value)
+    } catch {
+        return null
+    }
+}
+
+const tryParseEmbeddedJson = (value: string) => {
+    if (!value.includes('{')) {
+        return null
+    }
+
+    const firstBrace = value.indexOf('{')
+    const lastBrace = value.lastIndexOf('}')
+
+    if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) {
+        return null
+    }
+
+    return tryParseJsonString(value.slice(firstBrace, lastBrace + 1))
+}
+
+const readStringField = (record: Record<string, unknown>, key: string): string | null => {
+    const value = record[key]
+    return typeof value === 'string' ? value : null
+}
+
+const extractImageErrorMessage = (raw: string): string => {
+    if (!raw) {
+        return 'Unknown error'
+    }
+
+    const parsed =
+        (typeof raw === 'string' ? tryParseJsonString(raw) : null) ??
+        (typeof raw === 'string' ? tryParseEmbeddedJson(raw) : null)
+
+    if (typeof parsed === 'string') {
+        return parsed.trim() || raw
+    }
+
+    if (parsed && typeof parsed === 'object') {
+        const asRecord = parsed as Record<string, unknown>
+        const messageField = readStringField(asRecord, 'message')?.trim()
+        if (messageField) {
+            return messageField
+        }
+
+        const detailsField = readStringField(asRecord, 'details')?.trim()
+        if (detailsField) {
+            const nested = tryParseJsonString(detailsField) ?? tryParseEmbeddedJson(detailsField)
+            if (nested && typeof nested === 'object') {
+                const nestedRecord = nested as Record<string, unknown>
+                const nestedMessage = readStringField(nestedRecord, 'message')?.trim()
+                if (nestedMessage) {
+                    return nestedMessage
+                }
+            }
+            return detailsField
+        }
+
+        const errorField = readStringField(asRecord, 'error')?.trim()
+        if (errorField) {
+            return errorField
+        }
+    }
+
+    return raw
+}
+
 interface ChatState {
     messages: Message[]
     isTyping: boolean
     isLoading: boolean
     conversations: Conversation[]
+    conversationSummaries: Record<string, ConversationSummary>
     currentConversationId: string | null
     titleGenerationStatus: Record<string, TitleGenerationStatus>
 
@@ -259,6 +336,7 @@ interface ChatState {
     setLoading: (loading: boolean) => void
     setMessages: (messages: MessageUpdater) => void
     setCurrentConversationId: (id: string) => void
+    setConversationSummary: (id: string, summary: ConversationSummary | null) => void
     saveConversation: (title?: string) => void
     loadConversation: (id: string) => void
     deleteConversation: (id: string) => void
@@ -321,6 +399,19 @@ export const useChatStore = create<ChatState>()((set, get) => {
                             normalisedConversation.title = conv.title
                         }
 
+                        const summaryCandidate = isRecord(conv.summary) ? conv.summary : null
+                        const summaryText = typeof summaryCandidate?.text === 'string' ? summaryCandidate.text.trim() : null
+                        const summaryCount = typeof summaryCandidate?.summarisedCount === 'number' && Number.isFinite(summaryCandidate.summarisedCount)
+                            ? summaryCandidate.summarisedCount
+                            : null
+
+                        if (summaryText && summaryCount !== null) {
+                            normalisedConversation.summary = {
+                                text: summaryText,
+                                summarisedCount: summaryCount
+                            }
+                        }
+
                         return normalisedConversation
                     })
             } catch (error) {
@@ -364,6 +455,21 @@ export const useChatStore = create<ChatState>()((set, get) => {
             metadata: message.metadata ? { ...message.metadata } : undefined
         }))
 
+        const cloneConversationSummary = (summary: ConversationSummary): ConversationSummary => ({
+            text: summary.text,
+            summarisedCount: summary.summarisedCount
+        })
+
+        const buildSummaryMap = (items: Conversation[]): Record<string, ConversationSummary> => {
+            const summaries: Record<string, ConversationSummary> = {}
+            items.forEach(conversation => {
+                if (conversation.summary) {
+                    summaries[conversation.id] = cloneConversationSummary(conversation.summary)
+                }
+            })
+            return summaries
+        }
+
         const resolveMessages = (current: Message[], next: MessageUpdater): Message[] =>
             typeof next === 'function'
                 ? (next as (messages: Message[]) => Message[])(current)
@@ -393,7 +499,8 @@ export const useChatStore = create<ChatState>()((set, get) => {
             persistConversations(merged)
             set(state => ({
                 ...state,
-                conversations: merged
+                conversations: merged,
+                conversationSummaries: buildSummaryMap(merged)
             }))
         }
 
@@ -413,6 +520,7 @@ export const useChatStore = create<ChatState>()((set, get) => {
             isTyping: false,
             isLoading: false,
             conversations: [],
+            conversationSummaries: {},
             currentConversationId: null,
             titleGenerationStatus: {},
 
@@ -518,10 +626,11 @@ export const useChatStore = create<ChatState>()((set, get) => {
                    } catch (error) {
                        logImageResponse('🖼️ Image route failed', parsed.payload, undefined, error)
                         console.error('Failed to generate image:', error)
-                        const errorMessage = error instanceof Error ? error.message : String(error ?? 'Unknown error')
+                        const rawErrorMessage = error instanceof Error ? error.message : String(error ?? 'Unknown error')
+                        const friendlyErrorMessage = extractImageErrorMessage(rawErrorMessage)
                         updatePlaceholder(msg => ({
                             ...msg,
-                            content: `Sorry, I could not generate that image. ${errorMessage}`,
+                            content: `Sorry, I could not generate that image. ${friendlyErrorMessage}`,
                             messageType: 'text'
                         }))
                     }
@@ -609,6 +718,31 @@ export const useChatStore = create<ChatState>()((set, get) => {
                 localStorage.setItem('currentConversationId', id)
             },
 
+            setConversationSummary: (id: string, summary: ConversationSummary | null) => {
+                set(state => {
+                    const nextSummaries = { ...state.conversationSummaries }
+                    if (summary) {
+                        nextSummaries[id] = cloneConversationSummary(summary)
+                    } else {
+                        delete nextSummaries[id]
+                    }
+
+                    const nextConversations = state.conversations.map(conversation =>
+                        conversation.id === id
+                            ? {
+                                ...conversation,
+                                summary: summary ? cloneConversationSummary(summary) : undefined
+                            }
+                            : conversation
+                    )
+
+                    return {
+                        conversationSummaries: nextSummaries,
+                        conversations: nextConversations
+                    }
+                })
+            },
+
             saveConversation: (title?: string) => {
                 const { messages, conversations, currentConversationId } = get()
                 if (messages.length === 0) {
@@ -642,6 +776,11 @@ export const useChatStore = create<ChatState>()((set, get) => {
                     conversationRecord.title = resolvedTitle
                 }
 
+                const summaryFromState = get().conversationSummaries[conversationId] ?? existing?.summary
+                if (summaryFromState) {
+                    conversationRecord.summary = cloneConversationSummary(summaryFromState)
+                }
+
                 const updatedConversations = mergeAndSortConversations(combinedExisting, [conversationRecord])
 
                 persistConversations(updatedConversations)
@@ -652,6 +791,7 @@ export const useChatStore = create<ChatState>()((set, get) => {
                 set(state => ({
                     ...state,
                     conversations: updatedConversations,
+                    conversationSummaries: buildSummaryMap(updatedConversations),
                     currentConversationId: conversationId
                 }))
 
@@ -683,6 +823,7 @@ export const useChatStore = create<ChatState>()((set, get) => {
                     set(state => ({
                         ...state,
                         conversations: mergedConversations,
+                        conversationSummaries: buildSummaryMap(mergedConversations),
                         messages: persistedConversation.messages,
                         currentConversationId: id
                     }))
@@ -724,6 +865,7 @@ export const useChatStore = create<ChatState>()((set, get) => {
                 set(state => ({
                     ...state,
                     conversations: updatedConversations,
+                    conversationSummaries: buildSummaryMap(updatedConversations),
                     currentConversationId: currentConversationId === id ? null : state.currentConversationId,
                     messages: currentConversationId === id ? [] : state.messages
                 }))
@@ -750,7 +892,8 @@ export const useChatStore = create<ChatState>()((set, get) => {
 
                     set(state => ({
                         ...state,
-                        conversations: unified
+                        conversations: unified,
+                        conversationSummaries: buildSummaryMap(unified)
                     }))
 
                     if (currentId) {

@@ -100,7 +100,7 @@ function AnimatedGroup({ children }: { children: React.ReactNode }) {
    const { width } = useThree(state => state.viewport)
 
    const responsiveScale = useMemo(() => {
-      const factor = Math.min(Math.max(width / 6, 0.8), 1)
+      const factor = Math.min(Math.max(width / 12, 0.6), 1)
       return [2 * factor, 1 * factor, 2 * factor] as const
    }, [width])
 

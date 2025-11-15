@@ -29,4 +29,12 @@
    text-align: center;
    transform: translate(0, -4.5rem);
    width: 100%;
+   font-size: 1rem;
+}
+
+
+@media (max-width: 768px) {
+   .greeting {
+      font-size: 0.9rem;
+   }
 }

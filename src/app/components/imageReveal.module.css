@@ -13,7 +13,7 @@
    background-color: var(--background);
    overflow: hidden;
    aspect-ratio: 4 / 5;
-   min-height: 260px;
+   min-height: 200px;
 }
 
 .generatedImage {

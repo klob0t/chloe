@@ -9,7 +9,7 @@
 html,
 body {
   width: 100dvw;
-  height: 100dvh;
+  height: 100svh;
   overflow-x: hidden;
 }
 
@@ -22,7 +22,7 @@ body {
 }
 
 .app-shell {
-  min-height: 100dvh;
+  min-height: 100svh;
   width: 100dvw;
 }
 
