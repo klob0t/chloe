@@ -1,5 +1,3 @@
-gpt4free/
-
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -12,12 +10,17 @@ gpt4free/
 !.yarn/releases
 !.yarn/versions
 
+chloe-v1/
+
 # testing
 /coverage
 
 # next.js
 /.next/
 /out/
+
+temp/*
+temp
 
 # production
 /build
@@ -33,17 +36,14 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.venv/
 .env*
-
-/generated_media
-
-/har_and_cookies
 
 # vercel
 .vercel
 
-/chloe
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
-notes.txt
-providers.txt
+
+TODO.md

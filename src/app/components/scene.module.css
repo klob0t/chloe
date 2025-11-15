@@ -1,0 +1,8 @@
+.canvas table {
+   font-family: var(--font-geist-mono) !important;
+   font-size: 2rem;
+}
+
+.canvas {
+   transform: translate(1%, 0);
+}

@@ -1,0 +1,52 @@
+.chatFeed {
+    position: fixed;
+    top: 0rem;
+    left: calc(var(--sidebar-collapsed-width) + 1.5rem);
+    right: 0;
+    bottom: calc(1rem + 1rem);
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3rem;
+    overflow-y: auto;
+    padding: 0rem 0rem 0rem 0rem;
+    /* border: 1px solid pink; */
+}
+
+.messagesContainer {
+    width: min(100%, 768px);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 0rem 0rem 0rem;
+    /* border: 1px solid red; */
+    margin: 0 0;
+
+}
+
+
+
+/* @media (max-width: 768px) {
+    .chatFeed {
+        left: 1rem;
+        right: 0rem;
+        bottom: calc(6.5rem + env(safe-area-inset-bottom));
+    }
+
+    .messagesContainer {
+        width: 100%;
+        padding: 1rem 0 3rem;
+    }
+} */
+
+
+
+
+.spinnerWrapper {
+    display: flex;
+    justify-content: flex-start;
+    padding: 0.75rem 1rem;
+}
+
+.chloeLogo {
+    font-size: 0.6rem;
+}

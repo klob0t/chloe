@@ -1,0 +1,227 @@
+.messageWrapper {
+    display: flex;
+    width: 100%;
+}
+
+.userMessage {
+    max-width: 80%;
+    margin-left: auto;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 5rem;
+}
+
+.assistantMessage {
+    max-width: 80%;
+    display: flex;
+    margin: 1rem;
+    align-items: flex-start;
+}
+
+.assistantMessageImage {
+    width: 100%;
+    max-width: 80%;
+    margin: 1rem;
+}
+
+.userAvatar {
+    order: 2;
+    margin-left: 1.6rem;
+    font-size: 1.5rem;
+    font-weight: 100;
+
+    transform: translateY(-15px);
+}
+
+.assistantAvatar {
+    color: var(--text-light);
+    padding-right: 1rem;
+    font-size: 0.3rem;
+    transform: translateY(-15px);
+    font-weight: 700;
+    margin: 0rem 0.6rem 0rem 0rem;
+    flex-shrink: 0;
+}
+
+.content {
+    width: 100%;
+    padding: 1rem;
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--text-darker);
+    line-height: 1.5rem;
+    font-weight: 300;
+    position: relative;
+}
+
+
+
+.assistantMessageImage .content {
+    padding: 1rem;
+    border: 1px solid var(--text-light);
+    background: none;
+
+}
+
+/* Triangle for user messages (top right corner) */
+.userMessage .content::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    right: -1rem;
+    width: 0;
+    height: 0;
+    border-left: 1rem solid var(--text-light);
+    border-bottom: 1rem solid transparent;
+}
+
+.userMessage .content::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -0.85rem;
+    width: 0;
+    height: 0;
+    border-left: 0.9rem solid var(--background);
+    border-bottom: 0.9rem solid transparent;
+}
+
+/* Triangle for assistant messages (top left corner) */
+.assistantMessage .content::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1rem;
+    width: 0;
+    height: 0;
+    border-right: 1rem solid var(--text-light);
+    border-bottom: 1rem solid transparent;
+}
+
+.assistantMessage .content::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -0.85rem;
+    width: 0;
+    height: 0;
+    border-right: 0.9rem solid var(--background);
+    border-bottom: 0.9rem solid transparent;
+}
+
+.assistantMessage li {
+    text-indent: 0rem;
+
+    margin: 0rem 0rem 0.5rem 0rem;
+    list-style-position: inside
+}
+
+.assistantMessage p {
+    margin: 0rem 0rem 0.5rem 0rem;
+}
+
+.content {
+    line-height: 160%;
+}
+
+.assistantMessage hr {
+    margin: 1rem 0rem;
+    color: transparent;
+    background-color: transparent;
+    border: 1px solid var(--text-dark);
+
+}
+
+.assistantMessage h1,
+.assistantMessage h2,
+.assistantMessage h3,
+.assistantMessage h4 {
+    margin: 1rem 0rem
+}
+
+.assistantMessage code {
+    font-family: var(--font-geist-mono);
+}
+
+.imageWrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+}
+
+.generatedImage {
+    max-width: 100%;
+}
+
+.spinnerWrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0rem;
+}
+
+.codeBlock {
+    width: 100%;
+}
+
+.inlineCode {
+    font-family: var(--font-geist-mono);
+    background-color: rgba(72, 148, 245, 0.15);
+    border: 1px solid rgba(72, 148, 245, 0.35);
+    padding: 0.1rem 0.35rem;
+    white-space: pre-wrap;
+}
+
+.content table,
+.content th,
+.content td {
+    border: 1px solid var(--text-dark);
+    border-collapse: collapse;
+}
+
+.content table {
+    width: 100%;
+}
+
+.content thead>tr {
+    background-color: var(--background-darker)
+}
+
+.content td {
+    padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .assistantAvatar {
+        line-height: 0.37rem;
+        margin: 0rem 0.6rem 0rem -0.5rem;
+    }
+
+    .content {
+        font-size: 0.8rem;
+    }
+
+
+    .assistantMessageImage {
+        max-width: 80%;
+    }
+
+    .userMessage {
+        max-width: 100%;
+        margin-right: 1rem;
+    }
+
+    .imageWrapper {
+        max-width: 80%;
+    }
+
+    .generatedImage {
+        max-width: 80%;
+    }
+    
+
+    .assistantMessage {
+        max-width: 80%;
+        margin: 0rem 0rem 0rem 0rem;
+    }
+
+}

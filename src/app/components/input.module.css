@@ -1,0 +1,105 @@
+.inputWrapper {
+   position: fixed;
+   bottom: 0;
+   left: 0;
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 0.5rem;
+   margin-left: 60px;
+   z-index: 1;
+}
+
+.inputContainer {
+   width: 80%;
+   max-width: 768px;
+   margin-left: -60px;
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+}
+
+.inputRow {
+   display: flex;
+   align-items: flex-end;
+   gap: 0.5rem;
+}
+
+.inputArea {
+   flex: 1;
+   min-height: 45px;
+   border: 1px solid var(--text-dark);
+   background: var(--background-darker);
+   color: var(--text-light);
+   padding: 0.75rem 1rem;
+   font: inherit;
+   resize: none;
+   line-height: 1.4;
+   font-weight: 300;
+   overflow: hidden;
+}
+
+.inputArea:focus {
+   outline: none;
+   border-color: var(--text-light);
+}
+
+.inputArea:disabled {
+   opacity: 0.6;
+   cursor: not-allowed;
+}
+
+.sendButton {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 45px;
+   height: 45px;
+   border: 1px solid var(--text-dark);
+   background: var(--background-darker);
+   color: var(--text-light);
+}
+
+.sendButton svg {
+   width: 22px;
+   height: 22px;
+}
+
+.hints {
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+}
+
+.sendButton:disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+}
+
+.sendButton:not(:disabled):hover {
+   border-color: var(--text-light);
+   color: var(--text-light);
+   background: rgba(72, 147, 245, 0.08);
+   cursor: pointer;
+}
+
+.hint {
+   font-size: 0.75rem;
+   color: var(--text-dark);
+   text-align: right;
+}
+
+.disclaimer {
+   font-size: 0.8rem;
+   width: 100%;
+   display: flex;
+   justify-content: center;
+   color: var(--text-dark);
+}
+
+@media (max-width: 768px) {
+   .disclaimer {
+      font-size: 0.4rem;
+   }
+}
