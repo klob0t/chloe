@@ -4,24 +4,24 @@ interface Payload {
 }
 
 export interface CompletionResponse {
-    response?: string
-    usage?: unknown
-    [key: string]: unknown
+   response?: string
+   usage?: unknown
+   [key: string]: unknown
 }
 
 export interface ImageRequestPayload {
-    imagePrompt: string
-    seed?: number
-    guidanceScale?: number
-    inferenceSteps?: number
-    desiredModel?: string
-    width?: number
-    height?: number
+   imagePrompt: string
+   seed?: number
+   guidanceScale?: number
+   inferenceSteps?: number
+   desiredModel?: string
+   width?: number
+   height?: number
 }
 
 export interface ImageResponse {
-    response: string
-    metadata?: Record<string, unknown>
+   response: string
+   metadata?: Record<string, unknown>
 }
 
 export async function request(prompt: Payload): Promise<CompletionResponse> {
@@ -51,8 +51,13 @@ export async function request(prompt: Payload): Promise<CompletionResponse> {
 
       const rawBody = await res.text()
 
-      if (!rawBody) {
-         return {}
+      console.log('[request] completion res', {
+         status: res.status, bodyLen: rawBody?.length,
+         bodyPreview: rawBody?.slice(0, 200)
+      })
+
+      if (!rawBody || rawBody.trim().length === 0) {
+         console.error('Empty completion response body', { status: res.status })
       }
 
       try {

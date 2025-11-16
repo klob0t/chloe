@@ -61,7 +61,15 @@ export async function POST(request: NextRequest) {
 
   try {
     const payload: CompletionRequestBody = await request.json()
+
     const { messages, model = 'openai' } = payload
+    
+    console.log('[api/completion] received', {
+      model,
+      messagesCount: messages?.length,
+      lastUser: messages?.filter(m => m.role === 'user').slice(-1)[0]?.content?.slice(0, 160)
+    })
+
 
     if (!isChatMessageArray(messages)) {
       return NextResponse.json({ error: 'Missing or invalid messages array' }, { status: 400 })
@@ -92,6 +100,14 @@ export async function POST(request: NextRequest) {
 
     const data: CompletionApiResponse = await initialResponse.json()
     const message = data.choices?.[0]?.message
+    if (!message?.content && !data.response) {
+      console.error('Completion returned empty content', {
+        status: initialResponse.status,
+        model,
+        messagesLen: messages.length,
+        raw: data
+      })
+    }
 
     if (message?.tool_calls && message.tool_calls.length > 0) {
       console.log(`Completion requested ${message.tool_calls.length} tool call(s)`)
@@ -137,8 +153,12 @@ export async function POST(request: NextRequest) {
       }
 
       const followupData: CompletionApiResponse = await followupResponse.json()
-      const finalMessage = followupData.choices?.[0]?.message?.content ?? followupData.response ?? ''
 
+
+      const finalMessage = followupData.choices?.[0]?.message?.content ?? followupData.response ?? ''
+      if (!finalMessage) {
+        console.error('Follow-up completion empty', { raw: followupData })
+      }
       return NextResponse.json({
         response: finalMessage,
         usage: followupData.usage
