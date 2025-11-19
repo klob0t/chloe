@@ -67,7 +67,7 @@ export const startNewConversation = async (router: RouterLike) => {
                content: 'greet the user warmly with hello and offer what you can do to the user in 5 or less words'
             }
          ],
-         model: 'openai'
+         model: 'openai-fast'
       }
 
       const data = await request(payload)

@@ -65,7 +65,7 @@ export const SEARCH_TOOL = {
   type: 'function' as const,
   function: {
     name: 'search_web',
-    description: 'Search the web for current information using multiple search engines. Use this when the user asks for recent news, current events, weather, stock prices, or any information that might have changed recently.',
+    description: 'Search the web for current information via Tavily. Use this when the user asks for recent news, current events, weather, stock prices, or any information that might have changed recently.',
     parameters: {
       type: 'object',
       properties: {

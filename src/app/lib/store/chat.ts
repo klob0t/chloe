@@ -524,7 +524,7 @@ export const useChatStore = create<ChatState>()((set, get) => {
             currentConversationId: null,
             titleGenerationStatus: {},
 
-            sendMessage: async (content: string, model = 'openai-large') => {
+            sendMessage: async (content: string, model = 'openai') => {
                 const { messages, currentConversationId } = get()
                 console.log('Sending message. Current conversation ID:', currentConversationId, 'Existing messages:', messages.length)
 
@@ -659,12 +659,41 @@ export const useChatStore = create<ChatState>()((set, get) => {
                         }))
                         .filter(entry => entry.content.trim().length > 0)
 
-                    // Prepare messages array for OpenAI format
-                    const apiMessages = [
-                        { role: 'system', content: SYSTEM_PROMPT },
-                        ...serialisedHistory,
-                        { role: 'user', content }
-                    ]
+                    // Build messages under provider character limit (~7000)
+                    // We target ~6800 to leave headroom for metadata/overhead
+                    const MAX_INPUT_CHARS = 6800
+                    const OVERHEAD_PER_MSG = 20 // rough allowance for role/formatting
+
+                    const buildLimitedMessages = (
+                        history: Array<{ role: 'user' | 'assistant'; content: string }>,
+                        userText: string
+                    ) => {
+                        const system = { role: 'system' as const, content: SYSTEM_PROMPT }
+
+                        // Ensure user input fits budget at minimum
+                        let available = MAX_INPUT_CHARS - system.content.length - OVERHEAD_PER_MSG
+                        let finalUserText = userText
+                        if (finalUserText.length + OVERHEAD_PER_MSG > available) {
+                            finalUserText = finalUserText.slice(0, Math.max(0, available - OVERHEAD_PER_MSG))
+                        }
+                        available -= finalUserText.length + OVERHEAD_PER_MSG
+
+                        // Add newest history first until budget exhausted
+                        const picked: Array<{ role: 'user' | 'assistant'; content: string }> = []
+                        for (let i = history.length - 1; i >= 0; i--) {
+                            const entry = history[i]
+                            const cost = entry.content.length + OVERHEAD_PER_MSG
+                            if (cost > available) break
+                            picked.push(entry)
+                            available -= cost
+                        }
+                        picked.reverse()
+
+                        return [system, ...picked, { role: 'user' as const, content: finalUserText }]
+                    }
+
+                    // Prepare messages array for OpenAI-compatible format with limits applied
+                    const apiMessages = buildLimitedMessages(serialisedHistory, content)
 
 
                     // Make API request with OpenAI format

@@ -39,6 +39,38 @@ interface ToolResponseMessage {
   content: string
 }
 
+// Decide when to enable the web-search tool.
+// We only enable it if the latest user message clearly asks for web search
+// or time-sensitive information (e.g., news, today, latest, price, weather).
+const getLastUserText = (messages: ChatMessage[]): string => {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i]
+    if (m.role === 'user' && typeof m.content === 'string') {
+      return m.content
+    }
+  }
+  return ''
+}
+
+const shouldEnableSearch = (messages: ChatMessage[]): boolean => {
+  const text = getLastUserText(messages).toLowerCase()
+  if (!text) return false
+
+  // Explicit search/browse intent
+  const explicit = /\b(search|google|web|browse|look up|find online|from the web|from web|on the web|sources?|cite|citation)\b/i.test(text)
+
+  // Time-sensitive or current info intent
+  const timeSensitive = /\b(news|latest|today|current|weather|stock|price|release|update|trending|breaking)\b/i.test(text)
+
+  // Command-style triggers
+  const commands = /^(\/search|\/browse)\b/i.test(text)
+
+  // URL-like hints
+  const urlLike = /(https?:\/\/|www\.|\bsite:)/i.test(text)
+
+  return explicit || timeSensitive || commands || urlLike
+}
+
 const isChatMessageArray = (value: unknown): value is ChatMessage[] => {
   if (!Array.isArray(value)) {
     return false
@@ -67,12 +99,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing or invalid messages array' }, { status: 400 })
     }
 
-    const requestBody = {
+    const enableSearch = shouldEnableSearch(messages)
+
+    const requestBody: Record<string, unknown> = {
       messages,
       model,
-      max_tokens: 1000,
-      tools: [SEARCH_TOOL],
-      tool_choice: 'auto'
+      max_tokens: 1000
+    }
+
+    if (enableSearch) {
+      requestBody.tools = [SEARCH_TOOL]
+      requestBody.tool_choice = 'auto'
     }
 
     const initialResponse = await fetch(OPENAI_ENDPOINT, {
